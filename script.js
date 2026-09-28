@@ -162,6 +162,33 @@ const nflTeams = {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
+    // Luodaan tarvittaessa dynaamisesti oikeat valikot, jos HTML:ssä on pelkät homeTeam/awayTeam elementit
+    const container = document.querySelector('.card');
+    
+    if (document.getElementById('homeTeam') && !document.getElementById('homeOffense')) {
+        // Päivitetään HTML:n rakenteeseen hyökkäys ja puolustus erikseen vaivattomasti
+        container.innerHTML = `
+            <h2>Valitse vastakkaiset joukkueet</h2>
+            <div class="select-group">
+                <label>Kotijoukkueen Hyökkäys 🏠:</label>
+                <select id="homeOffense"></select>
+            </div>
+            <div class="select-group">
+                <label>Kotijoukkueen Puolustus 🛡️:</label>
+                <select id="homeDefense"></select>
+            </div>
+            <div class="select-group">
+                <label>Vierasjoukkueen Hyökkäys ✈️:</label>
+                <select id="awayOffense"></select>
+            </div>
+            <div class="select-group">
+                <label>Vierasjoukkueen Puolustus 🛡️:</label>
+                <select id="awayDefense"></select>
+            </div>
+            <button class="meme-btn" id="calcBtn">SUORITA REALISTINEN SIMULAATIO 🚀🔥</button>
+        `;
+    }
+
     const homeOffSelect = document.getElementById('homeOffense');
     const homeDefSelect = document.getElementById('homeDefense');
     const awayOffSelect = document.getElementById('awayOffense');
@@ -238,19 +265,15 @@ function calculateOptaMatch() {
     const awayDef = document.getElementById('awayDefense').value;
     const resultsDiv = document.getElementById('results');
 
-    // Lasketaan realistiset tehot ottaen huomioon hyökkäys, vastustajan puolustus ja loukkaantumiset
     const homePower = computeTeamPower(homeOff, awayDef, 'home', true);
     const awayPower = computeTeamPower(awayOff, homeDef, 'away', false);
 
-    // Skaalataan jaardit realistisiksi NFL-lukemiksi (tyypillisesti 260 - 420 jaardia per joukkue)
-    const homeYards = Math.min(460, Math.max(220, Math.round(330 + (homePower - awayPower) * 35)));
-    const awayYards = Math.min(460, Math.max(220, Math.round(310 + (awayPower - homePower) * 35)));
+    const homeYards = Math.min(450, Math.max(220, Math.round(330 + (homePower - awayPower) * 30)));
+    const awayYards = Math.min(450, Math.max(220, Math.round(310 + (awayPower - homePower) * 30)));
 
-    // Realistiset pisteet NFL-keskiarvojen mukaisesti
-    const homeScore = Math.max(6, Math.min(45, Math.round(homeYards / 28 + (homePower > awayPower ? 3 : -2))));
-    const awayScore = Math.max(3, Math.min(42, Math.round(awayYards / 29 + (awayPower > homePower ? 2 : -3))));
+    const homeScore = Math.max(6, Math.min(42, Math.round(homeYards / 28 + (homePower > awayPower ? 3 : -2))));
+    const awayScore = Math.max(3, Math.min(38, Math.round(awayYards / 29 + (awayPower > homePower ? 2 : -3))));
 
-    // Voittotodennäköisyydet
     const homeWinProb = Math.min(88, Math.max(12, Math.round(50 + (homePower - awayPower) * 14 + 4)));
     const awayWinProb = 100 - homeWinProb;
 
@@ -293,7 +316,6 @@ function computeTeamPower(offTeamName, defTeamName, prefix, isHome) {
         }
     });
 
-    // Vastustajan puolustuksen vaikutus (mitä vähemmän puolustus on päästänyt jaardeja, sitä kovempi vastus)
     let defResistance = (defTeam.defRushAllowed + defTeam.defPassAllowed) / 750;
     let homeBonus = isHome ? 1.08 : 1.0;
 
