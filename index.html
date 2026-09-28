@@ -3,49 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Fantasy & Ottelulaskuri</title>
+    <title>NFL-Calcy - Meemiversio</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>NFL Ottelu- ja Fantasy-laskuri</h1>
-        
-        <div class="selector-box">
-            <div class="team-select">
+        <h1>🏈 NFL-Calcy: Meemi & TD-Laskuri 🤡</h1>
+        <p class="subtitle">"Missä Tom Brady?" – Puhelinystävällinen fantasy-työkalu</p>
+
+        <div class="card">
+            <h2>Valitse vastakkaiset joukkueet</h2>
+            <div class="select-group">
                 <label for="homeTeam">Kotijoukkue:</label>
-                <select id="homeTeam">
-                    <option value="Rams">Rams (1-2)</option>
-                    <option value="Bills">Bills (3-0)</option>
-                </select>
+                <select id="homeTeam"></select>
             </div>
-
-            <div class="team-select">
+            <div class="select-group">
                 <label for="awayTeam">Vierasjoukkue:</label>
-                <select id="awayTeam">
-                    <option value="Bills" selected>Bills (3-0)</option>
-                    <option value="Rams">Rams (1-2)</option>
-                </select>
+                <select id="awayTeam"></select>
             </div>
-            
-            <button id="calcBtn">Laske ottelu & todennäköisyydet</button>
+            <button id="calcBtn" class="meme-btn">LAITA MATSI TULILLE 🚀🔥</button>
         </div>
 
-        <div class="matchup-container">
-            <div class="team-column" id="homeCol">
-                <h2 id="homeTitle">Rams</h2>
-                <div id="homePlayers"></div>
-            </div>
-            
-            <div class="team-column" id="awayCol">
-                <h2 id="awayTitle">Bills</h2>
-                <div id="awayPlayers"></div>
-            </div>
+        <div id="teamConfigs" class="config-grid">
+            <!-- Pelaajien poistoruksit generoidaan tähän -->
         </div>
 
-        <div class="result-box" id="resultBox" style="display:none;">
-            <h2>Tulokset ja Arviot</h2>
-            <div id="scoreOutput"></div>
-            <div id="tdOutput"></div>
+        <div id="results" class="results-container" style="display:none;">
+            <!-- Tulokset ja meemit ilmestyvät tänne -->
         </div>
     </div>
 
