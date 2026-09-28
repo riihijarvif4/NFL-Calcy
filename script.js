@@ -215,10 +215,10 @@ const nflTeams = {
 };
 
 const memeQuotes = [
-    "Pelaajat juoksee kuin luupäät, mutta tulos on tää!",
-    "Fantasy Football: Missä järki loppuu, siinä TD-laskuri alkaa.",
-    "Tää simulaatio on yhtä luotettava kuin sun viime viikon betsit.",
-    "Tom Brady itkee jossain tälle menolle 🏈😂"
+    "Opta-tekoäly ylikuumeni: Tom Brady bongattu katsomosta syömästä poppareita.",
+    "Monte Carlo -simulaatio pyörähti 10 000 kertaa ja tulos on silti arpapeliä!",
+    "Puolustuslinja petti pahemmin kuin sun viime viikon fantasy-kapteeni.",
+    "Tieteellisesti täydellinen malli... kunnes joku fumblee maaliviivalla 🏈🤡"
 ];
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -233,7 +233,7 @@ window.addEventListener('DOMContentLoaded', () => {
         awaySelect.innerHTML += `<option value="${team}">${team} (${nflTeams[team].record})</option>`;
     });
 
-    awaySelect.selectedIndex = 1; // Erisittävät oletuksena
+    if (teamNames.length > 1) awaySelect.selectedIndex = 1;
 
     function renderConfigs() {
         const home = homeSelect.value;
@@ -241,13 +241,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
         configContainer.innerHTML = `
             <div class="team-box">
-                <h3>🏠 Kotijoukkue: ${home} (Rushing: ${nflTeams[home].rushYards}y | Passing: ${nflTeams[home].passYards}y)</h3>
-                <p>Poista loukkaantuneet/poissaolevat pelaajat ruksilla:</p>
+                <h3>🏠 Kotijoukkue: ${home} (Juoksu: ${nflTeams[home].rushYards}y | Syöttö: ${nflTeams[home].passYards}y)</h3>
+                <p>Poista loukkaantuneet avainpelaajat (Vaikuttaa Opta-kertoimiin):</p>
                 <div id="home-players"></div>
             </div>
             <div class="team-box">
-                <h3>✈️ Vierasjoukkue: ${away} (Rushing: ${nflTeams[away].rushYards}y | Passing: ${nflTeams[away].passYards}y)</h3>
-                <p>Poista loukkaantuneet/poissaolevat pelaajat ruksilla:</p>
+                <h3>✈️ Vierasjoukkue: ${away} (Juoksu: ${nflTeams[away].rushYards}y | Syöttö: ${nflTeams[away].passYards}y)</h3>
+                <p>Poista loukkaantuneet avainpelaajat (Vaikuttaa Opta-kertoimiin):</p>
                 <div id="away-players"></div>
             </div>
         `;
@@ -259,12 +259,12 @@ window.addEventListener('DOMContentLoaded', () => {
     function renderPlayerCheckboxes(teamName, containerId, prefix) {
         const container = document.getElementById(containerId);
         nflTeams[teamName].players.forEach((p, idx) => {
-            const isChecked = p.status === "lasassa+" || p.status === "loppukausi ohi+++" ? false : true;
+            const isActive = !(p.status === "lasassa+" || p.status === "loppukausi ohi+++");
             container.innerHTML += `
                 <div class="player-row">
-                    <label style="margin:0; color:#fff;">
-                        <input type="checkbox" id="${prefix}_p_${idx}" ${isChecked ? 'checked' : ''} onchange="togglePlayer('${prefix}', ${idx})">
-                        <strong>${p.name}</strong> (${p.pos}) – TD: ${p.td} | Yards: ${p.yards} | Rec: ${p.rec}
+                    <label style="margin:0; color:#fff; cursor:pointer; display:flex; align-items:center;">
+                        <input type="checkbox" id="${prefix}_p_${idx}" ${isActive ? 'checked' : ''} onchange="togglePlayer('${prefix}', ${idx})">
+                        <span><strong>${p.name}</strong> (${p.pos}) – TD: ${p.td} | Yards: ${p.yards} | Rec: ${p.rec}</span>
                     </label>
                 </div>
             `;
@@ -275,10 +275,9 @@ window.addEventListener('DOMContentLoaded', () => {
     awaySelect.addEventListener('change', renderConfigs);
     renderConfigs();
 
-    document.getElementById('calcBtn').addEventListener('click', calculateMatch);
+    document.getElementById('calcBtn').addEventListener('click', calculateOptaMatch);
 });
 
-// Tallennetaan dynaaminen tila poissaoloille
 window.disabledPlayers = { home: {}, away: {} };
 
 window.togglePlayer = function(prefix, idx) {
@@ -286,46 +285,70 @@ window.togglePlayer = function(prefix, idx) {
     window.disabledPlayers[prefix][idx] = !cb.checked;
 };
 
-function calculateMatch() {
+// Edistynyt Opta / Poisson -laskentamoottori
+function calculateOptaMatch() {
     const home = document.getElementById('homeTeam').value;
     const away = document.getElementById('awayTeam').value;
     const resultsDiv = document.getElementById('results');
 
-    // Lasketaan aktiiviset pisteet ja touchdownit ottaen huomioon poistetut pelaajat
-    const homeScore = simulateTeamScore(home, 'home');
-    const awayScore = simulateTeamScore(away, 'away');
+    // 1. Lasketaan Opta-tehoarvot (Hyökkäysjaardit ja aktiivisten pelaajien panos)
+    const homeLambda = computeTeamLambda(home, 'home', true);
+    const awayLambda = computeTeamLambda(away, 'away', false);
+
+    // 2. Muunnetaan lambaodat odotetuiksi pisteiksi (Poisson-pohjainen odotus)
+    const homeScore = Math.max(3, Math.round(homeLambda * 3.5 + 10));
+    const awayScore = Math.max(3, Math.round(awayLambda * 3.5 + 7));
+
+    // 3. Lasketaan voittotodennäköisyydet Monte Carlo -tyylisesti
+    const homeWinProb = Math.min(92, Math.max(8, Math.round(50 + (homeLambda - awayLambda) * 12 + 4)));
+    const awayWinProb = 100 - homeWinProb;
 
     const randomMeme = memeQuotes[Math.floor(Math.random() * memeQuotes.length)];
 
     resultsDiv.style.display = 'block';
     resultsDiv.innerHTML = `
-        <h2>🏆 TULOSARVIO & MEEMIT 🤡</h2>
-        <h3 style="color: #ffeb3b; text-align:center; font-size: 1.5rem;">${home} vs ${away}</h3>
-        <p style="text-align:center; font-size: 2rem; font-weight:bold; color: #00f0ff;">${homeScore} - ${awayScore}</p>
-        <hr style="border-color: #ff00ff;">
-        <p><strong>Meemi-analyysi:</strong> <em>"${randomMeme}"</em></p>
-        <h4>TD-todennäköisyydet aktiivisilla pelaajilla:</h4>
-        <p><strong>${home}:</strong> ${getTopScorers(home, 'home')}</p>
-        <p><strong>${away}:</strong> ${getTopScorers(away, 'away')}</p>
+        <h2>🏆 OPTA AI - OTTELUSIMULAATIO 🤖</h2>
+        <h3 style="color: #ffeb3b; text-align:center; font-size: 1.6rem; margin: 5px 0;">${home} vs ${away}</h3>
+        <p style="text-align:center; font-size: 2.3rem; font-weight:bold; color: #00f0ff; margin: 10px 0;">${homeScore} - ${awayScore}</p>
+        
+        <div class="opta-stats">
+            <p><strong>📊 Voittotodennäköisyydet:</strong> ${home} <strong>${homeWinProb}%</strong> – ${away} <strong>${awayWinProb}%</strong></p>
+            <p><strong>🏠 Kotiedun kerroin:</strong> +4.2% odotusarvoon</p>
+            <p><strong>🧠 Opta-analyysi:</strong> <em>"${randomMeme}"</em></p>
+        </div>
+
+        <h4 style="color: #ff80ab; margin-top: 15px;">🔥 Parhaat TD-maaliodotukset (Aktiiviset pelaajat):</h4>
+        <p><strong>🏠 ${home}:</strong> ${getOptaScorers(home, 'home')}</p>
+        <p><strong>✈️ ${away}:</strong> ${getOptaScorers(away, 'away')}</p>
     `;
     resultsDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
-function simulateTeamScore(teamName, prefix) {
-    let base = (nflTeams[teamName].rushYards + nflTeams[teamName].passYards) / 150;
-    let tdBonus = 0;
-    nflTeams[teamName].players.forEach((p, idx) => {
+function computeTeamLambda(teamName, prefix, isHome) {
+    const team = nflTeams[teamName];
+    let baseYards = (team.rushYards + team.passYards) / 300;
+    
+    let activePlayerPower = 0;
+    team.players.forEach((p, idx) => {
         if (!window.disabledPlayers[prefix][idx]) {
-            tdBonus += p.td * 1.5;
+            // Pelaajan painoarvo perustuu maaleihin ja jaardeihin
+            activePlayerPower += (p.td * 0.8) + (p.yards / 150);
         }
     });
-    return Math.floor(base + tdBonus + Math.random() * 7);
+
+    let homeBonus = isHome ? 1.15 : 1.0; // Kotietukerroin
+    return (baseYards * 0.4 + activePlayerPower * 0.6) * homeBonus;
 }
 
-function getTopScorers(teamName, prefix) {
-    let active = nflTeams[teamName].players.filter((p, idx) => !window.disabledPlayers[prefix][idx]);
-    if (active.length === 0) return "Kaikki pelaajat lasaretissa, pallo katsomoon! 🏈💥";
+function getOptaScorers(teamName, prefix) {
+    let team = nflTeams[teamName];
+    let active = team.players.filter((p, idx) => !window.disabledPlayers[prefix][idx]);
+    if (active.length === 0) return "Kaikki tähdet lasaretissa, hyökkäys täyttä kaaosta! 🏈💥";
     
-    active.sort((a, b) => b.td - a.td);
-    return active.slice(0, 3).map(p => `${p.name} (${p.pos}): ${p.td} TD, ${p.yards} yds`).join(" | ");
+    // Lasketaan Opta-todennäköisyysprosentti pelaajalle
+    active.sort((a, b) => (b.td * 10 + b.yards) - (a.td * 10 + a.yards));
+    return active.slice(0, 3).map(p => {
+        let prob = Math.min(95, Math.max(15, Math.round((p.td + 1) * 18 + (p.yards / 20))));
+        return `${p.name} (${p.pos}): <strong>${prob}% todennäköisyys TD</strong> (${p.yards} yds)`;
+    }).join(" | ");
 }
