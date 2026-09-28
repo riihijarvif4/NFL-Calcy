@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Fantasy & Ottelulaskuri</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>NFL Ottelu- ja Fantasy-laskuri</h1>
+        
+        <div class="selector-box">
+            <div class="team-select">
+                <label for="homeTeam">Kotijoukkue:</label>
+                <select id="homeTeam">
+                    <option value="Rams">Rams (1-2)</option>
+                    <option value="Bills">Bills (3-0)</option>
+                </select>
+            </div>
+
+            <div class="team-select">
+                <label for="awayTeam">Vierasjoukkue:</label>
+                <select id="awayTeam">
+                    <option value="Bills" selected>Bills (3-0)</option>
+                    <option value="Rams">Rams (1-2)</option>
+                </select>
+            </div>
+            
+            <button id="calcBtn">Laske ottelu & todennäköisyydet</button>
+        </div>
+
+        <div class="matchup-container">
+            <div class="team-column" id="homeCol">
+                <h2 id="homeTitle">Rams</h2>
+                <div id="homePlayers"></div>
+            </div>
+            
+            <div class="team-column" id="awayCol">
+                <h2 id="awayTitle">Bills</h2>
+                <div id="awayPlayers"></div>
+            </div>
+        </div>
+
+        <div class="result-box" id="resultBox" style="display:none;">
+            <h2>Tulokset ja Arviot</h2>
+            <div id="scoreOutput"></div>
+            <div id="tdOutput"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
