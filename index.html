@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL H2H - Otteluvertailu</title>
+    <title>NFL H2H - Tykki</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="referee-stripe"></div>
 
     <header class="app-header">
-        <h1>🏈 NFL H2H <span>Otteluanalysaattori</span></h1>
-        <p>Valitse viikko ja ottelupari – Poisson-jakauma & True Odds -laskenta</p>
+        <h1>🏈 NFL H2H <span>Monni Engine</span></h1>
+        <p>1 000 kierroksen simulaatio, Poisson-jakauma & True Odds -analyysi</p>
     </header>
 
     <main class="main-container">
-        <!-- Valintapaneeli: Viikko ja Ottelu -->
+        <!-- Valintapaneeli -->
         <section class="selection-panel">
             <div class="select-box">
                 <label for="weekSelect">📅 Valitse Viikko</label>
                 <select id="weekSelect">
-                    <option value="4" selected>Viikko 4</option>
+                    <option value="4" selected>Viikko 4 (2026)</option>
                 </select>
             </div>
 
@@ -29,7 +29,7 @@
                 <select id="matchSelect"></select>
             </div>
 
-            <button id="compareBtn" class="btn-primary">Vertaile</button>
+            <button id="compareBtn" class="btn-primary">📊 Aja 1000x Simulaatio</button>
         </section>
 
         <!-- Vertailunäkymä -->
@@ -38,12 +38,13 @@
             <div class="team-card">
                 <h2 id="homeTitle">Kotijoukkue</h2>
                 <div class="team-stats" id="homeStats"></div>
-                <h3>Avainpelaajat & Poisson TD %</h3>
+                <h3>Avainpelaajat & Todennäköisyydet</h3>
                 <div class="players-list" id="homePlayers"></div>
             </div>
 
-            <!-- Keskusta (Tulosarvio & Todennäköisyys) -->
+            <!-- Keskusta: Monte Carlo Tulos & Voitto-osuus -->
             <div class="center-card">
+                <div class="sim-badge">1000x SIMULOITU KESKIARVO</div>
                 <div class="matchup-score-box">
                     <span id="homeScoreNum">--</span>
                     <span class="score-dash">-</span>
@@ -62,7 +63,7 @@
             <div class="team-card">
                 <h2 id="awayTitle">Vierasjoukkue</h2>
                 <div class="team-stats" id="awayStats"></div>
-                <h3>Avainpelaajat & Poisson TD %</h3>
+                <h3>Avainpelaajat & Todennäköisyydet</h3>
                 <div class="players-list" id="awayPlayers"></div>
             </div>
         </section>
