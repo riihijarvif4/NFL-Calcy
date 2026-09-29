@@ -3,102 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomminvarmat - NFL H2H & Syvädata Engine</title>
+    <title>NFL H2H - Suora Vertailu</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="nfl-header">
-      <div class="referee-stripe-top"></div>
-      <h1>🏈 Pomminvarmat <span>H2H & Syvädata</span></h1>
-      <p>Suora joukkueiden välinen vertailu, linjojen hallinta, säkitykset & xG</p>
+    <div class="referee-stripe"></div>
+
+    <header class="app-header">
+        <h1>🏈 NFL H2H <span>Vertailutyökalu</span></h1>
+        <p>Puhdas joukkueiden ja pelaajien välinen vertailu</p>
     </header>
 
-    <main class="container">
-        <!-- Viikon ja H2H-ottelun valinta -->
-        <section class="control-panel">
-            <div class="input-group">
-                <label for="weekSelect">📅 Valitse Viikko (Viikko 4+):</label>
-                <select id="weekSelect">
-                    <option value="4" selected>Viikko 4</option>
-                    <option value="5">Viikko 5</option>
-                </select>
+    <main class="main-container">
+        <!-- Valintapaneeli -->
+        <section class="selection-panel">
+            <div class="select-box">
+                <label for="homeTeamSelect">🏠 Kotijoukkue</label>
+                <select id="homeTeamSelect"></select>
             </div>
-            <div class="input-group">
-                <label for="matchSelect">⚔️ Valitse H2H Ottelupari:</label>
-                <select id="matchSelect">
-                    <!-- JavaScript täyttää dynaamisesti -->
-                </select>
+            
+            <div class="vs-badge">VS</div>
+
+            <div class="select-box">
+                <label for="awayTeamSelect">✈️ Vierasjoukkue</label>
+                <select id="awayTeamSelect"></select>
             </div>
-            <button id="simulateBtn" class="btn-nfl">⚡ Analysoi H2H & Linjat</button>
+
+            <button id="compareBtn" class="btn-primary">Vertaile</button>
         </section>
 
-        <!-- Säävaroitus (Keltalippu) -->
-        <section id="weatherAlert" class="penalty-flag-box hidden">
-            <div class="flag-icon">🟡 KELTALIPPU - SÄÄVAROITUS</div>
-            <p id="weatherText"></p>
-        </section>
-
-        <!-- Päävertailu: Kotijoukkue vs Vierasjoukkue -->
-        <section class="h2h-grid">
-            <!-- Kotijoukkueen Kortti -->
-            <div class="card team-card">
-                <h2 id="homeTeamTitle">Kotijoukkue</h2>
-                <div class="stats-box">
-                    <p>🏈 Hyökkäyksen keskiarvo: <strong id="homeOffYds">--</strong> yds</p>
-                    <p>🛡️ Puolustuksen säkitykset (Sacks/peli): <strong id="homeSacks">--</strong></p>
-                    <p>🎯 Arvioidut pisteet (xG): <strong id="homeScore">--</strong></p>
-                </div>
-                <h3>Avainpelaajat & Maalitodennäköisyydet</h3>
-                <div id="homePlayersContainer"></div>
+        <!-- Vertailunäkymä -->
+        <section class="h2h-container">
+            <!-- Kotijoukkue -->
+            <div class="team-card">
+                <h2 id="homeTitle">Kotijoukkue</h2>
+                <div class="team-stats" id="homeStats"></div>
+                <h3>Avainpelaajat & Tilastot</h3>
+                <div class="players-list" id="homePlayers"></div>
             </div>
 
-            <!-- Keskipiste / Voittotodennäköisyys -->
-            <div class="card central-card">
-                <h2>VS</h2>
-                <div class="win-prob-box">
-                    <span id="homeWinProb">Kotijoukkue: --%</span>
-                    <div class="vs-divider">⚡</div>
-                    <span id="awayWinProb">Vierasjoukkue: --%</span>
+            <!-- Keskusta (Tulosarvio & Todennäköisyys) -->
+            <div class="center-card">
+                <div class="matchup-score-box">
+                    <span id="homeScoreNum">--</span>
+                    <span class="score-dash">-</span>
+                    <span id="awayScoreNum">--</span>
                 </div>
-                <div id="trenchBattle" class="trench-box">
-                    <p>📊 Linjojen taistelu ja säkitysdynamiikka ladataan...</p>
+                <div class="win-prob-display">
+                    <div id="homeWinProb">Kotijoukkue: --%</div>
+                    <div class="prob-bar-container">
+                        <div id="probBar" class="prob-bar"></div>
+                    </div>
+                    <div id="awayWinProb">Vierasjoukkue: --%</div>
                 </div>
             </div>
 
-            <!-- Vierasjoukkueen Kortti -->
-            <div class="card team-card">
-                <h2 id="awayTeamTitle">Vierasjoukkue</h2>
-                <div class="stats-box">
-                    <p>🏈 Hyökkäyksen keskiarvo: <strong id="awayOffYds">--</strong> yds</p>
-                    <p>🛡️ Puolustuksen säkitykset (Sacks/peli): <strong id="awaySacks">--</strong></p>
-                    <p>🎯 Arvioidut pisteet (xG): <strong id="awayScore">--</strong></p>
-                </div>
-                <h3>Avainpelaajat & Maalitodennäköisyydet</h3>
-                <div id="awayPlayersContainer"></div>
-            </div>
-        </section>
-
-        <!-- Yhdistelmävedot (Parlays) -->
-        <section class="card parlay-section">
-            <h2>🎰 H2H Yhdistelmävedot (Parlays)</h2>
-            <div class="parlay-grid">
-                <div class="parlay-box" id="parlayDouble">
-                    <h3>Tupla (2 Kohdetta)</h3>
-                    <div class="parlay-content">Ladataan...</div>
-                </div>
-                <div class="parlay-box" id="parlayTriple">
-                    <h3>Tripla (3 Kohdetta)</h3>
-                    <div class="parlay-content">Ladataan...</div>
-                </div>
+            <!-- Vierasjoukkue -->
+            <div class="team-card">
+                <h2 id="awayTitle">Vierasjoukkue</h2>
+                <div class="team-stats" id="awayStats"></div>
+                <h3>Avainpelaajat & Tilastot</h3>
+                <div class="players-list" id="awayPlayers"></div>
             </div>
         </section>
     </main>
 
-    <footer class="nfl-footer">
-        <div class="referee-stripe-bottom"></div>
-        <p>&copy; 2026 Pomminvarmat NFL Engine. Rakennettu puhtaaseen H2H-analyysiin.</p>
-    </footer>
-
+    <div class="referee-stripe"></div>
     <script src="script.js"></script>
 </body>
 </html>
