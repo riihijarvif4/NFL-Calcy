@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL H2H - Suora Vertailu</title>
+    <title>NFL H2H - Otteluvertailu</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="referee-stripe"></div>
 
     <header class="app-header">
-        <h1>🏈 NFL H2H <span>Vertailutyökalu</span></h1>
-        <p>Puhdas joukkueiden ja pelaajien välinen vertailu</p>
+        <h1>🏈 NFL H2H <span>Otteluanalysaattori</span></h1>
+        <p>Valitse viikko ja ottelupari – Poisson-jakauma & True Odds -laskenta</p>
     </header>
 
     <main class="main-container">
-        <!-- Valintapaneeli -->
+        <!-- Valintapaneeli: Viikko ja Ottelu -->
         <section class="selection-panel">
             <div class="select-box">
-                <label for="homeTeamSelect">🏠 Kotijoukkue</label>
-                <select id="homeTeamSelect"></select>
+                <label for="weekSelect">📅 Valitse Viikko</label>
+                <select id="weekSelect">
+                    <option value="4" selected>Viikko 4</option>
+                </select>
             </div>
-            
-            <div class="vs-badge">VS</div>
 
             <div class="select-box">
-                <label for="awayTeamSelect">✈️ Vierasjoukkue</label>
-                <select id="awayTeamSelect"></select>
+                <label for="matchSelect">⚔️ Valitse Ottelupari</label>
+                <select id="matchSelect"></select>
             </div>
 
             <button id="compareBtn" class="btn-primary">Vertaile</button>
@@ -38,7 +38,7 @@
             <div class="team-card">
                 <h2 id="homeTitle">Kotijoukkue</h2>
                 <div class="team-stats" id="homeStats"></div>
-                <h3>Avainpelaajat & Tilastot</h3>
+                <h3>Avainpelaajat & Poisson TD %</h3>
                 <div class="players-list" id="homePlayers"></div>
             </div>
 
@@ -62,7 +62,7 @@
             <div class="team-card">
                 <h2 id="awayTitle">Vierasjoukkue</h2>
                 <div class="team-stats" id="awayStats"></div>
-                <h3>Avainpelaajat & Tilastot</h3>
+                <h3>Avainpelaajat & Poisson TD %</h3>
                 <div class="players-list" id="awayPlayers"></div>
             </div>
         </section>
