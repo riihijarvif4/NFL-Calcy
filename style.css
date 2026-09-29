@@ -1,207 +1,294 @@
+:root {
+    --nfl-green: #1b4d3e;
+    --nfl-field-green: #2e7d32;
+    --nfl-dark: #0f172a;
+    --nfl-card-bg: #1e293b;
+    --nfl-gold: #fbbf24;
+    --nfl-white: #f8fafc;
+    --nfl-red: #ef4444;
+}
+
 body {
-    background-color: #0b1410;
-    background-image: 
-        linear-gradient(rgba(11, 20, 16, 0.94), rgba(11, 20, 16, 0.94)),
-        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(46, 196, 182, 0.03) 40px, rgba(46, 196, 182, 0.03) 80px);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #e2e8f0;
+    background-color: var(--nfl-dark);
+    color: var(--nfl-white);
     margin: 0;
-    padding: 20px;
+    padding: 0;
+}
+
+/* Referee stripes header/footer */
+.referee-stripe-top, .referee-stripe-bottom {
+    height: 10px;
+    background: repeating-linear-gradient(
+        45deg,
+        #000,
+        #000 15px,
+        #fff 15px,
+        #fff 30px
+    );
+}
+
+.nfl-header {
+    background-color: var(--nfl-green);
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border-bottom: 3px solid var(--nfl-gold);
+}
+
+.nfl-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    color: var(--nfl-white);
+}
+
+.nfl-header h1 span {
+    color: var(--nfl-gold);
+}
+
+.nfl-header p {
+    margin: 0.5rem 0 0;
+    color: #cbd5e1;
 }
 
 .container {
-    max-width: 620px;
-    margin: 0 auto;
-    background: #121c17;
-    border: 1px solid #1e3328;
-    border-radius: 14px;
-    padding: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-h1 {
-    text-align: center;
-    font-size: 1.8rem;
-    color: #f8fafc;
-    margin-bottom: 4px;
-    letter-spacing: -0.5px;
-}
-
-.subtitle {
-    text-align: center;
-    color: #94a3b8;
-    margin-bottom: 24px;
-    font-size: 0.9rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
 .card {
-    background: #17231d;
-    border: 1px solid #22382c;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 16px;
+    background-color: var(--nfl-card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    border: 1px solid #334155;
+    position: relative;
+    overflow: hidden;
 }
 
-.card h2 {
-    color: #cbd5e1;
-    font-size: 1rem;
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-weight: 600;
+/* Field background lines effect */
+.field-card {
+    background: linear-gradient(rgba(30, 41, 59, 0.95), rgba(30, 41, 59, 0.95)), 
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.03) 40px, rgba(255, 255, 255, 0.03) 80px);
 }
 
-.select-group {
-    margin-bottom: 12px;
+.control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: var(--nfl-card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    border: 1px solid #334155;
 }
 
-.select-group:last-child {
-    margin-bottom: 0;
+.input-group {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 label {
-    display: block;
-    font-size: 0.85rem;
-    color: #94a3b8;
-    margin-bottom: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--nfl-gold);
 }
 
 select {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid #2d4a3b;
-    background: #0f1713;
-    color: #f1f5f9;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-select:focus {
-    border-color: #38bdf8;
-}
-
-.meme-btn {
-    width: 100%;
-    background: #2563eb;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: #0f172a;
     color: white;
+    border: 1px solid #475569;
+    font-size: 1rem;
+}
+
+.btn-nfl {
+    background-color: var(--nfl-gold);
+    color: #000;
+    font-weight: bold;
     border: none;
-    padding: 14px;
-    font-size: 1.05rem;
-    font-weight: 600;
+    padding: 0.75rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    margin-top: 14px;
+    transition: all 0.2s ease;
+    font-size: 1rem;
 }
 
-.meme-btn:hover {
-    background: #1d4ed8;
+.btn-nfl:hover {
+    background-color: #f59e0b;
+    transform: translateY(-2px);
 }
 
-.meme-btn:active {
-    transform: scale(0.99);
+/* Penalty flag box */
+.penalty-flag-box {
+    background-color: #fef08a;
+    color: #1e293b;
+    border-left: 6px solid #eab308;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
 }
 
-.config-grid {
+.penalty-flag-box.hidden {
+    display: none;
+}
+
+.flag-icon {
+    color: #b45309;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+}
+
+/* Scoreboard */
+.scoreboard {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border: 1px solid #334155;
+}
+
+.team-score {
+    text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
 }
 
-.team-box {
-    background: #17231d;
-    border: 1px solid #22382c;
-    border-radius: 10px;
-    padding: 14px;
-}
-
-.team-box h3 {
-    color: #f1f5f9;
-    margin-top: 0;
-    font-size: 0.95rem;
-    margin-bottom: 4px;
-}
-
-.team-box p {
+.team-label {
+    font-size: 1.1rem;
+    font-weight: bold;
     color: #94a3b8;
-    font-size: 0.8rem;
-    margin-bottom: 8px;
+}
+
+.score-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--nfl-white);
+    margin: 0.25rem 0;
+}
+
+.win-prob {
+    font-size: 0.85rem;
+    color: var(--nfl-gold);
+}
+
+.vs-divider {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #64748b;
+}
+
+.yards-overview {
+    background: rgba(15, 23, 42, 0.4);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+/* Players list */
+.players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .player-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #0f1713;
-    padding: 8px 10px;
-    margin: 6px 0;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    border: 1px solid #1a2c22;
-}
-
-.player-row input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 10px;
-    accent-color: #2563eb;
-    cursor: pointer;
-}
-
-.results-container {
-    background: #17231d;
-    border: 1px solid #38bdf8;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 20px;
-    animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.matchup-field {
-    background: linear-gradient(90deg, #132a1e 0%, #0d1f16 50%, #132a1e 100%);
-    border: 2px dashed #2d5a43;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 1rem;
     border-radius: 8px;
-    padding: 16px;
+    border-left: 4px solid var(--nfl-gold);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    text-align: center;
-    margin: 12px 0;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.field-team {
-    flex: 1;
+.player-info h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
 }
 
-.field-team h3 {
-    margin: 0;
-    color: #f8fafc;
-    font-size: 1.05rem;
-}
-
-.field-score {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #38bdf8;
-    padding: 0 12px;
-}
-
-.opta-stats {
-    background: #0f1713;
-    border-left: 3px solid #38bdf8;
-    padding: 10px 14px;
-    margin-top: 14px;
-    border-radius: 0 6px 6px 0;
+.player-info span {
     font-size: 0.85rem;
-    color: #cbd5e1;
+    color: #94a3b8;
 }
 
-.opta-stats p {
-    margin: 6px 0;
+.player-odds {
+    display: flex;
+    gap: 1rem;
+}
+
+.odd-badge {
+    background: #0f172a;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid #334155;
+}
+
+.odd-badge span {
+    display: block;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.odd-badge strong {
+    color: var(--nfl-gold);
+    font-size: 1rem;
+}
+
+/* Parlays */
+.parlay-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.parlay-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.parlay-box h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--nfl-gold);
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.5rem;
+}
+
+.parlay-content {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #e2e8f0;
+}
+
+.nfl-footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.placeholder-text {
+    color: #64748b;
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
 }
