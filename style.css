@@ -72,7 +72,7 @@ select {
 
 .h2h-container {
     display: grid;
-    grid-template-columns: 1fr 240px 1fr;
+    grid-template-columns: 1fr 260px 1fr;
     gap: 1rem;
 }
 
@@ -99,6 +99,7 @@ select {
 }
 
 .center-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.sim-badge { font-size: 0.65rem; background: rgba(251, 191, 36, 0.15); color: var(--nfl-gold); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; margin-bottom: 0.5rem; border: 1px solid var(--nfl-gold); }
 .matchup-score-box { font-size: 2.2rem; font-weight: bold; color: var(--nfl-gold); margin-bottom: 0.8rem; }
 .score-dash { margin: 0 0.3rem; color: var(--text-muted); }
 
