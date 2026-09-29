@@ -46,7 +46,7 @@ body {
     margin-bottom: 1.2rem;
 }
 
-.select-box { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 0.3rem; }
+.select-box { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 0.3rem; }
 .select-box label { font-size: 0.8rem; font-weight: bold; color: var(--nfl-gold); }
 
 select {
@@ -57,8 +57,6 @@ select {
     border: 1px solid var(--border-color);
     font-size: 0.9rem;
 }
-
-.vs-badge { font-size: 1.1rem; font-weight: bold; color: var(--nfl-gold); align-self: center; padding: 0 0.5rem; }
 
 .btn-primary {
     background-color: var(--nfl-gold);
