@@ -3,35 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomminvarmat - NFL-Calcy (Opta Engine)</title>
+    <title>Pomminvarmat - Ultimate NFL Simulator & Parlay Engine</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Pomminvarmat 🏈💣</h1>
-        <p class="subtitle">"Opta-tason tekoäly" – Puhelinystävällinen fantasy- & ottelulaskuri</p>
+    <header class="nfl-header">
+      <div class="referee-stripe-top"></div>
+      <h1>🏈 Pomminvarmat <span>NFL Engine 2.0</span></h1>
+      <p>Siuuuuuu!</p>
+    </header>
 
-        <div class="card">
-            <h2>Valitse vastakkaiset joukkueet</h2>
-            <div class="select-group">
-                <label for="homeTeam">Kotijoukkue (Kotietu aktiivinen 🏠):</label>
-                <select id="homeTeam"></select>
+    <main class="container">
+        <!-- Viikon ja ottelun valinta -->
+        <section class="control-panel">
+            <div class="input-group">
+                <label for="weekSelect">📅 Valitse NFL Viikko:</label>
+                <select id="weekSelect">
+                    <option value="1">Week 1</option>
+                    <option value="2">Week 2</option>
+                    <option value="3" selected>Week 3 (Valittu)</option>
+                    <option value="4">Week 4</option>
+                    <option value="5">Week 5</option>
+                </select>
             </div>
-            <div class="select-group">
-                <label for="awayTeam">Vierasjoukkue ✈️:</label>
-                <select id="awayTeam"></select>
+            <div class="input-group">
+                <label for="matchSelect">🏟️ Valitse Ottelupari:</label>
+                <select id="matchSelect">
+                    <option value="chiefs-bears">Kansas City Chiefs vs. Chicago Bears</option>
+                    <option value="bills-dolphins">Buffalo Bills vs. Miami Dolphins</option>
+                    <option value="49ers-packers">San Francisco 49ers vs. Green Bay Packers</option>
+                </select>
             </div>
-            <button id="calcBtn" class="meme-btn">SUORITA MONTE CARLO -SIMULAATIO 🚀🔥</button>
-        </div>
+            <button id="simulateBtn" class="btn-nfl">⚡ Aja xG-Simulaatio & Laske Kertoimet</button>
+        </section>
 
-        <div id="teamConfigs" class="config-grid">
-            <!-- Pelaajien poistoruksit generoidaan dynaamisesti tänne -->
-        </div>
+        <!-- Sää- ja olosuhdevaroitus (Keltalippu) -->
+        <section id="weatherAlert" class="penalty-flag-box hidden">
+            <div class="flag-icon">🟡 KELTALIPPU - SÄÄVAROITUS</div>
+            <p id="weatherText"></p>
+        </section>
 
-        <div id="results" class="results-container" style="display:none;">
-            <!-- Tulokset ja Opta-analyysit ilmestyvät tänne -->
-        </div>
-    </div>
+        <!-- Simulaatiotulokset ja kenttä -->
+        <section class="results-grid">
+            <div class="card field-card">
+                <h2>🏟️ Realistinen Ottelusimulaatio (xG & Pistematriisi)</h2>
+                <div class="scoreboard">
+                    <div class="team-score">
+                        <span id="homeName" class="team-label">Kotijoukkue</span>
+                        <span id="homeScore" class="score-number">--</span>
+                        <span id="homeWinProb" class="win-prob">Voitto: --%</span>
+                    </div>
+                    <div class="vs-divider">-</div>
+                    <div class="team-score">
+                        <span id="awayName" class="team-label">Vierasjoukkue</span>
+                        <span id="awayScore" class="score-number">--</span>
+                        <span id="awayWinProb" class="win-prob">Voitto: --%</span>
+                    </div>
+                </div>
+                <div id="yardsOverview" class="yards-overview">
+                    <p>📊 Arvioidut kokonaisjaardit ja linjojen hallinta odottavat ajoa...</p>
+                </div>
+            </div>
+
+            <!-- Pelaajien tilastot & 1+ / 2+ TD todennäköisyydet -->
+            <div class="card players-card">
+                <h2>🎯 Pelaajien xG & Anytime TD -todennäköisyydet</h2>
+                <div id="playersContainer" class="players-list">
+                    <p class="placeholder-text">Paina simulaatiopainiketta nähdäksesi pelaajien urakehityksen ja TD-prosentit.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Yhdistelmävedot (Parlay Builder: Tupla, Tripla, 4 & 5 kohdetta) -->
+        <section class="card parlay-section">
+            <h2>🎰 Viikon Pomminvarmat Yhdistelmävedot (Parlays)</h2>
+            <p class="parlay-sub">Automaattisesti lasketut parhaat kohteet riskitasoilla varustettuna.</p>
+            
+            <div class="parlay-grid">
+                <div class="parlay-box" id="parlayDouble">
+                    <h3>Pari / Tupla (2 Kodetta)</h3>
+                    <div class="parlay-content">Ladataan...</div>
+                </div>
+                <div class="parlay-box" id="parlayTriple">
+                    <h3>Tripla (3 Kodetta)</h3>
+                    <div class="parlay-content">Ladataan...</div>
+                </div>
+                <div class="parlay-box" id="parlay4Leg">
+                    <h3>4 Kohteen Lappu</h3>
+                    <div class="parlay-content">Ladataan...</div>
+                </div>
+                <div class="parlay-box" id="parlay5Leg">
+                    <h3>5 Kohteen Mjöta (💣 Mega)</h3>
+                    <div class="parlay-content">Ladataan...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="nfl-footer">
+        <div class="referee-stripe-bottom"></div>
+        <p>&copy; 2026 Pomminvarmat NFL Engine. Rakennettu ilman kompromisseja.</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
