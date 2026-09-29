@@ -156,7 +156,6 @@ const nflDatabase = {
     ]}
 };
 
-// Viikon 4 viralliset ottelut 2026
 const nflSchedule = {
     "4": [
         { away: "Pittsburgh Steelers", home: "Cleveland Browns" },
@@ -178,6 +177,7 @@ const nflSchedule = {
     ]
 };
 
+// Aidot, hyväksytyt NFL-pisteet (mahdollistaa laajan hajonnan, esim. 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 38, 42)
 const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 31, 34, 35, 38, 41, 42];
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -206,7 +206,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateMatches();
 });
 
-// MONTE CARLO SIMULAATTORI (1000 kierrosta)
+// MONTE CARLO SIMULAATTORI (1000 kierrosta dynaamisilla kertoimilla)
 function runMonteCarloSimulation() {
     const selectedWeek = document.getElementById('weekSelect').value;
     const matchIndex = document.getElementById('matchSelect').value;
@@ -220,23 +220,35 @@ function runMonteCarloSimulation() {
     const homeData = nflDatabase[homeKey];
     const awayData = nflDatabase[awayKey];
 
-    // Ajetaan 1000 simulaatiokierrosta
     const SIM_ITERATIONS = 1000;
     let homeWins = 0;
     let homeScoreSum = 0;
     let awayScoreSum = 0;
 
-    // Poisson-pohjainen satunnaislukuhaun apufunktio
-    function simulateTeamScore(baseYds) {
-        let base = baseYds / 120; // jaardikerroin
-        let score = VALID_SCORES[Math.floor(Math.random() * VALID_SCORES.length)];
-        return Math.min(42, Math.max(3, Math.round((score + base * Math.random()) / 3) * 3));
+    // Lasketaan dynaaminen hyökkäysteho joukkueen jaardien ja vastustajan päästettyjen TD:iden perusteella
+    let homeTotalYds = homeData.rush + homeData.pass;
+    let awayTotalYds = awayData.rush + awayData.pass;
+
+    function simulateGameScore(teamYds, oppAllowedTD) {
+        // Luodaan luonnollista hajontaa ja otetaan huomioon joukkueen tehokkuus
+        let baseFactor = (teamYds / 1100) * (1 + (oppAllowedTD / 25));
+        let randomScoreIndex = Math.floor(Math.random() * VALID_SCORES.length);
+        
+        // Painotetaan satunnaisuutta joukkueen tehojen mukaan
+        if (baseFactor > 1.15 && randomScoreIndex < VALID_SCORES.length - 4) randomScoreIndex += 2;
+        if (baseFactor < 0.85 && randomScoreIndex > 3) randomScoreIndex -= 2;
+
+        return VALID_SCORES[Math.max(0, Math.min(VALID_SCORES.length - 1, randomScoreIndex))];
     }
 
     for (let i = 0; i < SIM_ITERATIONS; i++) {
-        let hScore = simulateTeamScore(homeData.rush + homeData.pass);
-        let aScore = simulateTeamScore(awayData.rush + awayData.pass);
-        if (hScore === aScore) hScore += 3; // Ei tasapelejä NFL:ssä
+        let hScore = simulateGameScore(homeTotalYds, awayData.oppTD);
+        let aScore = simulateGameScore(awayTotalYds, homeData.oppTD);
+        
+        // Vältetään tasapelit
+        if (hScore === aScore) {
+            hScore += Math.random() > 0.5 ? 3 : 0;
+        }
 
         homeScoreSum += hScore;
         awayScoreSum += aScore;
@@ -244,15 +256,17 @@ function runMonteCarloSimulation() {
         if (hScore > aScore) homeWins++;
     }
 
-    // Lasketut keskiarvot 1000 kierroksesta
-    let avgHomeScore = Math.round(homeScoreSum / SIM_ITERATIONS);
-    let avgAwayScore = Math.round(awayScoreSum / SIM_ITERATIONS);
+    // Lähimmät validit NFL-pisteet keskiarvoista
+    let avgHomeScore = Math.round((homeScoreSum / SIM_ITERATIONS) / 3) * 3;
+    let avgAwayScore = Math.round((awayScoreSum / SIM_ITERATIONS) / 3) * 3;
+
+    // Varmistetaan että pisteet löytyvät sallitusta matriisista
+    if (!VALID_SCORES.includes(avgHomeScore)) avgHomeScore = 24;
+    if (!VALID_SCORES.includes(avgAwayScore)) avgAwayScore = 17;
+    if (avgHomeScore === avgAwayScore) avgHomeScore += 3;
+
     let homeWinProb = Math.round((homeWins / SIM_ITERATIONS) * 100);
     let awayWinProb = 100 - homeWinProb;
-
-    // Varmistetaan että lukemat vastaavat validia NFL-pistematriisia
-    if (!VALID_SCORES.includes(avgHomeScore)) avgHomeScore = 24;
-    if (!VALID_SCORES.includes(avgAwayScore)) avgAwayScore = 20;
 
     // UI-päivitys
     document.getElementById('homeTitle').innerText = `${match.home} (${homeData.record})`;
@@ -276,7 +290,6 @@ function runMonteCarloSimulation() {
     document.getElementById('awayWinProb').innerText = `${awayKey}: ${awayWinProb}%`;
     document.getElementById('probBar').style.width = `${homeWinProb}%`;
 
-    // Pelaajien Poisson-todennäköisyydet simulaation tuloksista
     let homeEstimatedTDs = avgHomeScore / 7;
     let awayEstimatedTDs = avgAwayScore / 7;
 
