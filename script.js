@@ -1,6 +1,6 @@
-// Kaikkien 32 joukkueen laajennetut tilastot (sis. puolustus, sääherkkyys, rec/targets)
+// Kaikkien 32 joukkueen laajennetut tilastot (sis. puolustus, sää, rec/targets, loukkaantumiset ja pelipaikat)
 const nflDatabase = {
-    "Rams": { record: "1-2", games: 3, rush: 401, pass: 885, oppPass: 750, oppRush: 340, oppTD: 7, turnovers: 4, sacks: 8, redZonePct: 58, thirdDownPct: 41, penalties: 18, injuredPlayers: ["Terrance Ferguson"], players: [
+    "Rams": { record: "1-2", games: 3, rush: 401, pass: 885, oppPass: 750, oppRush: 340, oppTD: 7, turnovers: 4, sacks: 8, redZonePct: 58, thirdDownPct: 41, penalties: 18, injuredPlayers: [{name: "Terrance Ferguson", pos: "TE"}], players: [
         { name: "Davante Adams", pos: "WR", td: 2, yds: "358 yds", rec: "24/32 rec" },
         { name: "Williams", pos: "RB", td: 2, yds: "320 total yds", rec: "12/15 rec" },
         { name: "Higbee", pos: "TE", td: 1, yds: "74 yds", rec: "8/11 rec" }
@@ -24,7 +24,7 @@ const nflDatabase = {
         { name: "Boston", pos: "WR", td: 2, yds: "195 yds", rec: "12/17 rec" },
         { name: "Judkins", pos: "RB", td: 0, yds: "124 yds", rec: "8/10 rec" }
     ]},
-    "Panthers": { record: "1-2", games: 3, rush: 291, pass: 939, oppPass: 810, oppRush: 390, oppTD: 10, turnovers: 5, sacks: 12, redZonePct: 48, thirdDownPct: 35, penalties: 22, injuredPlayers: ["Jalen Coker"], players: [
+    "Panthers": { record: "1-2", games: 3, rush: 291, pass: 939, oppPass: 810, oppRush: 390, oppTD: 10, turnovers: 5, sacks: 12, redZonePct: 48, thirdDownPct: 35, penalties: 22, injuredPlayers: [{name: "Jalen Coker", pos: "WR"}], players: [
         { name: "Hubbard", pos: "RB", td: 3, yds: "261 yds", rec: "11/14 rec" },
         { name: "Wallen", pos: "TE", td: 2, yds: "112 yds", rec: "9/12 rec" },
         { name: "Coker", pos: "WR", td: 2, yds: "222 yds", rec: "15/22 rec" }
@@ -39,7 +39,7 @@ const nflDatabase = {
         { name: "Flowers", pos: "WR", td: 1, yds: "234 yds", rec: "18/25 rec" },
         { name: "Jackson", pos: "QB", td: 1, yds: "124 yds", rec: "Passing QB" }
     ]},
-    "Saints": { record: "1-2", games: 3, rush: 304, pass: 917, oppPass: 760, oppRush: 360, oppTD: 10, turnovers: 4, sacks: 8, redZonePct: 53, thirdDownPct: 40, penalties: 18, injuredPlayers: ["Travis Etienne"], players: [
+    "Saints": { record: "1-2", games: 3, rush: 304, pass: 917, oppPass: 760, oppRush: 360, oppTD: 10, turnovers: 4, sacks: 8, redZonePct: 53, thirdDownPct: 40, penalties: 18, injuredPlayers: [], players: [
         { name: "Johnson", pos: "WR", td: 3, yds: "173 yds", rec: "12/18 rec" },
         { name: "Fant", pos: "TE", td: 3, yds: "66 yds", rec: "7/10 rec" },
         { name: "Olave", pos: "WR", td: 1, yds: "375 yds", rec: "25/35 rec" }
@@ -49,7 +49,7 @@ const nflDatabase = {
         { name: "Jeanty", pos: "RB", td: 2, yds: "303 yds", rec: "15/19 rec" },
         { name: "Bowers", pos: "TE", td: 1, yds: "116 yds", rec: "11/15 rec" }
     ]},
-    "49ers": { record: "3-0", games: 3, rush: 409, pass: 789, oppPass: 590, oppRush: 240, oppTD: 5, turnovers: 2, sacks: 4, redZonePct: 70, thirdDownPct: 50, penalties: 12, injuredPlayers: ["Mike Evans"], players: [
+    "49ers": { record: "3-0", games: 3, rush: 409, pass: 789, oppPass: 590, oppRush: 240, oppTD: 5, turnovers: 2, sacks: 4, redZonePct: 70, thirdDownPct: 50, penalties: 12, injuredPlayers: [], players: [
         { name: "McCaffrey", pos: "RB", td: 3, yds: "270 yds", rec: "18/22 rec" },
         { name: "Kittle", pos: "TE", td: 3, yds: "174 yds", rec: "14/18 rec" },
         { name: "Samuel", pos: "WR", td: 2, yds: "159 yds", rec: "13/18 rec" }
@@ -59,12 +59,12 @@ const nflDatabase = {
         { name: "McBride", pos: "TE", td: 2, yds: "211 yds", rec: "16/22 rec" },
         { name: "Wilson", pos: "WR", td: 1, yds: "163 yds", rec: "11/17 rec" }
     ]},
-    "Buccaneers": { record: "0-3", games: 3, rush: 283, pass: 615, oppPass: 750, oppRush: 340, oppTD: 7, turnovers: 6, sacks: 10, redZonePct: 42, thirdDownPct: 34, penalties: 23, injuredPlayers: ["Bucky Irving"], players: [
+    "Buccaneers": { record: "0-3", games: 3, rush: 283, pass: 615, oppPass: 750, oppRush: 340, oppTD: 7, turnovers: 6, sacks: 10, redZonePct: 42, thirdDownPct: 34, penalties: 23, injuredPlayers: [{name: "Bucky Irving", pos: "RB"}], players: [
         { name: "Egbuka", pos: "WR", td: 1, yds: "141 yds", rec: "10/15 rec" },
         { name: "Irving", pos: "RB", td: 1, yds: "241 yds", rec: "13/17 rec" },
         { name: "Mayfield", pos: "QB", td: 1, yds: "65 yds", rec: "Passing QB" }
     ]},
-    "Vikings": { record: "3-0", games: 3, rush: 304, pass: 462, oppPass: 550, oppRush: 230, oppTD: 3, turnovers: 1, sacks: 5, redZonePct: 72, thirdDownPct: 52, penalties: 13, injuredPlayers: ["Justin Jefferson"], players: [
+    "Vikings": { record: "3-0", games: 3, rush: 304, pass: 462, oppPass: 550, oppRush: 230, oppTD: 3, turnovers: 1, sacks: 5, redZonePct: 72, thirdDownPct: 52, penalties: 13, injuredPlayers: [{name: "Justin Jefferson", pos: "WR"}], players: [
         { name: "Jefferson", pos: "WR", td: 2, yds: "179 yds", rec: "15/22 rec" },
         { name: "Jones", pos: "RB", td: 1, yds: "237 yds", rec: "14/18 rec" },
         { name: "Hockenson", pos: "TE", td: 1, yds: "76 yds", rec: "8/11 rec" }
@@ -74,7 +74,7 @@ const nflDatabase = {
         { name: "Gibbs", pos: "RB", td: 6, yds: "463 yds", rec: "16/20 rec" },
         { name: "LaPorta", pos: "TE", td: 1, yds: "144 yds", rec: "12/16 rec" }
     ]},
-    "Jets": { record: "1-2", games: 3, rush: 277, pass: 783, oppPass: 700, oppRush: 300, oppTD: 7, turnovers: 4, sacks: 8, redZonePct: 54, thirdDownPct: 38, penalties: 19, injuredPlayers: ["Breece Hall", "Adonai Mitchell"], players: [
+    "Jets": { record: "1-2", games: 3, rush: 277, pass: 783, oppPass: 700, oppRush: 300, oppTD: 7, turnovers: 4, sacks: 8, redZonePct: 54, thirdDownPct: 38, penalties: 19, injuredPlayers: [{name: "Breece Hall", pos: "RB"}], players: [
         { name: "Wilson", pos: "WR", td: 2, yds: "163 yds", rec: "13/20 rec" },
         { name: "Sadiq", pos: "TE", td: 1, yds: "143 yds", rec: "9/12 rec" },
         { name: "Hall", pos: "RB", td: 1, yds: "265 yds", rec: "15/19 rec" }
@@ -98,7 +98,7 @@ const nflDatabase = {
         { name: "Henderson", pos: "RB", td: 1, yds: "99 yds", rec: "8/11 rec" },
         { name: "Hollins", pos: "WR", td: 0, yds: "156 yds", rec: "11/17 rec" }
     ]},
-    "Dolphins": { record: "0-3", games: 3, rush: 295, pass: 627, oppPass: 800, oppRush: 400, oppTD: 11, turnovers: 6, sacks: 11, redZonePct: 38, thirdDownPct: 30, penalties: 26, injuredPlayers: ["De'Von Achane"], players: [
+    "Dolphins": { record: "0-3", games: 3, rush: 295, pass: 627, oppPass: 800, oppRush: 400, oppTD: 11, turnovers: 6, sacks: 11, redZonePct: 38, thirdDownPct: 30, penalties: 26, injuredPlayers: [{name: "De'Von Achane", pos: "RB"}], players: [
         { name: "Gordon", pos: "RB", td: 1, yds: "48 yds", rec: "5/8 rec" },
         { name: "Washington", pos: "WR", td: 0, yds: "152 yds", rec: "10/16 rec" }
     ]},
@@ -127,12 +127,12 @@ const nflDatabase = {
         { name: "Gesicki", pos: "TE", td: 2, yds: "115 yds", rec: "10/14 rec" },
         { name: "Brown", pos: "RB", td: 1, yds: "229 yds", rec: "14/18 rec" }
     ]},
-    "Commanders": { record: "1-2", games: 3, rush: 396, pass: 554, oppPass: 790, oppRush: 380, oppTD: 11, turnovers: 4, sacks: 8, redZonePct: 52, thirdDownPct: 39, penalties: 18, injuredPlayers: ["Jayden Daniels", "Terry McLaurin", "Rachaad White"], players: [
+    "Commanders": { record: "1-2", games: 3, rush: 396, pass: 554, oppPass: 790, oppRush: 380, oppTD: 11, turnovers: 4, sacks: 8, redZonePct: 52, thirdDownPct: 39, penalties: 18, injuredPlayers: [{name: "Jayden Daniels", pos: "QB"}, {name: "Terry McLaurin", pos: "WR"}], players: [
         { name: "Diggs", pos: "WR", td: 3, yds: "135 yds", rec: "11/16 rec" },
         { name: "Croskey-Merritt", pos: "RB", td: 1, yds: "142 yds", rec: "9/12 rec" },
         { name: "McLaurin", pos: "WR", td: 1, yds: "141 yds", rec: "10/15 rec" }
     ]},
-    "Seahawks": { record: "2-1", games: 3, rush: 303, pass: 828, oppPass: 660, oppRush: 290, oppTD: 6, turnovers: 3, sacks: 5, redZonePct: 67, thirdDownPct: 47, penalties: 15, injuredPlayers: ["Jadarian Price"], players: [
+    "Seahawks": { record: "2-1", games: 3, rush: 303, pass: 828, oppPass: 660, oppRush: 290, oppTD: 6, turnovers: 3, sacks: 5, redZonePct: 67, thirdDownPct: 47, penalties: 15, injuredPlayers: [], players: [
         { name: "Smith-Njigba", pos: "WR", td: 6, yds: "405 yds", rec: "28/38 rec" },
         { name: "Kupp", pos: "TE", td: 1, yds: "101 yds", rec: "9/13 rec" }
     ]},
@@ -140,12 +140,12 @@ const nflDatabase = {
         { name: "Watson", pos: "WR", td: 4, yds: "284 yds", rec: "17/25 rec" },
         { name: "Golden", pos: "WR", td: 1, yds: "253 yds", rec: "15/22 rec" }
     ]},
-    "Eagles": { record: "2-0", games: 2, rush: 225, pass: 467, oppPass: 480, oppRush: 200, oppTD: 5, turnovers: 2, sacks: 4, redZonePct: 71, thirdDownPct: 48, penalties: 13, injuredPlayers: ["DeVonta Smith", "Dallas Goedert"], players: [
+    "Eagles": { record: "2-0", games: 2, rush: 225, pass: 467, oppPass: 480, oppRush: 200, oppTD: 5, turnovers: 2, sacks: 4, redZonePct: 71, thirdDownPct: 48, penalties: 13, injuredPlayers: [{name: "DeVonta Smith", pos: "WR"}], players: [
         { name: "Goedert", pos: "TE", td: 2, yds: "81 yds", rec: "7/10 rec" },
         { name: "Wicks", pos: "WR", td: 1, yds: "147 yds", rec: "9/13 rec" },
         { name: "Smith", pos: "WR", td: 1, yds: "170 yds", rec: "11/16 rec" }
     ]},
-    "Bears": { record: "1-1", games: 2, rush: 425, pass: 461, oppPass: 510, oppRush: 210, oppTD: 5, turnovers: 3, sacks: 5, redZonePct: 65, thirdDownPct: 44, penalties: 15, injuredPlayers: ["Caleb Williams"], players: [
+    "Bears": { record: "1-1", games: 2, rush: 425, pass: 461, oppPass: 510, oppRush: 210, oppTD: 5, turnovers: 3, sacks: 5, redZonePct: 65, thirdDownPct: 44, penalties: 15, injuredPlayers: [{name: "Caleb Williams", pos: "QB"}], players: [
         { name: "Swift", pos: "RB", td: 3, yds: "233 yds", rec: "12/15 rec" },
         { name: "Williams", pos: "QB", td: 2, yds: "107 yds", rec: "Passing QB" },
         { name: "Monangai", pos: "RB", td: 1, yds: "182 yds", rec: "8/11 rec" }
@@ -168,28 +168,43 @@ const nflSchedule = {
         { away: "Dallas Cowboys", home: "Houston Texans", weather: "🏟️ Sisäkenttä (Dome)" },
         { away: "Tennessee Titans", home: "Baltimore Ravens", weather: "🌧️ Sade (10°C)" },
         { away: "Arizona Cardinals", home: "New York Giants", weather: "☀️ Puolipilvinen (12°C)" },
-        { away: "Miami Dolphins", home: "Minnesota Vikings", weather: "🏟️ Sisäkenttä (Dome)" },
+        { away: "Miami Dolphins", home: "Minnesota Vikings", weather: "🏟️️ Sisäkenttä (Dome)" },
         { away: "Los Angeles Chargers", home: "Seattle Seahawks", weather: "🌧️ Rankkasade (8°C)" },
         { away: "Denver Broncos", home: "San Francisco 49ers", weather: "☀️ Kirkas (17°C)" },
         { away: "Kansas City Chiefs", home: "Las Vegas Raiders", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "Detroit Lions", home: "Carolina Panthers", weather: "🏟️ Sisäkenttä (Dome)" },
+        { away: "Detroit Lions", home: "Carolina Panthers", weather: "🏟️️ Sisäkenttä (Dome)" },
         { away: "Atlanta Falcons", home: "New Orleans Saints", weather: "🏟️ Sisäkenttä (Dome)" }
     ]
 };
 
 const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 31, 34, 35, 38, 41, 42];
 
-const weeklyParlays = {
+// Viikon vedot jaettuna klo 20:00 peleihin (5 kohdetta) ja myöhempiin ilta-/yöpeleihin (4 kohdetta)
+const weeklyTimeSlotParlays = {
     "4": {
-        hits: "3 / 5 osunut",
-        hitRatePct: "60%",
-        picks: [
-            { player: "Derrick Henry (Ravens)", odds: "1.75", status: "✅ Osunut" },
-            { player: "Ja'Marr Chase (Bengals)", odds: "1.90", status: "✅ Osunut" },
-            { player: "Jahmyr Gibbs (Lions)", odds: "1.80", status: "✅ Osunut" },
-            { player: "Jordan Addison (Vikings)", odds: "2.10", status: "❌ Huti" },
-            { player: "Bijan Robinson (Falcons)", odds: "1.95", status: "❌ Huti" }
-        ]
+        earlySlate: {
+            title: "🔥 Klo 20:00 alkavat pelit (5 Kohdetta)",
+            hits: "3 / 5 osunut",
+            hitRatePct: "60%",
+            picks: [
+                { player: "Derrick Henry (Ravens)", odds: "1.75", status: "✅ Osunut" },
+                { player: "Ja'Marr Chase (Bengals)", odds: "1.90", status: "✅ Osunut" },
+                { player: "Jahmyr Gibbs (Lions)", odds: "1.80", status: "✅ Osunut" },
+                { player: "Jordan Addison (Vikings)", odds: "2.10", status: "❌ Huti" },
+                { player: "Bijan Robinson (Falcons)", odds: "1.95", status: "❌ Huti" }
+            ]
+        },
+        lateSlate: {
+            title: "🌙 Myöhemmät illan / yön pelit (4 Kohdetta)",
+            hits: "2 / 4 osunut",
+            hitRatePct: "50%",
+            picks: [
+                { player: "Christian McCaffrey (49ers)", odds: "1.65", status: "✅ Osunut" },
+                { player: "Davante Adams (Rams)", odds: "2.05", status: "✅ Osunut" },
+                { player: "Rashee Rice (Chiefs)", odds: "1.90", status: "❌ Huti" },
+                { player: "Kenneth Walker III (Chiefs)", odds: "2.20", status: "❌ Huti" }
+            ]
+        }
     }
 };
 
@@ -224,6 +239,20 @@ function findTeamKey(teamName) {
     return Object.keys(nflDatabase).find(k => teamName.includes(k)) || "Chiefs";
 }
 
+function calculateTeamInjuryFactor(injuredList) {
+    let penalty = 1.0;
+    injuredList.forEach(p => {
+        if (p.pos === "QB") {
+            penalty -= 0.22; // QB-poissaolo tiputtaa hyökkäystehoa 22%
+        } else if (p.pos === "RB" || p.pos === "WR" || p.pos === "TE") {
+            penalty -= 0.05; // Taitopelaaja -5%
+        } else {
+            penalty -= 0.03; // Muu pelaaja
+        }
+    });
+    return Math.max(0.5, penalty); // Vähintään 50% tehoista jäljellä pahimmassakin tilanteessa
+}
+
 function runMonteCarloSimulation() {
     const selectedWeek = document.getElementById('weekSelect').value;
     const matchIndex = document.getElementById('matchSelect').value;
@@ -237,9 +266,8 @@ function runMonteCarloSimulation() {
     const homeData = nflDatabase[homeKey];
     const awayData = nflDatabase[awayKey];
 
-    // Loukkaantumiskerroin (Jokainen loukkaantunut tähtipelaaja laskee hyökkäystehoa ~4-6%)
-    let homeInjuryPenalty = 1.0 - (homeData.injuredPlayers.length * 0.05);
-    let awayInjuryPenalty = 1.0 - (awayData.injuredPlayers.length * 0.05);
+    let homeInjuryPenalty = calculateTeamInjuryFactor(homeData.injuredPlayers);
+    let awayInjuryPenalty = calculateTeamInjuryFactor(awayData.injuredPlayers);
 
     let weatherFactor = 1.0;
     if (match.weather.includes("Sade") || match.weather.includes("Rankkasade")) weatherFactor = 0.93;
@@ -258,7 +286,7 @@ function runMonteCarloSimulation() {
         
         if (isHome) basePower *= 1.06; // Kotietu
         basePower *= weatherFactor;
-        basePower *= injuryPenalty; // Otetaan loukkaantumiset huomioon tehossa
+        basePower *= injuryPenalty;
 
         let penaltiesDeduction = (team.penalties * 0.005) + (opp.sacks * 0.01) + (opp.turnovers * 0.02);
         let netFactor = Math.max(0.4, basePower - penaltiesDeduction);
@@ -305,9 +333,8 @@ function runMonteCarloSimulation() {
     const awayOppPassPG = Math.round(awayData.oppPass / awayData.games);
     const awayOppRushPG = Math.round(awayData.oppRush / awayData.games);
 
-    // Muodostetaan loukkaantumistekstit UI:hin
-    let homeInjuriesText = homeData.injuredPlayers.length > 0 ? `<br>🚑 <strong>Poissaoloja:</strong> <span style="color: #f87171;">${homeData.injuredPlayers.join(', ')}</span>` : `<br>🟢 Kokoonpano kunnossa`;
-    let awayInjuriesText = awayData.injuredPlayers.length > 0 ? `<br>🚑 <strong>Poissaoloja:</strong> <span style="color: #f87171;">${awayData.injuredPlayers.join(', ')}</span>` : `<br>🟢 Kokoonpano kunnossa`;
+    let homeInjuriesText = homeData.injuredPlayers.length > 0 ? `<br>🚑 <strong>Poissaolot:</strong> <span style="color: #f87171;">${homeData.injuredPlayers.map(p => `${p.name} (${p.pos})`).join(', ')}</span>` : `<br>🟢 Kokoonpano kunnossa`;
+    let awayInjuriesText = awayData.injuredPlayers.length > 0 ? `<br>🚑 <strong>Poissaolot:</strong> <span style="color: #f87171;">${awayData.injuredPlayers.map(p => `${p.name} (${p.pos})`).join(', ')}</span>` : `<br>🟢 Kokoonpano kunnossa`;
 
     document.getElementById('homeTitle').innerText = `${match.home} (${homeData.record}) 🏟️`;
     document.getElementById('awayTitle').innerText = `${match.away} (${awayData.record})`;
@@ -350,23 +377,24 @@ function runMonteCarloSimulation() {
     renderPlayersWithPoisson('homePlayers', homeData.players, homeEstimatedTDs, awayData.oppTD, homeData.injuredPlayers);
     renderPlayersWithPoisson('awayPlayers', awayData.players, awayEstimatedTDs, homeData.oppTD, awayData.injuredPlayers);
 
-    renderWeeklyParlay(selectedWeek);
+    renderWeeklyTimeSlotParlays(selectedWeek);
 }
 
 function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, opponentOppTD, injuredList) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
 
+    let injuredNames = injuredList.map(i => i.name);
     let totalPlayerTDs = players.reduce((sum, p) => sum + p.td, 0);
     if (totalPlayerTDs === 0) totalPlayerTDs = 1;
 
     players.forEach(p => {
-        let isInjured = injuredList.includes(p.name);
+        let isInjured = injuredNames.includes(p.name);
         let marketShare = p.td / totalPlayerTDs;
         let matchupMultiplier = opponentOppTD / 8.0; 
         let lambda = (teamEstimatedTDs * marketShare) * matchupMultiplier;
         
-        if (isInjured) lambda = 0; // Jos pelaaja on loukkaantunut, TD-todennäköisyys putoaa nollaan
+        if (isInjured) lambda = 0; 
         if (lambda < 0.02 && !isInjured) lambda = 0.02;
 
         let probability = 1 - Math.exp(-lambda);
@@ -388,7 +416,7 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
     });
 }
 
-function renderWeeklyParlay(week) {
+function renderWeeklyTimeSlotParlays(week) {
     let parlayBox = document.getElementById('weeklyParlayContainer');
     if (!parlayBox) {
         parlayBox = document.createElement('div');
@@ -401,21 +429,33 @@ function renderWeeklyParlay(week) {
         document.querySelector('.container').appendChild(parlayBox);
     }
 
-    const parlayData = weeklyParlays[week] || { hits: "Ei ratkennut", hitRatePct: "0%", picks: [] };
+    const slots = weeklyTimeSlotParlays[week] || {
+        earlySlate: { title: "Klo 20:00 pelit", hits: "0/0", hitRatePct: "0%", picks: [] },
+        lateSlate: { title: "Myöhemmät pelit", hits: "0/0", hitRatePct: "0%", picks: [] }
+    };
 
-    let picksHtml = parlayData.picks.map(p => `
-        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #334155; font-size: 14px;">
-            <span>🏈 <strong>${p.player}</strong> (Kerroin: ${p.odds})</span>
-            <span style="font-weight: bold;">${p.status}</span>
-        </div>
-    `).join('');
+    function generateSlateHtml(slateData) {
+        let picksHtml = slateData.picks.map(p => `
+            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #334155; font-size: 13px;">
+                <span>🏈 <strong>${p.player}</strong> (Kerroin: ${p.odds})</span>
+                <span style="font-weight: bold;">${p.status}</span>
+            </div>
+        `).join('');
+
+        return `
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <strong style="color: #38bdf8; font-size: 14px;">${slateData.title}</strong>
+                    <span style="font-size: 11px; background: #0f172a; padding: 3px 6px; border-radius: 4px; color: #f59e0b;">Osuma: ${slateData.hitRatePct} (${slateData.hits})</span>
+                </div>
+                ${picksHtml}
+            </div>
+        `;
+    }
 
     parlayBox.innerHTML = `
-        <h3 style="margin-top: 0; color: #f59e0b; display: flex; justify-content: space-between; align-items: center;">
-            🔥 Viikon 4 Anytime TD -Veto (5 Kohdetta)
-            <span style="font-size: 12px; background: #0f172a; padding: 4px 8px; border-radius: 6px; color: #38bdf8;">Osumatarkkuus: ${parlayData.hitRatePct} (${parlayData.hits})</span>
-        </h3>
-        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Kierroksen tarkkaan lasketut 5 anytime touchdown -poimintaa ja niiden osumat:</p>
-        ${picksHtml}
+        <h3 style="margin-top: 0; color: #f59e0b; margin-bottom: 12px;">🔥 Viikon 4 Aikaerotetut Anytime TD -Vedot</h3>
+        ${generateSlateHtml(slots.earlySlate)}
+        ${generateSlateHtml(slots.lateSlate)}
     `;
 }
