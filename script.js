@@ -478,3 +478,60 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
         container.appendChild(div);
     });
 }
+function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, opponentOppTD, injuredList) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    let injuredNames = injuredList.map(i => i.name.toLowerCase());
+    
+    // Siivotaan tuplapelaajat pois nimen perusteella
+    let uniquePlayers = [];
+    let seenNames = new Set();
+    players.forEach(p => {
+        let cleanName = p.name.trim();
+        if (!seenNames.has(cleanName)) {
+            seenNames.add(cleanName);
+            uniquePlayers.push(p);
+        }
+    });
+
+    let totalPlayerTDs = uniquePlayers.reduce((sum, p) => sum + p.td, 0);
+    if (totalPlayerTDs === 0) totalPlayerTDs = 1;
+
+    uniquePlayers.forEach(p => {
+        // Tarkistetaan loukkaantuminen joustavammin (esim. jos listassa on pelkkä sukunimi tai koko nimi)
+        let isInjured = injuredNames.some(inj => inj.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(inj));
+        
+        let marketShare = p.td / totalPlayerTDs;
+        let matchupMultiplier = opponentOppTD / 8.0; 
+        let lambda = (teamEstimatedTDs * marketShare) * matchupMultiplier;
+        
+        if (isInjured) lambda = 0; 
+        if (lambda < 0.02 && !isInjured) lambda = 0.02;
+
+        let probability = 1 - Math.exp(-lambda);
+        let tdProbPercent = Math.round(probability * 100);
+
+        const div = document.createElement('div');
+        div.className = 'player-row';
+        
+        // Jos pelaaja on loukkaantunut, tehdään rivistä ja badge-laatikosta punainen
+        if (isInjured) {
+            div.style.borderColor = '#ef4444';
+            div.style.backgroundColor = '#450a0a';
+        }
+
+        div.innerHTML = `
+            <div>
+                <strong>${p.name} (${p.pos})</strong> ${isInjured ? '<span style="color: #f87171; font-size: 11px; font-weight: bold;">(OUT 🚑)</span>' : ''}
+                <span>${p.yds} | Rec: <strong>${p.rec}</strong></span>
+            </div>
+            <div class="odd-badge" style="${isInjured ? 'background: #7f1d1d; border-color: #ef4444;' : ''}">
+                <span>1+ TD</span>
+                <strong style="${isInjured ? 'color: #fca5a5;' : ''}">${isInjured ? 'OUT' : tdProbPercent + '%'}</strong>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
