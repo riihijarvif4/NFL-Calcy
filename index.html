@@ -3,73 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL H2H - Ultimate Analytics Engine</title>
-    <link rel="stylesheet" href="style.css">
+    <title>TuhtiMonnin MuhditTonnit</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #38bdf8;
+            font-size: 24px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #0f172a;
+            color: #fff;
+            border: 1px solid #475569;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #fbbf24;
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #f59e0b;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #38bdf8;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+        .stats-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+        .score-box {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #fbbf24;
+            margin: 15px 0;
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .prob-container {
+            margin-top: 15px;
+        }
+        .prob-bar-bg {
+            background-color: #334155;
+            border-radius: 6px;
+            height: 12px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .prob-bar-fill {
+            background-color: #38bdf8;
+            height: 100%;
+            width: 50%;
+            transition: width 0.3s ease;
+        }
+        .prob-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f172a;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border: 1px solid #334155;
+        }
+        .player-row span {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .odd-badge {
+            background: #1e293b;
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-align: right;
+            border: 1px solid #475569;
+        }
+        .odd-badge span {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .odd-badge strong {
+            color: #38bdf8;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <div class="referee-stripe"></div>
 
-    <header class="app-header">
-        <h1>🏈 NFL H2H <span>Advanced Analytics Engine</span></h1>
-        <p>1 000x Monte Carlo, Turnovers, Red Zone, 3rd Down & True Odds</p>
-    </header>
+<div class="container">
+    <h1>🏈 TuhtiMonnin MuhditTonnit</h1>
 
-    <main class="main-container">
-        <!-- Valintapaneeli -->
-        <section class="selection-panel">
-            <div class="select-box">
-                <label for="weekSelect">📅 Valitse Viikko</label>
-                <select id="weekSelect">
-                    <option value="4" selected>Viikko 4 (2026)</option>
-                </select>
+    <!-- Valintakortti -->
+    <div class="card">
+        <label for="weekSelect">📅 Valitse Viikko</label>
+        <select id="weekSelect">
+            <option value="5" selected>Viikko 5 (2026)</option>
+        </select>
+
+        <label for="matchSelect">⚔️ Valitse Ottelupari</label>
+        <select id="matchSelect"></select>
+
+        <button id="compareBtn">📊 Aja Täysi Simulaatio</button>
+    </div>
+
+    <!-- Kotijoukkueen kortti -->
+    <div class="card">
+        <div class="section-title" id="homeTitle">Kotijoukkue</div>
+        <div class="stats-text" id="homeStats">Ladataan tilastoja...</div>
+    </div>
+
+    <!-- Simulaation tulos -->
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 12px; font-weight: bold; color: #94a3b8; letter-spacing: 1px;">1000x MONTE CARLO -MEDIAANI</div>
+        <div class="score-box">
+            <span id="homeScoreNum">--</span>
+            <span style="color: #64748b; font-size: 24px;">VS</span>
+            <span id="awayScoreNum">--</span>
+        </div>
+        <div class="prob-container">
+            <div class="prob-labels">
+                <span id="homeWinProb">Kotijoukkue: --%</span>
+                <span id="awayWinProb">Vierasjoukkue: --%</span>
             </div>
-
-            <div class="select-box">
-                <label for="matchSelect">⚔️ Valitse Ottelupari</label>
-                <select id="matchSelect"></select>
+            <div class="prob-bar-bg">
+                <div class="prob-bar-fill" id="probBar"></div>
             </div>
+        </div>
+    </div>
 
-            <button id="compareBtn" class="btn-primary">📊 Aja Täysi Simulaatio</button>
-        </section>
+    <!-- Vierasjoukkueen kortti -->
+    <div class="card">
+        <div class="section-title" id="awayTitle">Vierasjoukkue</div>
+        <div class="stats-text" id="awayStats">Ladataan tilastoja...</div>
+    </div>
 
-        <!-- Vertailunäkymä -->
-        <section class="h2h-container">
-            <!-- Kotijoukkue -->
-            <div class="team-card">
-                <h2 id="homeTitle">Kotijoukkue</h2>
-                <div class="team-stats" id="homeStats"></div>
-                <h3>Avainpelaajat & Todennäköisyydet</h3>
-                <div class="players-list" id="homePlayers"></div>
-            </div>
+    <!-- Pelaajatiedot / Todennäköisyydet -->
+    <div class="card">
+        <div class="section-title">⭐ Kotijoukkueen Avainpelaajat & TD-todennäköisyydet</div>
+        <div id="homePlayers"></div>
+    </div>
 
-            <!-- Keskusta: Tulos & Voitto-osuus -->
-            <div class="center-card">
-                <div class="sim-badge">1000x MONTE CARLO -MEDIAANI</div>
-                <div class="matchup-score-box">
-                    <span id="homeScoreNum">--</span>
-                    <span class="score-dash">-</span>
-                    <span id="awayScoreNum">--</span>
-                </div>
-                <div class="win-prob-display">
-                    <div id="homeWinProb">Kotijoukkue: --%</div>
-                    <div class="prob-bar-container">
-                        <div id="probBar" class="prob-bar"></div>
-                    </div>
-                    <div id="awayWinProb">Vierasjoukkue: --%</div>
-                </div>
-            </div>
+    <div class="card">
+        <div class="section-title">⭐ Vierasjoukkueen Avainpelaajat & TD-todennäköisyydet</div>
+        <div id="awayPlayers"></div>
+    </div>
+</div>
 
-            <!-- Vierasjoukkue -->
-            <div class="team-card">
-                <h2 id="awayTitle">Vierasjoukkue</h2>
-                <div class="team-stats" id="awayStats"></div>
-                <h3>Avainpelaajat & Todennäköisyydet</h3>
-                <div class="players-list" id="awayPlayers"></div>
-            </div>
-        </section>
-    </main>
-
-    <div class="referee-stripe"></div>
-    <script src="script.js"></script>
+<!-- Ladataan JavaScript erillisestä script.js tiedostosta -->
+<script src="script.js"></script>
 </body>
 </html>
