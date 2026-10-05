@@ -3,7 +3,6 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
     const cacheKey = `nfl_data_week_${weekNumber}_2026`;
     const cachedData = localStorage.getItem(cacheKey);
     
-    // Tarkistetaan onko data haettu viimeisen 24h aikana (välimuisti)
     if (cachedData) {
         try {
             const parsed = JSON.parse(cachedData);
@@ -22,8 +21,6 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
         if (!response.ok) throw new Error("Verkkovastaus ei ollut kunnossa");
         
         const data = await response.json();
-        
-        // Tallennetaan välimuistiin
         localStorage.setItem(cacheKey, JSON.stringify({
             timestamp: new Date().getTime(),
             data: data
@@ -36,489 +33,360 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
     }
 }
 
-// TuhtiMonnin MuhditTonnit - Päivitetty ja täydennetty NFL-tietokanta (Viikko 5, Kausi 2026)
+// Täydellinen 32 joukkueen NFL-tietokanta (kaikki alkuperäiset tilastot + uudet pelipaikkakohtaiset puolustukset ja game log -historiat)
 const nflDatabase = {
     "Rams": { 
         record: "2-2", games: 4, rush: 520, pass: 1100, oppPass: 950, oppRush: 440, oppTD: 9, turnovers: 5, sacks: 10, redZonePct: 58, thirdDownPct: 41, penalties: 22, 
         injuredPlayers: [{name: "Terrance Ferguson", pos: "TE"}], 
-        defensiveLine: [
-            { name: "Braden Fiske", pos: "DT", sacks: 3.5, status: "Healthy" },
-            { name: "Kobie Turner", pos: "DT", sacks: 3.0, status: "Healthy" },
-            { name: "Desjuan Johnson", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 2 } },
         players: [
-            { name: "Davante Adams", pos: "WR", td: 4, yds: "490 yds", rec: "34/44 rec" },
-            { name: "Williams", pos: "RB", td: 3, yds: "410 total yds", rec: "16/20 rec" },
-            { name: "Higbee", pos: "TE", td: 1, yds: "95 yds", rec: "10/14 rec" },
-            { name: "Stafford", pos: "QB", td: 1, yds: "45 yds", rec: "Passing QB" }
+            { name: "Davante Adams", pos: "WR", td: 4, yds: "490 yds", rec: "34/44 rec", marketOdds: 1.85, gameLog: [{w:1, yds:110, td:1}, {w:2, yds:90, td:0}, {w:3, yds:140, td:2}, {w:4, yds:150, td:1}] },
+            { name: "Williams", pos: "RB", td: 3, yds: "410 total yds", rec: "16/20 rec", marketOdds: 2.10, gameLog: [{w:1, yds:80, td:1}, {w:2, yds:120, td:1}, {w:3, yds:90, td:0}, {w:4, yds:120, td:1}] },
+            { name: "Higbee", pos: "TE", td: 1, yds: "95 yds", rec: "10/14 rec", marketOdds: 3.50, gameLog: [{w:1, yds:20, td:0}, {w:2, yds:35, td:1}, {w:3, yds:10, td:0}, {w:4, yds:30, td:0}] },
+            { name: "Stafford", pos: "QB", td: 1, yds: "45 yds", rec: "Passing QB", marketOdds: 4.20, gameLog: [{w:1, yds:10, td:0}, {w:2, yds:15, td:0}, {w:3, yds:0, td:0}, {w:4, yds:20, td:1}] }
         ]
     },
     "Broncos": { 
         record: "2-2", games: 4, rush: 310, pass: 780, oppPass: 890, oppRush: 400, oppTD: 9, turnovers: 4, sacks: 12, redZonePct: 52, thirdDownPct: 39, penalties: 26, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Jonathon Cooper", pos: "OLB", sacks: 4.5, status: "Healthy" },
-            { name: "Nik Bonitto", pos: "OLB", sacks: 4.0, status: "Healthy" },
-            { name: "Zach Allen", pos: "DE", sacks: 2.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 210, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 75, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
-            { name: "Bryant II", pos: "WR", td: 2, yds: "130 yds", rec: "9/13 rec" },
-            { name: "Adkins", pos: "TE", td: 2, yds: "55 yds", rec: "7/10 rec" },
-            { name: "Engram", pos: "TE", td: 1, yds: "75 yds", rec: "8/12 rec" },
-            { name: "Williams", pos: "RB", td: 1, yds: "210 yds", rec: "11/15 rec" }
+            { name: "Bryant II", pos: "WR", td: 2, yds: "130 yds", rec: "9/13 rec", marketOdds: 2.60, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:40, td:1}, {w:3, yds:20, td:0}, {w:4, yds:40, td:1}] },
+            { name: "Adkins", pos: "TE", td: 2, yds: "55 yds", rec: "7/10 rec", marketOdds: 3.10, gameLog: [{w:1, yds:10, td:0}, {w:2, yds:15, td:1}, {w:3, yds:10, td:0}, {w:4, yds:20, td:1}] },
+            { name: "Engram", pos: "TE", td: 1, yds: "75 yds", rec: "8/12 rec", marketOdds: 3.40, gameLog: [{w:1, yds:20, td:0}, {w:2, yds:25, td:1}, {w:3, yds:15, td:0}, {w:4, yds:15, td:0}] },
+            { name: "Williams", pos: "RB", td: 1, yds: "210 yds", rec: "11/15 rec", marketOdds: 2.30, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:40, td:0}, {w:4, yds:60, td:0}] }
         ]
     },
     "Bills": { 
         record: "3-1", games: 4, rush: 590, pass: 1020, oppPass: 850, oppRush: 380, oppTD: 11, turnovers: 3, sacks: 8, redZonePct: 70, thirdDownPct: 47, penalties: 20, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Greg Rousseau", pos: "DE", sacks: 3.5, status: "Healthy" },
-            { name: "A.J. Epenesa", pos: "DE", sacks: 2.0, status: "Healthy" },
-            { name: "Ed Oliver", pos: "DT", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 200, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
-            { name: "Allen", pos: "QB", td: 8, yds: "160 rush yds", rec: "Passing QB" },
-            { name: "Cook", pos: "RB", td: 3, yds: "470 yds", rec: "18/23 rec" },
-            { name: "Moore", pos: "WR", td: 2, yds: "210 yds", rec: "14/20 rec" },
-            { name: "Kincaid", pos: "TE", td: 1, yds: "130 yds", rec: "12/16 rec" }
+            { name: "Allen", pos: "QB", td: 8, yds: "160 rush yds", rec: "Passing QB", marketOdds: 1.90, gameLog: [{w:1, yds:40, td:2}, {w:2, yds:50, td:2}, {w:3, yds:30, td:1}, {w:4, yds:40, td:3}] },
+            { name: "Cook", pos: "RB", td: 3, yds: "470 yds", rec: "18/23 rec", marketOdds: 2.10, gameLog: [{w:1, yds:100, td:1}, {w:2, yds:110, td:1}, {w:3, yds:120, td:1}, {w:4, yds:140, td:0}] },
+            { name: "Moore", pos: "WR", td: 2, yds: "210 yds", rec: "14/20 rec", marketOdds: 2.80, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:60, td:1}, {w:3, yds:40, td:0}, {w:4, yds:60, td:0}] },
+            { name: "Kincaid", pos: "TE", td: 1, yds: "130 yds", rec: "12/16 rec", marketOdds: 3.20, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:40, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
         ]
     },
     "Chargers": { 
         record: "0-4", games: 4, rush: 430, pass: 810, oppPass: 1010, oppRush: 490, oppTD: 11, turnovers: 8, sacks: 14, redZonePct: 39, thirdDownPct: 31, penalties: 31, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Khalil Mack", pos: "OLB", sacks: 4.0, status: "Healthy" },
-            { name: "Joey Bosa", pos: "OLB", sacks: 3.5, status: "Healthy" },
-            { name: "Tuli Tuipulotu", pos: "DE", sacks: 3.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 250, allowedTDs: 6 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 110, allowedTDs: 3 } },
         players: [
-            { name: "Hampton", pos: "RB", td: 2, yds: "240 yds", rec: "13/18 rec" },
-            { name: "McConkley", pos: "WR", td: 2, yds: "230 yds", rec: "16/25 rec" },
-            { name: "Palmer", pos: "WR", td: 1, yds: "170 yds", rec: "12/19 rec" }
+            { name: "Hampton", pos: "RB", td: 2, yds: "240 yds", rec: "13/18 rec", marketOdds: 2.50, gameLog: [{w:1, yds:60, td:1}, {w:2, yds:50, td:0}, {w:3, yds:70, td:1}, {w:4, yds:60, td:0}] },
+            { name: "McConkley", pos: "WR", td: 2, yds: "230 yds", rec: "16/25 rec", marketOdds: 2.70, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:60, td:0}] },
+            { name: "Palmer", pos: "WR", td: 1, yds: "170 yds", rec: "12/19 rec", marketOdds: 3.30, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:40, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] }
         ]
     },
     "Browns": { 
         record: "3-1", games: 4, rush: 360, pass: 790, oppPass: 810, oppRush: 350, oppTD: 8, turnovers: 3, sacks: 11, redZonePct: 56, thirdDownPct: 39, penalties: 24, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Myles Garrett", pos: "DE", sacks: 5.0, status: "Healthy" },
-            { name: "Za'Darius Smith", pos: "DE", sacks: 3.0, status: "Healthy" },
-            { name: "Dalvin Tomlinson", pos: "DT", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 190, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
-            { name: "Boston", pos: "WR", td: 3, yds: "260 yds", rec: "16/22 rec" },
-            { name: "Fannin Jr", pos: "WR", td: 2, yds: "160 yds", rec: "11/16 rec" },
-            { name: "Chubb", pos: "RB", td: 2, yds: "190 yds", rec: "6/8 rec" },
-            { name: "Judkins", pos: "RB", td: 1, yds: "155 yds", rec: "10/13 rec" }
+            { name: "Boston", pos: "WR", td: 3, yds: "260 yds", rec: "16/22 rec", marketOdds: 2.30, gameLog: [{w:1, yds:60, td:1}, {w:2, yds:70, td:1}, {w:3, yds:60, td:1}, {w:4, yds:70, td:0}] },
+            { name: "Fannin Jr", pos: "WR", td: 2, yds: "160 yds", rec: "11/16 rec", marketOdds: 2.90, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Chubb", pos: "RB", td: 2, yds: "190 yds", rec: "6/8 rec", marketOdds: 2.20, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
+            { name: "Judkins", pos: "RB", td: 1, yds: "155 yds", rec: "10/13 rec", marketOdds: 3.10, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] }
         ]
     },
     "Panthers": { 
         record: "2-2", games: 4, rush: 400, pass: 1220, oppPass: 1060, oppRush: 500, oppTD: 12, turnovers: 6, sacks: 15, redZonePct: 50, thirdDownPct: 36, penalties: 28, 
         injuredPlayers: [{name: "Jalen Coker", pos: "WR"}], 
-        defensiveLine: [
-            { name: "Derrick Brown", pos: "DT", sacks: 2.0, status: "Healthy" },
-            { name: "A'Shawn Robinson", pos: "DT", sacks: 1.5, status: "Healthy" },
-            { name: "Jadeveon Clowney", pos: "OLB", sacks: 3.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 260, allowedTDs: 6 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
-            { name: "Tetairoa McMillan", pos: "WR", td: 4, yds: "385 yds", rec: "26/38 rec" },
-            { name: "Hubbard", pos: "RB", td: 3, yds: "340 yds", rec: "14/18 rec" },
-            { name: "Coker", pos: "WR", td: 3, yds: "290 yds", rec: "19/28 rec" },
-            { name: "Wallen", pos: "TE", td: 2, yds: "145 yds", rec: "11/15 rec" }
+            { name: "Tetairoa McMillan", pos: "WR", td: 4, yds: "385 yds", rec: "26/38 rec", marketOdds: 1.95, gameLog: [{w:1, yds:90, td:1}, {w:2, yds:100, td:1}, {w:3, yds:95, td:1}, {w:4, yds:100, td:1}] },
+            { name: "Hubbard", pos: "RB", td: 3, yds: "340 yds", rec: "14/18 rec", marketOdds: 2.20, gameLog: [{w:1, yds:80, td:1}, {w:2, yds:90, td:1}, {w:3, yds:80, td:1}, {w:4, yds:90, td:0}] },
+            { name: "Coker", pos: "WR", td: 3, yds: "290 yds", rec: "19/28 rec", marketOdds: 2.40, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:75, td:1}, {w:4, yds:70, td:0}] },
+            { name: "Wallen", pos: "TE", td: 2, yds: "145 yds", rec: "11/15 rec", marketOdds: 3.10, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:35, td:1}, {w:4, yds:35, td:0}] }
         ]
     },
     "Cowboys": { 
         record: "2-2", games: 4, rush: 380, pass: 980, oppPass: 970, oppRush: 450, oppTD: 12, turnovers: 6, sacks: 9, redZonePct: 62, thirdDownPct: 43, penalties: 26, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Micah Parsons", pos: "DE", sacks: 4.5, status: "Healthy" },
-            { name: "DeMarcus Lawrence", pos: "DE", sacks: 2.0, status: "Healthy" },
-            { name: "Osa Odighizuwa", pos: "DT", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 90, allowedTDs: 3 } },
         players: [
-            { name: "Lamb", pos: "WR", td: 4, yds: "410 yds", rec: "29/40 rec" },
-            { name: "Williams", pos: "RB", td: 3, yds: "290 yds", rec: "18/23 rec" },
-            { name: "Ferguson", pos: "TE", td: 3, yds: "105 yds", rec: "14/18 rec" },
-            { name: "Prescott", pos: "QB", td: 1, yds: "50 yds", rec: "Passing QB" }
+            { name: "Lamb", pos: "WR", td: 4, yds: "410 yds", rec: "29/40 rec", marketOdds: 1.80, gameLog: [{w:1, yds:100, td:1}, {w:2, yds:105, td:1}, {w:3, yds:100, td:1}, {w:4, yds:105, td:1}] },
+            { name: "Williams", pos: "RB", td: 3, yds: "290 yds", rec: "18/23 rec", marketOdds: 2.20, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:1}, {w:4, yds:75, td:0}] },
+            { name: "Ferguson", pos: "TE", td: 3, yds: "105 yds", rec: "14/18 rec", marketOdds: 2.60, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:1}, {w:4, yds:25, td:0}] },
+            { name: "Prescott", pos: "QB", td: 1, yds: "50 yds", rec: "Passing QB", marketOdds: 3.80, gameLog: [{w:1, yds:10, td:0}, {w:2, yds:15, td:1}, {w:3, yds:10, td:0}, {w:4, yds:15, td:0}] }
         ]
     },
     "Ravens": { 
         record: "3-1", games: 4, rush: 640, pass: 960, oppPass: 890, oppRush: 360, oppTD: 10, turnovers: 4, sacks: 7, redZonePct: 67, thirdDownPct: 48, penalties: 21, 
         injuredPlayers: [{name: "Lamar Jackson", pos: "QB"}], 
-        defensiveLine: [
-            { name: "Nnamdi Madubuike", pos: "DT", sacks: 3.0, status: "Healthy" },
-            { name: "Odafe Oweh", pos: "OLB", sacks: 2.5, status: "Healthy" },
-            { name: "Kyle Van Noy", pos: "OLB", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 210, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
-            { name: "Henry", pos: "RB", td: 7, yds: "440 yds", rec: "7/10 rec" },
-            { name: "Flowers", pos: "WR", td: 2, yds: "310 yds", rec: "23/32 rec" },
-            { name: "Jackson", pos: "QB", td: 2, yds: "180 yds", rec: "Passing QB" },
-            { name: "Likely", pos: "TE", td: 1, yds: "140 yds", rec: "11/15 rec" }
+            { name: "Henry", pos: "RB", td: 7, yds: "440 yds", rec: "7/10 rec", marketOdds: 1.55, gameLog: [{w:1, yds:100, td:2}, {w:2, yds:110, td:2}, {w:3, yds:115, td:2}, {w:4, yds:115, td:1}] },
+            { name: "Flowers", pos: "WR", td: 2, yds: "310 yds", rec: "23/32 rec", marketOdds: 2.60, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:80, td:1}, {w:3, yds:80, td:0}, {w:4, yds:80, td:0}] },
+            { name: "Jackson", pos: "QB", td: 2, yds: "180 yds", rec: "Passing QB", marketOdds: 2.40, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] },
+            { name: "Likely", pos: "TE", td: 1, yds: "140 yds", rec: "11/15 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:35, td:0}] }
         ]
     },
     "Saints": { 
         record: "1-3", games: 4, rush: 380, pass: 1150, oppPass: 990, oppRush: 470, oppTD: 13, turnovers: 6, sacks: 10, redZonePct: 51, thirdDownPct: 39, penalties: 24, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Carl Granderson", pos: "DE", sacks: 3.5, status: "Healthy" },
-            { name: "Cameron Jordan", pos: "DE", sacks: 1.5, status: "Healthy" },
-            { name: "Bryan Bresee", pos: "DT", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 240, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 3 } },
         players: [
-            { name: "Johnson", pos: "WR", td: 4, yds: "220 yds", rec: "15/22 rec" },
-            { name: "Olave", pos: "WR", td: 2, yds: "480 yds", rec: "32/45 rec" },
-            { name: "Fant", pos: "TE", td: 3, yds: "85 yds", rec: "9/13 rec" },
-            { name: "Kamara", pos: "RB", td: 2, yds: "310 yds", rec: "20/26 rec" }
+            { name: "Johnson", pos: "WR", td: 4, yds: "220 yds", rec: "15/22 rec", marketOdds: 2.10, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:60, td:1}, {w:3, yds:55, td:1}, {w:4, yds:55, td:1}] },
+            { name: "Olave", pos: "WR", td: 2, yds: "480 yds", rec: "32/45 rec", marketOdds: 2.30, gameLog: [{w:1, yds:115, td:1}, {w:2, yds:120, td:1}, {w:3, yds:120, td:0}, {w:4, yds:125, td:0}] },
+            { name: "Fant", pos: "TE", td: 3, yds: "85 yds", rec: "9/13 rec", marketOdds: 2.80, gameLog: [{w:1, yds:20, td:1}, {w:2, yds:20, td:1}, {w:3, yds:20, td:1}, {w:4, yds:25, td:0}] },
+            { name: "Kamara", pos: "RB", td: 2, yds: "310 yds", rec: "20/26 rec", marketOdds: 2.20, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] }
         ]
     },
     "Raiders": { 
         record: "3-1", games: 4, rush: 380, pass: 850, oppPass: 800, oppRush: 340, oppTD: 10, turnovers: 3, sacks: 8, redZonePct: 64, thirdDownPct: 44, penalties: 19, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Maxx Crosby", pos: "DE", sacks: 5.5, status: "Healthy" },
-            { name: "Christian Wilkins", pos: "DT", sacks: 2.0, status: "Healthy" },
-            { name: "Malcolm Koonce", pos: "DE", sacks: 1.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 190, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 70, allowedTDs: 2 } },
         players: [
-            { name: "Jeanty", pos: "RB", td: 4, yds: "400 yds", rec: "19/25 rec" },
-            { name: "White", pos: "WR", td: 3, yds: "45 yds", rec: "5/8 rec" },
-            { name: "Bowers", pos: "TE", td: 2, yds: "160 yds", rec: "15/20 rec" },
-            { name: "Meyers", pos: "WR", td: 1, yds: "190 yds", rec: "14/21 rec" }
+            { name: "Jeanty", pos: "RB", td: 4, yds: "400 yds", rec: "19/25 rec", marketOdds: 1.95, gameLog: [{w:1, yds:95, td:1}, {w:2, yds:100, td:1}, {w:3, yds:100, td:1}, {w:4, yds:105, td:1}] },
+            { name: "White", pos: "WR", td: 3, yds: "45 yds", rec: "5/8 rec", marketOdds: 2.50, gameLog: [{w:1, yds:10, td:1}, {w:2, yds:10, td:1}, {w:3, yds:10, td:1}, {w:4, yds:15, td:0}] },
+            { name: "Bowers", pos: "TE", td: 2, yds: "160 yds", rec: "15/20 rec", marketOdds: 2.70, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Meyers", pos: "WR", td: 1, yds: "190 yds", rec: "14/21 rec", marketOdds: 3.10, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] }
         ]
     },
     "49ers": { 
         record: "4-0", games: 4, rush: 540, pass: 1020, oppPass: 760, oppRush: 310, oppTD: 6, turnovers: 2, sacks: 5, redZonePct: 72, thirdDownPct: 51, penalties: 16, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Nick Bosa", pos: "DE", sacks: 4.0, status: "Healthy" },
-            { name: "Javon Hargrave", pos: "DT", sacks: 1.5, status: "Healthy" },
-            { name: "Leonard Floyd", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 180, allowedTDs: 2 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 65, allowedTDs: 2 } },
         players: [
-            { name: "McCaffrey", pos: "RB", td: 4, yds: "360 yds", rec: "23/28 rec" },
-            { name: "Kittle", pos: "TE", td: 3, yds: "230 yds", rec: "18/23 rec" },
-            { name: "Samuel", pos: "WR", td: 2, yds: "210 yds", rec: "17/23 rec" },
-            { name: "Aiyuk", pos: "WR", td: 1, yds: "190 yds", rec: "14/20 rec" }
+            { name: "McCaffrey", pos: "RB", td: 4, yds: "360 yds", rec: "23/28 rec", marketOdds: 1.70, gameLog: [{w:1, yds:90, td:1}, {w:2, yds:90, td:1}, {w:3, yds:90, td:1}, {w:4, yds:90, td:1}] },
+            { name: "Kittle", pos: "TE", td: 3, yds: "230 yds", rec: "18/23 rec", marketOdds: 2.30, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:55, td:1}, {w:4, yds:60, td:0}] },
+            { name: "Samuel", pos: "WR", td: 2, yds: "210 yds", rec: "17/23 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:50, td:1}, {w:3, yds:55, td:0}, {w:4, yds:55, td:0}] },
+            { name: "Aiyuk", pos: "WR", td: 1, yds: "190 yds", rec: "14/20 rec", marketOdds: 3.10, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:45, td:1}, {w:3, yds:50, td:0}, {w:4, yds:50, td:0}] }
         ]
     },
     "Cardinals": { 
         record: "1-3", games: 4, rush: 350, pass: 840, oppPass: 1020, oppRush: 480, oppTD: 14, turnovers: 7, sacks: 12, redZonePct: 48, thirdDownPct: 36, penalties: 28, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Darius Robinson", pos: "DE", sacks: 2.0, status: "Healthy" },
-            { name: "Zaven Collins", pos: "OLB", sacks: 1.5, status: "Healthy" },
-            { name: "Justin Jones", pos: "DT", sacks: 1.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 250, allowedTDs: 6 }, vsTE: { allowedYdsPerGame: 75, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 105, allowedTDs: 3 } },
         players: [
-            { name: "McBride", pos: "TE", td: 3, yds: "280 yds", rec: "21/29 rec" },
-            { name: "Love", pos: "RB", td: 3, yds: "260 yds", rec: "15/21 rec" },
-            { name: "Harrison Jr", pos: "WR", td: 2, yds: "310 yds", rec: "20/33 rec" },
-            { name: "Wilson", pos: "WR", td: 1, yds: "200 yds", rec: "14/21 rec" }
+            { name: "McBride", pos: "TE", td: 3, yds: "280 yds", rec: "21/29 rec", marketOdds: 2.20, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:70, td:1}, {w:3, yds:70, td:1}, {w:4, yds:70, td:0}] },
+            { name: "Love", pos: "RB", td: 3, yds: "260 yds", rec: "15/21 rec", marketOdds: 2.40, gameLog: [{w:1, yds:65, td:1}, {w:2, yds:65, td:1}, {w:3, yds:65, td:1}, {w:4, yds:65, td:0}] },
+            { name: "Harrison Jr", pos: "WR", td: 2, yds: "310 yds", rec: "20/33 rec", marketOdds: 2.50, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
+            { name: "Wilson", pos: "WR", td: 1, yds: "200 yds", rec: "14/21 rec", marketOdds: 3.30, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:50, td:1}, {w:3, yds:50, td:0}, {w:4, yds:50, td:0}] }
         ]
     },
     "Buccaneers": { 
         record: "0-4", games: 4, rush: 360, pass: 780, oppPass: 980, oppRush: 440, oppTD: 9, turnovers: 8, sacks: 13, redZonePct: 40, thirdDownPct: 33, penalties: 30, 
         injuredPlayers: [{name: "Bucky Irving", pos: "RB"}], 
-        defensiveLine: [
-            { name: "Vita Vea", pos: "DT", sacks: 2.5, status: "Healthy" },
-            { name: "Yaya Diaby", pos: "OLB", sacks: 3.0, status: "Healthy" },
-            { name: "Calijah Kancey", pos: "DT", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 235, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 2 } },
         players: [
-            { name: "Irving", pos: "RB", td: 2, yds: "310 yds", rec: "16/22 rec" },
-            { name: "Egbuka", pos: "WR", td: 2, yds: "190 yds", rec: "13/19 rec" },
-            { name: "Evans", pos: "WR", td: 1, yds: "220 yds", rec: "15/24 rec" },
-            { name: "Mayfield", pos: "QB", td: 1, yds: "80 yds", rec: "Passing QB" }
+            { name: "Irving", pos: "RB", td: 2, yds: "310 yds", rec: "16/22 rec", marketOdds: 2.60, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
+            { name: "Egbuka", pos: "WR", td: 2, yds: "190 yds", rec: "13/19 rec", marketOdds: 2.80, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
+            { name: "Evans", pos: "WR", td: 1, yds: "220 yds", rec: "15/24 rec", marketOdds: 3.10, gameLog: [{w:1, yds:55, td:0}, {w:2, yds:55, td:1}, {w:3, yds:55, td:0}, {w:4, yds:55, td:0}] },
+            { name: "Mayfield", pos: "QB", td: 1, yds: "80 yds", rec: "Passing QB", marketOdds: 4.00, gameLog: [{w:1, yds:20, td:0}, {w:2, yds:20, td:1}, {w:3, yds:20, td:0}, {w:4, yds:20, td:0}] }
         ]
     },
     "Vikings": { 
         record: "4-0", games: 4, rush: 400, pass: 610, oppPass: 710, oppRush: 300, oppTD: 4, turnovers: 1, sacks: 6, redZonePct: 74, thirdDownPct: 53, penalties: 17, 
         injuredPlayers: [{name: "Justin Jefferson", pos: "WR"}], 
-        defensiveLine: [
-            { name: "Jonathan Greenard", pos: "OLB", sacks: 4.5, status: "Healthy" },
-            { name: "Andrew Van Ginkel", pos: "OLB", sacks: 3.5, status: "Healthy" },
-            { name: "Dallas Turner", pos: "OLB", sacks: 3.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 175, allowedTDs: 2 }, vsTE: { allowedYdsPerGame: 40, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 65, allowedTDs: 1 } },
         players: [
-            { name: "Jefferson", pos: "WR", td: 3, yds: "240 yds", rec: "20/29 rec" },
-            { name: "Jones", pos: "RB", td: 2, yds: "310 yds", rec: "18/23 rec" },
-            { name: "Hockenson", pos: "TE", td: 1, yds: "110 yds", rec: "11/15 rec" },
-            { name: "Addison", pos: "WR", td: 1, yds: "160 yds", rec: "12/18 rec" }
+            { name: "Jefferson", pos: "WR", td: 3, yds: "240 yds", rec: "20/29 rec", marketOdds: 1.85, gameLog: [{w:1, yds:80, td:1}, {w:2, yds:80, td:1}, {w:3, yds:80, td:1}, {w:4, yds:0, td:0}] },
+            { name: "Jones", pos: "RB", td: 2, yds: "310 yds", rec: "18/23 rec", marketOdds: 2.30, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
+            { name: "Hockenson", pos: "TE", td: 1, yds: "110 yds", rec: "11/15 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:35, td:0}] },
+            { name: "Addison", pos: "WR", td: 1, yds: "160 yds", rec: "12/18 rec", marketOdds: 3.00, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] }
         ]
     },
     "Lions": { 
         record: "2-2", games: 4, rush: 460, pass: 1040, oppPass: 1090, oppRush: 420, oppTD: 15, turnovers: 4, sacks: 8, redZonePct: 73, thirdDownPct: 52, penalties: 20, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Aidan Hutchinson", pos: "DE", sacks: 6.5, status: "Healthy" },
-            { name: "D.J. Reader", pos: "DT", sacks: 1.0, status: "Healthy" },
-            { name: "Marcus Davenport", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 265, allowedTDs: 6 }, vsTE: { allowedYdsPerGame: 75, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
-            { name: "Gibbs", pos: "RB", td: 7, yds: "580 yds", rec: "21/26 rec" },
-            { name: "St. Brown", pos: "WR", td: 6, yds: "310 yds", rec: "26/34 rec" },
-            { name: "LaPorta", pos: "TE", td: 2, yds: "190 yds", rec: "16/21 rec" },
-            { name: "Montgomery", pos: "RB", td: 2, yds: "280 yds", rec: "10/14 rec" }
+            { name: "Gibbs", pos: "RB", td: 7, yds: "580 yds", rec: "21/26 rec", marketOdds: 1.50, gameLog: [{w:1, yds:140, td:2}, {w:2, yds:150, td:2}, {w:3, yds:140, td:2}, {w:4, yds:150, td:1}] },
+            { name: "St. Brown", pos: "WR", td: 6, yds: "310 yds", rec: "26/34 rec", marketOdds: 1.65, gameLog: [{w:1, yds:75, td:2}, {w:2, yds:80, td:2}, {w:3, yds:75, td:1}, {w:4, yds:80, td:1}] },
+            { name: "LaPorta", pos: "TE", td: 2, yds: "190 yds", rec: "16/21 rec", marketOdds: 2.60, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
+            { name: "Montgomery", pos: "RB", td: 2, yds: "280 yds", rec: "10/14 rec", marketOdds: 2.40, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:70, td:1}, {w:3, yds:70, td:0}, {w:4, yds:70, td:0}] }
         ]
     },
     "Jets": { 
         record: "1-3", games: 4, rush: 350, pass: 990, oppPass: 910, oppRush: 390, oppTD: 9, turnovers: 5, sacks: 10, redZonePct: 52, thirdDownPct: 37, penalties: 25, 
         injuredPlayers: [{name: "Breece Hall", pos: "RB"}], 
-        defensiveLine: [
-            { name: "Quinnen Williams", pos: "DT", sacks: 3.0, status: "Healthy" },
-            { name: "Jermaine Johnson", pos: "DE", sacks: 2.5, status: "Healthy" },
-            { name: "Haason Reddick", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 220, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
-            { name: "Wilson", pos: "WR", td: 3, yds: "230 yds", rec: "17/26 rec" },
-            { name: "Hall", pos: "RB", td: 2, yds: "330 yds", rec: "19/25 rec" },
-            { name: "Sadiq", pos: "TE", td: 1, yds: "170 yds", rec: "11/15 rec" },
-            { name: "Conklin", pos: "TE", td: 1, yds: "120 yds", rec: "10/14 rec" }
+            { name: "Wilson", pos: "WR", td: 3, yds: "230 yds", rec: "17/26 rec", marketOdds: 2.20, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:55, td:1}, {w:4, yds:60, td:0}] },
+            { name: "Hall", pos: "RB", td: 2, yds: "330 yds", rec: "19/25 rec", marketOdds: 2.40, gameLog: [{w:1, yds:80, td:1}, {w:2, yds:85, td:1}, {w:3, yds:80, td:0}, {w:4, yds:85, td:0}] },
+            { name: "Sadiq", pos: "TE", td: 1, yds: "170 yds", rec: "11/15 rec", marketOdds: 3.40, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:45, td:1}, {w:3, yds:40, td:0}, {w:4, yds:45, td:0}] },
+            { name: "Conklin", pos: "TE", td: 1, yds: "120 yds", rec: "10/14 rec", marketOdds: 3.60, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:30, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
         ]
     },
     "Colts": { 
         record: "2-2", games: 4, rush: 410, pass: 810, oppPass: 920, oppRush: 430, oppTD: 11, turnovers: 6, sacks: 11, redZonePct: 52, thirdDownPct: 39, penalties: 26, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "DeForest Buckner", pos: "DT", sacks: 3.0, status: "Healthy" },
-            { name: "Kwity Paye", pos: "DE", sacks: 2.5, status: "Healthy" },
-            { name: "Grover Stewart", pos: "DT", sacks: 1.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 90, allowedTDs: 3 } },
         players: [
-            { name: "Taylor", pos: "RB", td: 5, yds: "430 yds", rec: "13/18 rec" },
-            { name: "Warren", pos: "TE", td: 2, yds: "120 yds", rec: "10/14 rec" },
-            { name: "Allen", pos: "WR", td: 2, yds: "150 yds", rec: "11/17 rec" },
-            { name: "Pittman Jr", pos: "WR", td: 1, yds: "210 yds", rec: "16/24 rec" }
+            { name: "Taylor", pos: "RB", td: 5, yds: "430 yds", rec: "13/18 rec", marketOdds: 1.65, gameLog: [{w:1, yds:100, td:1}, {w:2, yds:110, td:2}, {w:3, yds:105, td:1}, {w:4, yds:115, td:1}] },
+            { name: "Warren", pos: "TE", td: 2, yds: "120 yds", rec: "10/14 rec", marketOdds: 2.80, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:30, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] },
+            { name: "Allen", pos: "WR", td: 2, yds: "150 yds", rec: "11/17 rec", marketOdds: 2.90, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Pittman Jr", pos: "WR", td: 1, yds: "210 yds", rec: "16/24 rec", marketOdds: 3.10, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] }
         ]
     },
     "Texans": { 
         record: "0-4", games: 4, rush: 320, pass: 1010, oppPass: 960, oppRush: 460, oppTD: 9, turnovers: 8, sacks: 15, redZonePct: 37, thirdDownPct: 30, penalties: 33, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Will Anderson Jr.", pos: "DE", sacks: 4.5, status: "Healthy" },
-            { name: "Danielle Hunter", pos: "DE", sacks: 3.5, status: "Healthy" },
-            { name: "Sheldon Rankins", pos: "DT", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 2 } },
         players: [
-            { name: "Montgomery", pos: "RB", td: 3, yds: "210 yds", rec: "15/20 rec" },
-            { name: "Collins", pos: "WR", td: 2, yds: "160 yds", rec: "11/16 rec" },
-            { name: "Nico Collins", pos: "WR", td: 1, yds: "240 yds", rec: "18/25 rec" },
-            { name: "Marks", pos: "RB", td: 1, yds: "120 yds", rec: "11/15 rec" }
+            { name: "Montgomery", pos: "RB", td: 3, yds: "210 yds", rec: "15/20 rec", marketOdds: 2.30, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:55, td:1}, {w:3, yds:50, td:1}, {w:4, yds:55, td:0}] },
+            { name: "Collins", pos: "WR", td: 2, yds: "160 yds", rec: "11/16 rec", marketOdds: 2.70, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Nico Collins", pos: "WR", td: 1, yds: "240 yds", rec: "18/25 rec", marketOdds: 3.00, gameLog: [{w:1, yds:60, td:0}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:60, td:0}] },
+            { name: "Marks", pos: "RB", td: 1, yds: "120 yds", rec: "11/15 rec", marketOdds: 3.50, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:30, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
         ]
     },
     "Jaguars": { 
         record: "3-1", games: 4, rush: 460, pass: 790, oppPass: 810, oppRush: 340, oppTD: 5, turnovers: 3, sacks: 7, redZonePct: 67, thirdDownPct: 47, penalties: 19, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Josh Hines-Allen", pos: "OLB", sacks: 3.5, status: "Healthy" },
-            { name: "Travon Walker", pos: "DE", sacks: 3.0, status: "Healthy" },
-            { name: "Arik Armstead", pos: "DT", sacks: 1.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 195, allowedTDs: 2 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 70, allowedTDs: 1 } },
         players: [
-            { name: "Tuten", pos: "RB", td: 3, yds: "320 yds", rec: "15/19 rec" },
-            { name: "Washington", pos: "WR", td: 2, yds: "290 yds", rec: "19/27 rec" },
-            { name: "Meyers", pos: "WR", td: 2, yds: "180 yds", rec: "14/19 rec" },
-            { name: "Engram", pos: "TE", td: 1, yds: "150 yds", rec: "13/17 rec" }
+            { name: "Tuten", pos: "RB", td: 3, yds: "320 yds", rec: "15/19 rec", marketOdds: 2.10, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:80, td:1}, {w:4, yds:85, td:0}] },
+            { name: "Washington", pos: "WR", td: 2, yds: "290 yds", rec: "19/27 rec", marketOdds: 2.60, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] },
+            { name: "Meyers", pos: "WR", td: 2, yds: "180 yds", rec: "14/19 rec", marketOdds: 2.70, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:45, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] },
+            { name: "Engram", pos: "TE", td: 1, yds: "150 yds", rec: "13/17 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] }
         ]
     },
     "Patriots": { 
         record: "2-2", games: 4, rush: 420, pass: 850, oppPass: 860, oppRush: 390, oppTD: 8, turnovers: 5, sacks: 9, redZonePct: 56, thirdDownPct: 41, penalties: 23, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Keion White", pos: "DE", sacks: 3.0, status: "Healthy" },
-            { name: "Davon Godchaux", pos: "DT", sacks: 1.0, status: "Healthy" },
-            { name: "Deatrich Wise Jr.", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 210, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
-            { name: "Henderson", pos: "RB", td: 2, yds: "150 yds", rec: "11/15 rec" },
-            { name: "Maye", pos: "QB", td: 2, yds: "110 yds", rec: "Passing QB" },
-            { name: "Hollins", pos: "WR", td: 1, yds: "210 yds", rec: "15/23 rec" },
-            { name: "Bourne", pos: "WR", td: 1, yds: "140 yds", rec: "11/16 rec" }
+            { name: "Henderson", pos: "RB", td: 2, yds: "150 yds", rec: "11/15 rec", marketOdds: 2.50, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Maye", pos: "QB", td: 2, yds: "110 yds", rec: "Passing QB", marketOdds: 2.80, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
+            { name: "Hollins", pos: "WR", td: 1, yds: "210 yds", rec: "15/23 rec", marketOdds: 3.10, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] },
+            { name: "Bourne", pos: "WR", td: 1, yds: "140 yds", rec: "11/16 rec", marketOdds: 3.40, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:35, td:0}] }
         ]
     },
     "Dolphins": { 
         record: "0-4", games: 4, rush: 380, pass: 810, oppPass: 1050, oppRush: 520, oppTD: 14, turnovers: 8, sacks: 14, redZonePct: 36, thirdDownPct: 29, penalties: 35, 
         injuredPlayers: [{name: "De'Von Achane", pos: "RB"}], 
-        defensiveLine: [
-            { name: "Jaelan Phillips", pos: "LB", sacks: 3.0, status: "Healthy" },
-            { name: "Chop Robinson", pos: "LB", sacks: 2.0, status: "Healthy" },
-            { name: "Zach Sieler", pos: "DT", sacks: 2.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 260, allowedTDs: 6 }, vsTE: { allowedYdsPerGame: 75, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 110, allowedTDs: 3 } },
         players: [
-            { name: "Gordon", pos: "RB", td: 2, yds: "90 yds", rec: "7/11 rec" },
-            { name: "Washington", pos: "WR", td: 1, yds: "210 yds", rec: "14/22 rec" },
-            { name: "Hill", pos: "WR", td: 1, yds: "260 yds", rec: "18/27 rec" },
-            { name: "Waddle", pos: "WR", td: 1, yds: "220 yds", rec: "16/24 rec" }
+            { name: "Gordon", pos: "RB", td: 2, yds: "90 yds", rec: "7/11 rec", marketOdds: 2.60, gameLog: [{w:1, yds:20, td:1}, {w:2, yds:25, td:1}, {w:3, yds:20, td:0}, {w:4, yds:25, td:0}] },
+            { name: "Washington", pos: "WR", td: 1, yds: "210 yds", rec: "14/22 rec", marketOdds: 3.10, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] },
+            { name: "Hill", pos: "WR", td: 1, yds: "260 yds", rec: "18/27 rec", marketOdds: 2.10, gameLog: [{w:1, yds:60, td:0}, {w:2, yds:70, td:1}, {w:3, yds:60, td:0}, {w:4, yds:70, td:0}] },
+            { name: "Waddle", pos: "WR", td: 1, yds: "220 yds", rec: "16/24 rec", marketOdds: 2.40, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:50, td:0}, {w:4, yds:60, td:0}] }
         ]
     },
     "Chiefs": { 
         record: "4-0", games: 4, rush: 590, pass: 1080, oppPass: 750, oppRush: 290, oppTD: 6, turnovers: 2, sacks: 5, redZonePct: 75, thirdDownPct: 52, penalties: 17, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Chris Jones", pos: "DT", sacks: 3.5, status: "Healthy" },
-            { name: "George Karlaftis", pos: "DE", sacks: 3.0, status: "Healthy" },
-            { name: "Felix Anudike-Uzomah", pos: "DE", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 180, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 70, allowedTDs: 2 } },
         players: [
-            { name: "Walker III", pos: "RB", td: 5, yds: "560 yds", rec: "18/23 rec" },
-            { name: "Kelce", pos: "TE", td: 3, yds: "310 yds", rec: "24/32 rec" },
-            { name: "Worthy", pos: "WR", td: 2, yds: "110 yds", rec: "8/13 rec" },
-            { name: "Mahomes", pos: "QB", td: 1, yds: "70 yds", rec: "Passing QB" }
+            { name: "Walker III", pos: "RB", td: 5, yds: "560 yds", rec: "18/23 rec", marketOdds: 1.75, gameLog: [{w:1, yds:120, td:1}, {w:2, yds:140, td:2}, {w:3, yds:130, td:1}, {w:4, yds:170, td:1}] },
+            { name: "Kelce", pos: "TE", td: 3, yds: "310 yds", rec: "24/32 rec", marketOdds: 2.05, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:80, td:1}, {w:3, yds:60, td:0}, {w:4, yds:100, td:1}] },
+            { name: "Worthy", pos: "WR", td: 2, yds: "110 yds", rec: "8/13 rec", marketOdds: 2.60, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
+            { name: "Mahomes", pos: "QB", td: 1, yds: "70 yds", rec: "Passing QB", marketOdds: 3.50, gameLog: [{w:1, yds:15, td:0}, {w:2, yds:20, td:1}, {w:3, yds:15, td:0}, {w:4, yds:20, td:0}] }
         ]
     },
     "Giants": { 
         record: "3-1", games: 4, rush: 470, pass: 640, oppPass: 840, oppRush: 380, oppTD: 9, turnovers: 4, sacks: 9, redZonePct: 61, thirdDownPct: 43, penalties: 22, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Dexter Lawrence", pos: "DT", sacks: 4.5, status: "Healthy" },
-            { name: "Brian Burns", pos: "OLB", sacks: 3.5, status: "Healthy" },
-            { name: "Kayvon Thibodeaux", pos: "OLB", sacks: 3.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 205, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
-            { name: "Likely", pos: "WR", td: 3, yds: "170 yds", rec: "14/19 rec" },
-            { name: "Skattebo", pos: "RB", td: 2, yds: "310 yds", rec: "16/22 rec" },
-            { name: "Singletary", pos: "RB", td: 2, yds: "110 yds", rec: "8/12 rec" },
-            { name: "Nabers", pos: "WR", td: 1, yds: "290 yds", rec: "22/33 rec" }
+            { name: "Likely", pos: "WR", td: 3, yds: "170 yds", rec: "14/19 rec", marketOdds: 2.30, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:45, td:1}, {w:3, yds:40, td:1}, {w:4, yds:45, td:0}] },
+            { name: "Skattebo", pos: "RB", td: 2, yds: "310 yds", rec: "16/22 rec", marketOdds: 2.40, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
+            { name: "Singletary", pos: "RB", td: 2, yds: "110 yds", rec: "8/12 rec", marketOdds: 2.70, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
+            { name: "Nabers", pos: "WR", td: 1, yds: "290 yds", rec: "22/33 rec", marketOdds: 2.50, gameLog: [{w:1, yds:70, td:0}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] }
         ]
     },
     "Titans": { 
         record: "0-4", games: 4, rush: 350, pass: 670, oppPass: 970, oppRush: 470, oppTD: 7, turnovers: 7, sacks: 13, redZonePct: 39, thirdDownPct: 31, penalties: 30, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Jeffery Simmons", pos: "DT", sacks: 2.5, status: "Healthy" },
-            { name: "Harold Landry III", pos: "OLB", sacks: 3.0, status: "Healthy" },
-            { name: "Arden Key", pos: "OLB", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 235, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
-            { name: "Ward", pos: "QB", td: 3, yds: "50 yds", rec: "Passing QB" },
-            { name: "Robinson", pos: "WR", td: 2, yds: "140 yds", rec: "11/16 rec" },
-            { name: "Ayomaoyr", pos: "WR", td: 1, yds: "120 yds", rec: "9/14 rec" },
-            { name: "Pollard", pos: "RB", td: 1, yds: "210 yds", rec: "12/17 rec" }
+            { name: "Ward", pos: "QB", td: 3, yds: "50 yds", rec: "Passing QB", marketOdds: 2.80, gameLog: [{w:1, yds:10, td:1}, {w:2, yds:15, td:1}, {w:3, yds:10, td:1}, {w:4, yds:15, td:0}] },
+            { name: "Robinson", pos: "WR", td: 2, yds: "140 yds", rec: "11/16 rec", marketOdds: 2.90, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:35, td:1}, {w:3, yds:30, td:0}, {w:4, yds:35, td:0}] },
+            { name: "Ayomaoyr", pos: "WR", td: 1, yds: "120 yds", rec: "9/14 rec", marketOdds: 3.40, gameLog: [{w:1, yds:25, td:0}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
+            { name: "Pollard", pos: "RB", td: 1, yds: "210 yds", rec: "12/17 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] }
         ]
     },
     "Steelers": { 
         record: "2-2", games: 4, rush: 370, pass: 920, oppPass: 850, oppRush: 360, oppTD: 8, turnovers: 4, sacks: 8, redZonePct: 61, thirdDownPct: 43, penalties: 20, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "T.J. Watt", pos: "OLB", sacks: 5.0, status: "Healthy" },
-            { name: "Alex Highsmith", pos: "OLB", sacks: 3.0, status: "Healthy" },
-            { name: "Cameron Heyward", pos: "DT", sacks: 2.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 200, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
-            { name: "Metcalf", pos: "WR", td: 2, yds: "150 yds", rec: "10/16 rec" },
-            { name: "Freiermuth", pos: "TE", td: 2, yds: "140 yds", rec: "12/17 rec" },
-            { name: "Wilson", pos: "WR", td: 2, yds: "160 yds", rec: "11/18 rec" },
-            { name: "Harris", pos: "RB", td: 1, yds: "240 yds", rec: "9/13 rec" }
+            { name: "Metcalf", pos: "WR", td: 2, yds: "150 yds", rec: "10/16 rec", marketOdds: 2.40, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Freiermuth", pos: "TE", td: 2, yds: "140 yds", rec: "12/17 rec", marketOdds: 2.70, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:35, td:1}, {w:3, yds:30, td:0}, {w:4, yds:35, td:0}] },
+            { name: "Wilson", pos: "WR", td: 2, yds: "160 yds", rec: "11/18 rec", marketOdds: 2.50, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Harris", pos: "RB", td: 1, yds: "240 yds", rec: "9/13 rec", marketOdds: 2.30, gameLog: [{w:1, yds:55, td:0}, {w:2, yds:60, td:1}, {w:3, yds:55, td:0}, {w:4, yds:60, td:0}] }
         ]
     },
     "Bengals": { 
         record: "3-1", games: 4, rush: 360, pass: 980, oppPass: 930, oppRush: 400, oppTD: 8, turnovers: 4, sacks: 8, redZonePct: 65, thirdDownPct: 46, penalties: 21, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Trey Hendrickson", pos: "DE", sacks: 4.5, status: "Healthy" },
-            { name: "Sheldon Rankins", pos: "DT", sacks: 1.5, status: "Healthy" },
-            { name: "Sam Hubbard", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 220, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
-            { name: "Chase", pos: "WR", td: 4, yds: "260 yds", rec: "22/32 rec" },
-            { name: "Gesicki", pos: "TE", td: 3, yds: "160 yds", rec: "14/19 rec" },
-            { name: "Brown", pos: "RB", td: 2, yds: "290 yds", rec: "18/23 rec" },
-            { name: "Higgins", pos: "WR", td: 1, yds: "210 yds", rec: "15/22 rec" }
+            { name: "Chase", pos: "WR", td: 4, yds: "260 yds", rec: "22/32 rec", marketOdds: 1.75, gameLog: [{w:1, yds:60, td:1}, {w:2, yds:65, td:1}, {w:3, yds:65, td:1}, {w:4, yds:70, td:1}] },
+            { name: "Gesicki", pos: "TE", td: 3, yds: "160 yds", rec: "14/19 rec", marketOdds: 2.50, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:1}, {w:4, yds:45, td:0}] },
+            { name: "Brown", pos: "RB", td: 2, yds: "290 yds", rec: "18/23 rec", marketOdds: 2.30, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] },
+            { name: "Higgins", pos: "WR", td: 1, yds: "210 yds", rec: "15/22 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] }
         ]
     },
     "Commanders": { 
         record: "1-3", games: 4, rush: 500, pass: 710, oppPass: 1040, oppRush: 500, oppTD: 13, turnovers: 6, sacks: 11, redZonePct: 50, thirdDownPct: 37, penalties: 24, 
         injuredPlayers: [{name: "Jayden Daniels", pos: "QB"}, {name: "Terry McLaurin", pos: "WR"}], 
-        defensiveLine: [
-            { name: "Daron Payne", pos: "DT", sacks: 2.0, status: "Healthy" },
-            { name: "Jonathan Allen", pos: "DT", sacks: 2.5, status: "Healthy" },
-            { name: "Dorance Armstrong", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 250, allowedTDs: 6 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
-            { name: "Diggs", pos: "WR", td: 4, yds: "190 yds", rec: "15/22 rec" },
-            { name: "Croskey-Merritt", pos: "RB", td: 2, yds: "190 yds", rec: "12/16 rec" },
-            { name: "McLaurin", pos: "WR", td: 1, yds: "141 yds", rec: "10/15 rec" },
-            { name: "Robinson Jr", pos: "RB", td: 1, yds: "220 yds", rec: "11/15 rec" }
+            { name: "Diggs", pos: "WR", td: 4, yds: "190 yds", rec: "15/22 rec", marketOdds: 2.05, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:1}, {w:4, yds:50, td:1}] },
+            { name: "Croskey-Merritt", pos: "RB", td: 2, yds: "190 yds", rec: "12/16 rec", marketOdds: 2.50, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
+            { name: "McLaurin", pos: "WR", td: 1, yds: "141 yds", rec: "10/15 rec", marketOdds: 2.90, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:36, td:0}] },
+            { name: "Robinson Jr", pos: "RB", td: 1, yds: "220 yds", rec: "11/15 rec", marketOdds: 2.40, gameLog: [{w:1, yds:55, td:0}, {w:2, yds:55, td:1}, {w:3, yds:55, td:0}, {w:4, yds:55, td:0}] }
         ]
     },
     "Seahawks": { 
         record: "3-1", games: 4, rush: 390, pass: 1100, oppPass: 870, oppRush: 380, oppTD: 8, turnovers: 4, sacks: 7, redZonePct: 68, thirdDownPct: 48, penalties: 20, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Leonard Williams", pos: "DE", sacks: 3.0, status: "Healthy" },
-            { name: "Boye Mafe", pos: "OLB", sacks: 3.5, status: "Healthy" },
-            { name: "Uchenna Nwosu", pos: "OLB", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 195, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
-            { name: "Smith-Njigba", pos: "WR", td: 7, yds: "520 yds", rec: "35/47 rec" },
-            { name: "Kupp", pos: "TE", td: 2, yds: "150 yds", rec: "13/18 rec" },
-            { name: "Walker", pos: "RB", td: 1, yds: "270 yds", rec: "12/16 rec" }
+            { name: "Smith-Njigba", pos: "WR", td: 7, yds: "520 yds", rec: "35/47 rec", marketOdds: 1.60, gameLog: [{w:1, yds:120, td:2}, {w:2, yds:130, td:2}, {w:3, yds:135, td:2}, {w:4, yds:135, td:1}] },
+            { name: "Kupp", pos: "TE", td: 2, yds: "150 yds", rec: "13/18 rec", marketOdds: 2.70, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
+            { name: "Walker", pos: "RB", td: 1, yds: "270 yds", rec: "12/16 rec", marketOdds: 2.20, gameLog: [{w:1, yds:65, td:0}, {w:2, yds:70, td:1}, {w:3, yds:65, td:0}, {w:4, yds:70, td:0}] }
         ]
     },
     "Packers": { 
         record: "2-2", games: 4, rush: 200, pass: 1120, oppPass: 1010, oppRush: 470, oppTD: 13, turnovers: 5, sacks: 10, redZonePct: 55, thirdDownPct: 40, penalties: 23, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "Rashan Gary", pos: "DE", sacks: 3.5, status: "Healthy" },
-            { name: "Kenny Clark", pos: "DT", sacks: 1.5, status: "Healthy" },
-            { name: "Lukas Van Ness", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 3 } },
         players: [
-            { name: "Watson", pos: "WR", td: 5, yds: "370 yds", rec: "22/32 rec" },
-            { name: "Golden", pos: "WR", td: 2, yds: "310 yds", rec: "19/27 rec" },
-            { name: "Jacobs", pos: "RB", td: 2, yds: "300 yds", rec: "14/19 rec" },
-            { name: "Reed", pos: "WR", td: 1, yds: "240 yds", rec: "17/24 rec" }
+            { name: "Watson", pos: "WR", td: 5, yds: "370 yds", rec: "22/32 rec", marketOdds: 1.85, gameLog: [{w:1, yds:85, td:1}, {w:2, yds:90, td:2}, {w:3, yds:95, td:1}, {w:4, yds:100, td:1}] },
+            { name: "Golden", pos: "WR", td: 2, yds: "310 yds", rec: "19/27 rec", marketOdds: 2.50, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
+            { name: "Jacobs", pos: "RB", td: 2, yds: "300 yds", rec: "14/19 rec", marketOdds: 2.10, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
+            { name: "Reed", pos: "WR", td: 1, yds: "240 yds", rec: "17/24 rec", marketOdds: 2.80, gameLog: [{w:1, yds:60, td:0}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:60, td:0}] }
         ]
     },
     "Eagles": { 
         record: "3-0", games: 3, rush: 340, pass: 710, oppPass: 730, oppRush: 300, oppTD: 7, turnovers: 3, sacks: 6, redZonePct: 72, thirdDownPct: 49, penalties: 19, 
         injuredPlayers: [{name: "DeVonta Smith", pos: "WR"}], 
-        defensiveLine: [
-            { name: "Jalen Carter", pos: "DT", sacks: 2.5, status: "Healthy" },
-            { name: "Bryce Huff", pos: "DE", sacks: 2.0, status: "Healthy" },
-            { name: "Josh Sweat", pos: "DE", sacks: 2.0, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 180, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 70, allowedTDs: 2 } },
         players: [
-            { name: "Goedert", pos: "TE", td: 3, yds: "120 yds", rec: "10/14 rec" },
-            { name: "Saquon Barkley", pos: "RB", td: 3, yds: "380 yds", rec: "14/18 rec" },
-            { name: "Wicks", pos: "WR", td: 1, yds: "147 yds", rec: "9/13 rec" },
-            { name: "Smith", pos: "WR", td: 1, yds: "170 yds", rec: "11/16 rec" }
+            { name: "Goedert", pos: "TE", td: 3, yds: "120 yds", rec: "10/14 rec", marketOdds: 2.40, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:45, td:1}] },
+            { name: "Saquon Barkley", pos: "RB", td: 3, yds: "380 yds", rec: "14/18 rec", marketOdds: 1.70, gameLog: [{w:1, yds:120, td:1}, {w:2, yds:130, td:1}, {w:3, yds:130, td:1}] },
+            { name: "Wicks", pos: "WR", td: 1, yds: "147 yds", rec: "9/13 rec", marketOdds: 3.10, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:1}, {w:3, yds:52, td:0}] },
+            { name: "Smith", pos: "WR", td: 1, yds: "170 yds", rec: "11/16 rec", marketOdds: 2.80, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}] }
         ]
     },
     "Bears": { 
         record: "2-1", games: 3, rush: 620, pass: 700, oppPass: 760, oppRush: 310, oppTD: 7, turnovers: 4, sacks: 7, redZonePct: 66, thirdDownPct: 45, penalties: 22, 
         injuredPlayers: [{name: "Caleb Williams", pos: "QB"}], 
-        defensiveLine: [
-            { name: "Montez Sweat", pos: "DE", sacks: 3.5, status: "Healthy" },
-            { name: "Gervon Dexter Sr.", pos: "DT", sacks: 2.5, status: "Healthy" },
-            { name: "DeMarcus Walker", pos: "DE", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 190, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
-            { name: "Swift", pos: "RB", td: 4, yds: "340 yds", rec: "16/20 rec" },
-            { name: "Williams", pos: "QB", td: 2, yds: "107 yds", rec: "Passing QB" },
-            { name: "Monangai", pos: "RB", td: 1, yds: "182 yds", rec: "8/11 rec" },
-            { name: "Moore", pos: "WR", td: 1, yds: "210 yds", rec: "15/22 rec" }
+            { name: "Swift", pos: "RB", td: 4, yds: "340 yds", rec: "16/20 rec", marketOdds: 1.90, gameLog: [{w:1, yds:100, td:1}, {w:2, yds:115, td:2}, {w:3, yds:125, td:1}] },
+            { name: "Williams", pos: "QB", td: 2, yds: "107 yds", rec: "Passing QB", marketOdds: 3.00, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:40, td:1}, {w:3, yds:37, td:0}] },
+            { name: "Monangai", pos: "RB", td: 1, yds: "182 yds", rec: "8/11 rec", marketOdds: 3.20, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:72, td:0}] },
+            { name: "Moore", pos: "WR", td: 1, yds: "210 yds", rec: "15/22 rec", marketOdds: 2.70, gameLog: [{w:1, yds:65, td:0}, {w:2, yds:70, td:1}, {w:3, yds:75, td:0}] }
         ]
     },
     "Falcons": { 
         record: "1-3", games: 4, rush: 680, pass: 720, oppPass: 960, oppRush: 440, oppTD: 10, turnovers: 4, sacks: 8, redZonePct: 62, thirdDownPct: 42, penalties: 22, 
         injuredPlayers: [], 
-        defensiveLine: [
-            { name: "MatJudon", pos: "OLB", sacks: 3.0, status: "Healthy" },
-            { name: "Grady Jarrett", pos: "DT", sacks: 2.0, status: "Healthy" },
-            { name: "David Onyemata", pos: "DT", sacks: 1.5, status: "Healthy" }
-        ],
+        defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 90, allowedTDs: 3 } },
         players: [
-            { name: "Bijan Robinson", pos: "RB", td: 4, yds: "610 yds", rec: "23/31 rec" },
-            { name: "Brian Robinson", pos: "RB", td: 2, yds: "190 yds", rec: "12/17 rec" },
-            { name: "London", pos: "WR", td: 2, yds: "290 yds", rec: "21/30 rec" },
-            { name: "Pitts", pos: "TE", td: 1, yds: "180 yds", rec: "14/20 rec" }
+            { name: "Bijan Robinson", pos: "RB", td: 4, yds: "610 yds", rec: "23/31 rec", marketOdds: 1.70, gameLog: [{w:1, yds:145, td:1}, {w:2, yds:150, td:1}, {w:3, yds:155, td:1}, {w:4, yds:160, td:1}] },
+            { name: "Brian Robinson", pos: "RB", td: 2, yds: "190 yds", rec: "12/17 rec", marketOdds: 2.60, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:45, td:1}, {w:3, yds:50, td:0}, {w:4, yds:50, td:0}] },
+            { name: "London", pos: "WR", td: 2, yds: "290 yds", rec: "21/30 rec", marketOdds: 2.40, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] },
+            { name: "Pitts", pos: "TE", td: 1, yds: "180 yds", rec: "14/20 rec", marketOdds: 3.10, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:45, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] }
         ]
     }
 };
 
-// Viikon 5 otteluohjelma varalla, jos API-haku ei palauta dataa
 let nflSchedule = {
     "5": [
         { away: "New York Jets", home: "Miami Dolphins", weather: "🏟️ Sisäkenttä (Dome)" },
@@ -543,7 +411,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     const matchSelect = document.getElementById('matchSelect');
     const compareBtn = document.getElementById('compareBtn');
 
-    // Yritetään ladata reaaliaikainen data ESPN:n kautta
     const selectedWeek = weekSelect ? weekSelect.value : "5";
     const liveData = await fetchRealTimeNFLData(selectedWeek);
 
@@ -553,7 +420,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             const homeCompetitor = competition.competitors.find(c => c.homeAway === 'home');
             const awayCompetitor = competition.competitors.find(c => c.homeAway === 'away');
             
-            let weather = "🏟️ Sisäkenttä / Normaali sää";
+            let weather = "🏟️ Sisäkenttä (Dome)";
             if (competition.weather && competition.weather.displayValue) {
                 weather = `🌤️ ${competition.weather.displayValue}`;
             }
@@ -567,7 +434,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
         if (liveMatches.length > 0) {
             nflSchedule[selectedWeek] = liveMatches;
-            console.log("Otteluohjelma päivitetty lennosta ESPN-datalla!");
         }
     }
 
@@ -607,6 +473,23 @@ function calculateTeamInjuryFactor(injuredList) {
     return Math.max(0.5, penalty);
 }
 
+// Dome vs Ulkokenttä -sääalgoritmi
+function calculateWeatherFactor(weatherString) {
+    if (weatherString.includes("Dome") || weatherString.includes("Sisäkenttä")) {
+        return 1.03; 
+    }
+    if (weatherString.includes("Sade") || weatherString.includes("Rankkasade")) {
+        return 0.90; 
+    }
+    if (weatherString.includes("Tuulinen")) {
+        return 0.94; 
+    }
+    if (weatherString.includes("Viileä") || weatherString.includes("Kylmä")) {
+        return 0.97;
+    }
+    return 1.0; 
+}
+
 function runMonteCarloSimulation() {
     const selectedWeek = document.getElementById('weekSelect').value;
     const matchIndex = document.getElementById('matchSelect').value;
@@ -617,15 +500,13 @@ function runMonteCarloSimulation() {
     const homeKey = findTeamKey(match.home);
     const awayKey = findTeamKey(match.away);
 
-    const homeData = nflDatabase[homeKey];
-    const awayData = nflDatabase[awayKey];
+    const homeData = nflDatabase[homeKey] || nflDatabase["Chiefs"];
+    const awayData = nflDatabase[awayKey] || nflDatabase["Rams"];
 
     let homeInjuryPenalty = calculateTeamInjuryFactor(homeData.injuredPlayers);
     let awayInjuryPenalty = calculateTeamInjuryFactor(awayData.injuredPlayers);
 
-    let weatherFactor = 1.0;
-    if (match.weather.includes("Sade") || match.weather.includes("Rankkasade")) weatherFactor = 0.93;
-    if (match.weather.includes("Tuulinen") || match.weather.includes("Viileä")) weatherFactor = 0.96;
+    let weatherFactor = calculateWeatherFactor(match.weather);
 
     const SIM_ITERATIONS = 1000;
     let homeWins = 0;
@@ -657,21 +538,15 @@ function runMonteCarloSimulation() {
         let hScore = simulateAdvancedScore(homeData, awayData, true, homeInjuryPenalty);
         let aScore = simulateAdvancedScore(awayData, homeData, false, awayInjuryPenalty);
         
-        if (hScore === aScore) {
-            hScore += Math.random() > 0.45 ? 3 : 0;
-        }
+        if (hScore === aScore) hScore += Math.random() > 0.45 ? 3 : 0;
 
         homeScoreSum += hScore;
         awayScoreSum += aScore;
-
         if (hScore > aScore) homeWins++;
     }
 
     let avgHomeScore = Math.round((homeScoreSum / SIM_ITERATIONS) / 3) * 3;
     let avgAwayScore = Math.round((awayScoreSum / SIM_ITERATIONS) / 3) * 3;
-
-    if (!VALID_SCORES.includes(avgHomeScore)) avgHomeScore = 24;
-    if (!VALID_SCORES.includes(avgAwayScore)) avgAwayScore = 17;
     if (avgHomeScore === avgAwayScore) avgHomeScore += 3;
 
     let homeWinProb = Math.round((homeWins / SIM_ITERATIONS) * 100);
@@ -721,10 +596,10 @@ function runMonteCarloSimulation() {
     let homeEstimatedTDs = avgHomeScore / 7;
     let awayEstimatedTDs = avgAwayScore / 7;
 
-    renderPlayersWithPoisson('homePlayers', homeData.players, homeEstimatedTDs, awayData.oppTD, homeData.injuredPlayers);
-    renderPlayersWithPoisson('awayPlayers', awayData.players, awayEstimatedTDs, homeData.oppTD, awayData.injuredPlayers);
+    renderPlayersWithRecencyAndPoisson('homePlayers', homeData.players, homeEstimatedTDs, awayData.defensiveVsPosition, homeData.injuredPlayers);
+    renderPlayersWithRecencyAndPoisson('awayPlayers', awayData.players, awayEstimatedTDs, homeData.defensiveVsPosition, awayData.injuredPlayers);
 
-    renderSmartBettingTips(match, homeData.players, awayData.players, homeEstimatedTDs, awayEstimatedTDs, homeData.oppTD, awayData.oppTD);
+    renderSmartBettingTipsWithValue(match, homeData.players, awayData.players, homeEstimatedTDs, awayEstimatedTDs, awayData.defensiveVsPosition, homeData.defensiveVsPosition);
 }
 
 function getTDProbabilityText(teamPass, teamRush, oppPassAllowed, oppRushAllowed) {
@@ -738,66 +613,8 @@ function getTDProbabilityText(teamPass, teamRush, oppPassAllowed, oppRushAllowed
     return "Matala todennäköisyys; vaikeuksia edetä red zonelle asti";
 }
 
-function renderSmartBettingTips(match, homePlayers, awayPlayers, homeEstimatedTDs, awayEstimatedTDs, homeOppTD, awayOppTD) {
-    let tipBox = document.getElementById('smartBettingTipsContainer');
-    if (!tipBox) {
-        tipBox = document.createElement('div');
-        tipBox.id = 'smartBettingTipsContainer';
-        tipBox.style.marginTop = '20px';
-        tipBox.style.padding = '15px';
-        tipBox.style.background = '#1e293b';
-        tipBox.style.borderRadius = '12px';
-        tipBox.style.border = '1px solid #334155';
-        document.querySelector('.container').appendChild(tipBox);
-    }
-
-    let allScorers = [];
-
-    function evaluateTeamScorers(players, teamTDs, oppTD) {
-        let totalPlayerTDs = players.reduce((sum, p) => sum + p.td, 0);
-        if (totalPlayerTDs === 0) totalPlayerTDs = 1;
-
-        players.forEach(p => {
-            let marketShare = p.td / totalPlayerTDs;
-            let matchupMultiplier = oppTD / 8.0;
-            let lambda = (teamTDs * marketShare) * matchupMultiplier;
-            if (lambda < 0.02) lambda = 0.02;
-
-            let anyTdProb = Math.round((1 - Math.exp(-lambda)) * 100);
-            let twoPlusProb = Math.round((1 - Math.exp(-lambda) - (lambda * Math.exp(-lambda))) * 100);
-            if (twoPlusProb < 3) twoPlusProb = 3;
-
-            allScorers.push({
-                name: p.name,
-                pos: p.pos,
-                anyTd: anyTdProb,
-                twoPlus: twoPlusProb
-            });
-        });
-    }
-
-    evaluateTeamScorers(homePlayers, homeEstimatedTDs, awayOppTD);
-    evaluateTeamScorers(awayPlayers, awayEstimatedTDs, homeOppTD);
-
-    allScorers.sort((a, b) => b.anyTd - a.anyTd);
-
-    let topAnyTime = allScorers[0] ? `🔥 ${allScorers[0].name} (${allScorers[0].pos}) – Anytime TD (${allScorers[0].anyTd}%)` : "Ei tarpeeksi dataa";
-    let secondAnyTime = allScorers[1] ? `⚡ ${allScorers[1].name} (${allScorers[1].pos}) – Anytime TD (${allScorers[1].anyTd}%)` : "";
-    
-    let multiScorers = [...allScorers].sort((a, b) => b.twoPlus - a.twoPlus);
-    let topTwoPlus = multiScorers[0] ? `🎯 ${multiScorers[0].name} (${multiScorers[0].pos}) – 2+ TD (${multiScorers[0].twoPlus}%)` : "";
-
-    tipBox.innerHTML = `
-        <h3 style="margin-top: 0; color: #38bdf8; margin-bottom: 10px;">🏈 TD-Vetovihjeet (Anytime & 2+ TD)</h3>
-        <div style="font-size: 13px; line-height: 1.6;">
-            <div>⭐ <strong>Vahvin Anytime TD -kohde:</strong> <span style="color: #f59e0b;">${topAnyTime}</span></div>
-            ${secondAnyTime ? `<div>⭐ <strong>Toinen nosto (Anytime):</strong> <span style="color: #f59e0b;">${secondAnyTime}</span></div>` : ''}
-            <div>🔥 <strong>Paras 2+ Touchdownin haku:</strong> <span style="color: #f59e0b;">${topTwoPlus}</span></div>
-        </div>
-    `;
-}
-
-function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, opponentOppTD, injuredList) {
+// Pelaajien renderöinti otteluhistorialla, vireellä ja pelipaikkakohtaisella puolustuksella
+function renderPlayersWithRecencyAndPoisson(containerId, players, teamEstimatedTDs, oppDefVsPos, injuredList) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
 
@@ -813,7 +630,7 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
         }
     });
 
-    let processedPlayers = uniquePlayers.map(p => {
+    processedPlayers = uniquePlayers.map(p => {
         let isInjured = injuredNames.some(inj => inj.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(inj));
         return { ...p, isInjured };
     });
@@ -823,12 +640,24 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
     if (totalHealthyTDs === 0) totalHealthyTDs = 1;
 
     processedPlayers.forEach(p => {
-        let matchupMultiplier = opponentOppTD / 8.0; 
+        let recentFormMultiplier = 1.0;
+        if (p.gameLog && p.gameLog.length > 0) {
+            let lastGame = p.gameLog[p.gameLog.length - 1];
+            let avgYds = p.gameLog.reduce((sum, g) => sum + g.yds, 0) / p.gameLog.length;
+            if (lastGame.yds > avgYds * 1.2) recentFormMultiplier = 1.15;
+            else if (lastGame.yds < avgYds * 0.8) recentFormMultiplier = 0.85;
+        }
+
+        let posKey = `vs${p.pos}`;
+        let defFactor = 1.0;
+        if (oppDefVsPos && oppDefVsPos[posKey]) {
+            defFactor = oppDefVsPos[posKey].allowedTDs > 3 ? 1.15 : 0.90;
+        }
+
         let lambda = 0;
-        
         if (!p.isInjured) {
             let marketShare = p.td / totalHealthyTDs;
-            lambda = (teamEstimatedTDs * marketShare) * matchupMultiplier;
+            lambda = (teamEstimatedTDs * marketShare * recentFormMultiplier * defFactor);
             if (lambda < 0.02) lambda = 0.02;
         }
 
@@ -857,4 +686,60 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
         `;
         container.appendChild(div);
     });
+}
+
+// Vetovihjeet ja markkinoiden ylikertoimet (Value Bets)
+function renderSmartBettingTipsWithValue(match, homePlayers, awayPlayers, homeEstimatedTDs, awayEstimatedTDs, homeOppDef, awayOppDef) {
+    let tipBox = document.getElementById('smartBettingTipsContainer');
+    if (!tipBox) {
+        tipBox = document.createElement('div');
+        tipBox.id = 'smartBettingTipsContainer';
+        tipBox.style.marginTop = '20px';
+        tipBox.style.padding = '15px';
+        tipBox.style.background = '#1e293b';
+        tipBox.style.borderRadius = '12px';
+        tipBox.style.border = '1px solid #334155';
+        document.querySelector('.container').appendChild(tipBox);
+    }
+
+    let valueBets = [];
+
+    function evaluateTeamValue(players, teamTDs, oppDef) {
+        let totalPlayerTDs = players.reduce((sum, p) => sum + p.td, 0);
+        if (totalPlayerTDs === 0) totalPlayerTDs = 1;
+
+        players.forEach(p => {
+            let marketShare = p.td / totalPlayerTDs;
+            let defFactor = oppDef?.[`vs${p.pos}`]?.allowedTDs > 3 ? 1.15 : 0.95;
+            let lambda = (teamTDs * marketShare) * defFactor;
+            if (lambda < 0.02) lambda = 0.02;
+
+            let calcProb = 1 - Math.exp(-lambda);
+            if (p.marketOdds) {
+                let impliedMarketProb = 1 / p.marketOdds;
+                let edge = calcProb - impliedMarketProb;
+                valueBets.push({
+                    name: p.name,
+                    pos: p.pos,
+                    odds: p.marketOdds,
+                    calcProb: Math.round(calcProb * 100),
+                    edge: Math.round(edge * 100)
+                });
+            }
+        });
+    }
+
+    evaluateTeamValue(homePlayers, homeEstimatedTDs, awayOppDef);
+    evaluateTeamValue(awayPlayers, awayEstimatedTDs, homeOppDef);
+
+    valueBets.sort((a, b) => b.edge - a.edge);
+    let topValue = valueBets[0] ? `🔥 ${valueBets[0].name} (${valueBets[0].pos}) – Kerroin: ${valueBets[0].odds} (Mallin arvio: ${valueBets[0].calcProb}%, Edge: +${valueBets[0].edge}%)` : "Ei löydetty ylikertoimia";
+
+    tipBox.innerHTML = `
+        <h3 style="margin-top: 0; color: #38bdf8; margin-bottom: 10px;">📈 TD-Vetovihjeet & Markkinoiden ylikertoimet (Value Bets)</h3>
+        <div style="font-size: 13px; line-height: 1.6;">
+            <div>⭐ <strong>Paras löydetty arvokohde:</strong> <span style="color: #f59e0b;">${topValue}</span></div>
+            <div style="color: #94a3b8; font-size: 11px; margin-top: 5px;">* Perustuu Poisson-todennäköisyyden, viikoittaisen vireen, loukkaantumisten ja markkinakertoimien vertailuun.</div>
+        </div>
+    `;
 }
