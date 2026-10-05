@@ -781,7 +781,9 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
         div.innerHTML = `
             <div>
                 <strong>${p.name} (${p.pos})</strong> ${p.isInjured ? '<span style="color: #f87171; font-size: 11px; font-weight: bold;">(OUT 🚑)</span>' : ''}
-                <span>${p.yds} | Rec: <strong>${p.rec}</strong></span>
+                <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+                    <span style="color: #38bdf8; font-weight: bold;">${p.td} TD</span> | ${p.yds} | Rec: <strong>${p.rec}</strong>
+                </div>
             </div>
             <div class="odd-badge" style="${p.isInjured ? 'background: #7f1d1d; border-color: #ef4444;' : ''}">
                 <span>1+ TD</span>
