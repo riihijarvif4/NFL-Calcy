@@ -1,3 +1,36 @@
+// Funktio, joka hakee reaaliaikaisen NFL-datan ilmaiseksi ESPN:n rajapinnasta
+async function fetchRealTimeNFLData(weekNumber = 5) {
+    const cacheKey = `nfl_data_week_${weekNumber}_2026`;
+    const cachedData = localStorage.getItem(cacheKey);
+    
+    // Tarkistetaan onko data haettu tänään (välimuisti)
+    if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        // Jos data on alle 24h vanhaa, käytetään sitä suoraan
+        if (new Date().getTime() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+            console.log("Ladattu tiedot selaimen muistista (cache)");
+            return parsed.data;
+        }
+    }
+
+    try {
+        console.log("Haetaan tuoretta dataa ESPN:n rajapinnasta...");
+        const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${weekNumber}`);
+        const data = await response.json();
+        
+        // Tallennetaan välimuistiin
+        localStorage.setItem(cacheKey, JSON.stringify({
+            timestamp: new Date().getTime(),
+            data: data
+        }));
+
+        return data;
+    } catch (error) {
+        console.error("Virhe verkkoyhteydessä, käytetään varakantaa:", error);
+        return null;
+    }
+}
+
 // TuhtiMonnin MuhditTonnit - Päivitetty ja täydennetty NFL-tietokanta (Viikko 5, Kausi 2026)
 const nflDatabase = {
     "Rams": { 
