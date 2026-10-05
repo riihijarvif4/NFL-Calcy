@@ -199,7 +199,7 @@ const nflSchedule = {
         { away: "Baltimore Ravens", home: "Houston Texans", weather: "🏟️ Sisäkenttä (Dome)" },
         { away: "Carolina Panthers", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
         { away: "Minnesota Vikings", home: "Cleveland Browns", weather: "🌧️ Sade (10°C)" },
-        { away: "New England Patriots", home: "Denver Broncos", weather: "☀️️ Poutainen (14°C)" },
+        { away: "New England Patriots", home: "Denver Broncos", weather: "☀ Poutainen (14°C)" },
         { away: "Philadelphia Eagles", home: "New York Giants", weather: "❄️ Viileä (6°C)" },
         { away: "Green Bay Packers", home: "Los Angeles Rams", weather: "☀️ Aurinkoinen (20°C)" },
         { away: "Las Vegas Raiders", home: "Washington Commanders", weather: "🌧️ Kevyt sade (12°C)" },
@@ -447,44 +447,8 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
     const container = document.getElementById(containerId);
     container.innerHTML = '';
 
-    let injuredNames = injuredList.map(i => i.name);
-    let totalPlayerTDs = players.reduce((sum, p) => sum + p.td, 0);
-    if (totalPlayerTDs === 0) totalPlayerTDs = 1;
-
-    players.forEach(p => {
-        let isInjured = injuredNames.includes(p.name);
-        let marketShare = p.td / totalPlayerTDs;
-        let matchupMultiplier = opponentOppTD / 8.0; 
-        let lambda = (teamEstimatedTDs * marketShare) * matchupMultiplier;
-        
-        if (isInjured) lambda = 0; 
-        if (lambda < 0.02 && !isInjured) lambda = 0.02;
-
-        let probability = 1 - Math.exp(-lambda);
-        let tdProbPercent = Math.round(probability * 100);
-
-        const div = document.createElement('div');
-        div.className = 'player-row';
-        div.innerHTML = `
-            <div>
-                <strong>${p.name} (${p.pos})</strong> ${isInjured ? '<span style="color: #f87171; font-size: 11px;">(OUT 🚑)</span>' : ''}
-                <span>${p.yds} | Rec: <strong>${p.rec}</strong></span>
-            </div>
-            <div class="odd-badge">
-                <span>1+ TD</span>
-                <strong>${tdProbPercent}%</strong>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, opponentOppTD, injuredList) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
     let injuredNames = injuredList.map(i => i.name.toLowerCase());
     
-    // Siivotaan tuplapelaajat pois nimen perusteella
     let uniquePlayers = [];
     let seenNames = new Set();
     players.forEach(p => {
@@ -495,94 +459,26 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
         }
     });
 
-    let totalPlayerTDs = uniquePlayers.reduce((sum, p) => sum + p.td, 0);
-    if (totalPlayerTDs === 0) totalPlayerTDs = 1;
-
-    uniquePlayers.forEach(p => {
-        // Tarkistetaan loukkaantuminen joustavammin (esim. jos listassa on pelkkä sukunimi tai koko nimi)
-        let isInjured = injuredNames.some(inj => inj.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(inj));
-        
-        let marketShare = p.td / totalPlayerTDs;
-        let matchupMultiplier = opponentOppTD / 8.0; 
-        let lambda = (teamEstimatedTDs * marketShare) * matchupMultiplier;
-        
-        if (isInjured) lambda = 0; 
-        if (lambda < 0.02 && !isInjured) lambda = 0.02;
-
-        let probability = 1 - Math.exp(-lambda);
-        let tdProbPercent = Math.round(probability * 100);
-
-        const div = document.createElement('div');
-        div.className = 'player-row';
-        
-        // Jos pelaaja on loukkaantunut, tehdään rivistä ja badge-laatikosta punainen
-        if (isInjured) {
-            div.style.borderColor = '#ef4444';
-            div.style.backgroundColor = '#450a0a';
-        }
-
-        div.innerHTML = `
-            <div>
-                <strong>${p.name} (${p.pos})</strong> ${isInjured ? '<span style="color: #f87171; font-size: 11px; font-weight: bold;">(OUT 🚑)</span>' : ''}
-                <span>${p.yds} | Rec: <strong>${p.rec}</strong></span>
-            </div>
-            <div class="odd-badge" style="${isInjured ? 'background: #7f1d1d; border-color: #ef4444;' : ''}">
-                <span>1+ TD</span>
-                <strong style="${isInjured ? 'color: #fca5a5;' : ''}">${isInjured ? 'OUT' : tdProbPercent + '%'}</strong>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, opponentOppTD, injuredList) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
-    let injuredNames = injuredList.map(i => i.name.toLowerCase());
-    
-    // Siivotaan tuplapelaajat pois nimen perusteella
-    let uniquePlayers = [];
-    let seenNames = new Set();
-    players.forEach(p => {
-        let cleanName = p.name.trim();
-        if (!seenNames.has(cleanName)) {
-            seenNames.add(cleanName);
-            uniquePlayers.push(p);
-        }
-    });
-
-    // Tarkistetaan ketkä ovat loukkaantuneita ja ketkä terveitä
     let processedPlayers = uniquePlayers.map(p => {
         let isInjured = injuredNames.some(inj => inj.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(inj));
         return { ...p, isInjured };
     });
 
-    // Lasketaan yhteis-TD:t vain terveiltä pelaajilta, jotta poissaolijoiden osuus saadaan jaettua heille
     let healthyPlayers = processedPlayers.filter(p => !p.isInjured);
     let totalHealthyTDs = healthyPlayers.reduce((sum, p) => sum + p.td, 0);
     if (totalHealthyTDs === 0) totalHealthyTDs = 1;
 
-    // Jos kaikki ovat loukkaantuneena (äätilanne), turvataan jako
-    let baseTotalTDs = processedPlayers.reduce((sum, p) => sum + p.td, 0);
-    if (baseTotalTDs === 0) baseTotalTDs = 1;
-
     processedPlayers.forEach(p => {
-        let marketShare = 0;
+        let matchupMultiplier = opponentOppTD / 8.0; 
+        let lambda = 0;
         
         if (!p.isInjured) {
-            // Jos pelaaja on terve, hänen osuutensa kasvaa, koska loukkaantuneiden osuus jaetaan terveille
-            let healthyShare = p.td / totalHealthyTDs;
-            let injuryBoostFactor = baseTotalTDs / Math.max(1, healthyPlayers.reduce((sum, hp) => sum + hp.td, 0));
-            marketShare = healthyShare; 
+            let marketShare = p.td / totalHealthyTDs;
+            lambda = (teamEstimatedTDs * marketShare) * matchupMultiplier;
+            if (lambda < 0.02) lambda = 0.02;
         }
 
-        let matchupMultiplier = opponentOppTD / 8.0; 
-        let lambda = (teamEstimatedTDs * (p.isInjured ? 0 : (p.td / totalHealthyTDs))) * matchupMultiplier;
-        
-        if (p.isInjured) lambda = 0; 
-        if (lambda < 0.02 && !p.isInjured) lambda = 0.02;
-
-        let probability = 1 - Math.exp(-lambda);
+        let probability = p.isInjured ? 0 : (1 - Math.exp(-lambda));
         let tdProbPercent = Math.round(probability * 100);
 
         const div = document.createElement('div');
@@ -606,4 +502,3 @@ function renderPlayersWithPoisson(containerId, players, teamEstimatedTDs, oppone
         container.appendChild(div);
     });
 }
-
