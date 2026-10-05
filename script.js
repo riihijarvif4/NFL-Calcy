@@ -3,19 +3,24 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
     const cacheKey = `nfl_data_week_${weekNumber}_2026`;
     const cachedData = localStorage.getItem(cacheKey);
     
-    // Tarkistetaan onko data haettu tänään (välimuisti)
+    // Tarkistetaan onko data haettu viimeisen 24h aikana (välimuisti)
     if (cachedData) {
-        const parsed = JSON.parse(cachedData);
-        // Jos data on alle 24h vanhaa, käytetään sitä suoraan
-        if (new Date().getTime() - parsed.timestamp < 24 * 60 * 60 * 1000) {
-            console.log("Ladattu tiedot selaimen muistista (cache)");
-            return parsed.data;
+        try {
+            const parsed = JSON.parse(cachedData);
+            if (new Date().getTime() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+                console.log("Ladattu otteluohjelma selaimen muistista (cache)");
+                return parsed.data;
+            }
+        } catch (e) {
+            console.error("Virhe välimuistin luvussa:", e);
         }
     }
 
     try {
-        console.log("Haetaan tuoretta dataa ESPN:n rajapinnasta...");
+        console.log("Haetaan tuoretta otteludataa ESPN:n rajapinnasta...");
         const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${weekNumber}`);
+        if (!response.ok) throw new Error("Verkkovastaus ei ollut kunnossa");
+        
         const data = await response.json();
         
         // Tallennetaan välimuistiin
@@ -26,7 +31,7 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
 
         return data;
     } catch (error) {
-        console.error("Virhe verkkoyhteydessä, käytetään varakantaa:", error);
+        console.error("Virhe verkkoyhteydessä, käytetään staattista varakantaa:", error);
         return null;
     }
 }
@@ -513,9 +518,8 @@ const nflDatabase = {
     }
 };
 
-
-// Viikon 5 otteluohjelma simulaatioita varten
-const nflSchedule = {
+// Viikon 5 otteluohjelma varalla, jos API-haku ei palauta dataa
+let nflSchedule = {
     "5": [
         { away: "New York Jets", home: "Miami Dolphins", weather: "🏟️ Sisäkenttä (Dome)" },
         { away: "Baltimore Ravens", home: "Houston Texans", weather: "🏟️ Sisäkenttä (Dome)" },
@@ -534,15 +538,43 @@ const nflSchedule = {
 
 const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 31, 34, 35, 38, 41, 42];
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     const weekSelect = document.getElementById('weekSelect');
     const matchSelect = document.getElementById('matchSelect');
     const compareBtn = document.getElementById('compareBtn');
 
+    // Yritetään ladata reaaliaikainen data ESPN:n kautta
+    const selectedWeek = weekSelect ? weekSelect.value : "5";
+    const liveData = await fetchRealTimeNFLData(selectedWeek);
+
+    if (liveData && liveData.events && liveData.events.length > 0) {
+        const liveMatches = liveData.events.map(event => {
+            const competition = event.competitions[0];
+            const homeCompetitor = competition.competitors.find(c => c.homeAway === 'home');
+            const awayCompetitor = competition.competitors.find(c => c.homeAway === 'away');
+            
+            let weather = "🏟️ Sisäkenttä / Normaali sää";
+            if (competition.weather && competition.weather.displayValue) {
+                weather = `🌤️ ${competition.weather.displayValue}`;
+            }
+
+            return {
+                away: awayCompetitor ? awayCompetitor.team.displayName : "Away Team",
+                home: homeCompetitor ? homeCompetitor.team.displayName : "Home Team",
+                weather: weather
+            };
+        });
+
+        if (liveMatches.length > 0) {
+            nflSchedule[selectedWeek] = liveMatches;
+            console.log("Otteluohjelma päivitetty lennosta ESPN-datalla!");
+        }
+    }
+
     function updateMatches() {
-        const selectedWeek = weekSelect.value;
+        const currentWeek = weekSelect.value;
         matchSelect.innerHTML = '';
-        const matches = nflSchedule[selectedWeek] || [];
+        const matches = nflSchedule[currentWeek] || [];
         
         matches.forEach((m, index) => {
             const opt = document.createElement('option');
@@ -553,9 +585,9 @@ window.addEventListener('DOMContentLoaded', () => {
         runMonteCarloSimulation();
     }
 
-    weekSelect.addEventListener('change', updateMatches);
-    matchSelect.addEventListener('change', runMonteCarloSimulation);
-    compareBtn.addEventListener('click', runMonteCarloSimulation);
+    if (weekSelect) weekSelect.addEventListener('change', updateMatches);
+    if (matchSelect) matchSelect.addEventListener('change', runMonteCarloSimulation);
+    if (compareBtn) compareBtn.addEventListener('click', runMonteCarloSimulation);
 
     updateMatches();
 });
