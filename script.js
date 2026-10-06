@@ -517,13 +517,13 @@ const nflDatabase = {
 
 let nflSchedule = {
     "5": [
-        { away: "New York Jets", home: "Miami Dolphins", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "Baltimore Ravens", home: "Houston Texans", weather: "🏟️️ Sisäkenttä (Dome)" },
+        { away: "New York Jets", home: "Miami Dolphins", weather: "🏟️️ Sisäkenttä (Dome)" },
+        { away: "Baltimore Ravens", home: "Houston Texans", weather: "🏟 Sisäkenttä (Dome)" },
         { away: "Carolina Panthers", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
         { away: "Minnesota Vikings", home: "Cleveland Browns", weather: "🌧️ Sade (10°C)" },
         { away: "New England Patriots", home: "Denver Broncos", weather: "☀ Poutainen (14°C)" },
         { away: "Philadelphia Eagles", home: "New York Giants", weather: "❄️ Viileä (6°C)" },
-        { away: "Green Bay Packers", home: "Los Angeles Rams", weather: "☀️ Aurinkoinen (20°C)" },
+        { away: "Green Bay Packers", home: "Los Angeles Rams", weather: "☀️️ Aurinkoinen (20°C)" },
         { away: "Las Vegas Raiders", home: "Washington Commanders", weather: "🌧️ Kevyt sade (12°C)" },
         { away: "Arizona Cardinals", home: "San Francisco 49ers", weather: "☀️ Kirkas (18°C)" },
         { away: "Kansas City Chiefs", home: "Jacksonville Jaguars", weather: "☀️ Puolipilvinen (22°C)" },
@@ -698,7 +698,7 @@ function runMonteCarloSimulation() {
     document.getElementById('awayTitle').innerText = `${match.away} (${awayData.record})`;
 
     document.getElementById('homeStats').innerHTML = `
-        🌤️️ <strong>Olosuhteet:</strong> ${match.weather}<br>
+        🌤 <strong>Olosuhteet:</strong> ${match.weather}<br>
         📊 <strong>Hyökkäys / peli:</strong> Heitto ${homePassPG} yds | Juoksu ${homeRushPG} yds<br>
         🛡 <strong>Vastustaja (${match.away}) päästää / peli:</strong> Heitto ${awayOppPassPG} yds | Juoksu ${awayOppRushPG} yds<br>
         ⚡ <strong>TD-arvio:</strong> <span style="color: #38bdf8;">${homeTDEval}</span>
@@ -740,7 +740,6 @@ function getTDProbabilityText(teamPass, teamRush, oppPassAllowed, oppRushAllowed
     return "Matala todennäköisyys; vaikeuksia edetä red zonelle asti";
 }
 
-// Päivitetty renderöinti, joka piirtää hyökkääjien lisäksi myös puolustuksen avainpelaajat ja säkkitodennäköisyydet
 function renderPlayersWithRecencyAndPoisson(containerId, players, defenders, teamEstimatedTDs, oppDefVsPos, injuredList) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
@@ -766,7 +765,6 @@ function renderPlayersWithRecencyAndPoisson(containerId, players, defenders, tea
     let totalHealthyTDs = healthyPlayers.reduce((sum, p) => sum + p.td, 0);
     if (totalHealthyTDs === 0) totalHealthyTDs = 1;
 
-    // Piirretään hyökkäyspelaajat
     processedPlayers.forEach(p => {
         let recentFormMultiplier = 1.0;
         if (p.gameLog && p.gameLog.length > 0) {
@@ -815,7 +813,6 @@ function renderPlayersWithRecencyAndPoisson(containerId, players, defenders, tea
         container.appendChild(div);
     });
 
-    // Lisätään puolustuksen avainpelaajat ja säkkitodennäköisyydet osio hyökkäyksen alle
     if (defenders && defenders.length > 0) {
         const defenseTitle = document.createElement('div');
         defenseTitle.className = 'players-section-title';
