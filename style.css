@@ -1,170 +1,108 @@
+/* --- Man Cave & NFL Sportsbook -teeman tyylit --- */
+
 :root {
-    --bg-dark: #090d16;
-    --bg-card: #131c31;
-    --card-bg: #1e293b;
-    --border-color: #334155;
-    --nfl-green: #0d2818;
-    --nfl-accent-green: #10b981;
-    --nfl-gold: #fbbf24;
-    --nfl-blue: #38bdf8;
-    --text-white: #f8fafc;
-    --text-muted: #94a3b8;
+    --nfl-dark-bg: #0b0f19;
+    --nfl-card-bg: #131c2e;
+    --nfl-card-border: #1e293b;
+    --nfl-neon-green: #10b981;
+    --nfl-neon-gold: #f59e0b;
+    --nfl-neon-blue: #38bdf8;
+    --nfl-accent-red: #ef4444;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--text-white);
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-    <div class="referee-stripe"></div>
-
+    background-color: var(--nfl-dark-bg);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+    color: #f8fafc;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Aidot NFL-tuomarin raidat yläreunaan */
-.referee-stripe {
-    height: 6px;
-    background: repeating-linear-gradient(45deg, #000, #000 10px, #fff 10px, #fff 20px);
-    border-bottom: 2px solid var(--nfl-gold);
+/* Pääkontti ja kortit */
+.container, .panel, #smartBettingTipsContainer {
+    background: var(--nfl-card-bg) !important;
+    border: 1px solid var(--nfl-card-border) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.03);
+    border-radius: 16px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.app-header {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    text-align: center;
-    padding: 1.5rem 1rem;
-    border-bottom: 2px solid var(--border-color);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
-
-.app-header h1 { 
-    margin: 0; 
-    font-size: 1.8rem; 
-    letter-spacing: 0.5px;
-    font-weight: 800;
-}
-.app-header h1 span { color: var(--nfl-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
-.app-header p { margin: 0.4rem 0 0; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-
-.main-container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
-
-.selection-panel {
+/* Pelaajarivit ja kortit interaktiivisiksi */
+.player-row {
+    background: rgba(19, 28, 46, 0.6);
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    background: var(--bg-card);
-    padding: 1.2rem;
-    border-radius: 14px;
-    border: 1px solid var(--border-color);
-    align-items: flex-end;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
 }
 
-.select-box { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 0.4rem; }
-.select-box label { font-size: 0.8rem; font-weight: 700; color: var(--nfl-gold); text-transform: uppercase; letter-spacing: 0.5px; }
-
-select {
-    padding: 0.75rem;
-    border-radius: 8px;
-    background: var(--bg-dark);
-    color: var(--text-white);
-    border: 1px solid var(--border-color);
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
+.player-row:hover {
+    transform: translateY(-2px);
+    border-color: var(--nfl-neon-blue);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
 }
-select:focus { border-color: var(--nfl-gold); }
 
-.btn-primary {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: #000;
-    font-weight: 800;
-    border: none;
-    padding: 0.75rem 1.5rem;
+/* Odd-badge (kertoimet ja todennäköisyydet) */
+.odd-badge {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
     border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.1s, filter 0.2s;
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+    padding: 6px 12px;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.odd-badge strong {
+    color: var(--nfl-neon-green);
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Ylikertoimet / Top Value Bets -laatikko */
+#smartBettingTipsContainer {
+    background: linear-gradient(145deg, #131c2e, #0f172a) !important;
+    border-left: 4px solid var(--nfl-neon-gold) !important;
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.1) !important;
+}
+
+#smartBettingTipsContainer h3 {
+    color: var(--nfl-neon-gold) !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}
-.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-.btn-primary:active { transform: translateY(0); }
-
-.h2h-container {
-    display: grid;
-    grid-template-columns: 1fr 280px 1fr;
-    gap: 1.2rem;
+    font-size: 15px;
 }
 
-@media (max-width: 950px) {
-    .h2h-container { grid-template-columns: 1fr; }
+/* Valikot ja napit (Dropdownit & Buttons) */
+select, button {
+    background-color: #1e293b !important;
+    color: #fff !important;
+    border: 1px solid #334155 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
-.team-card, .center-card {
-    background-color: var(--bg-card);
-    border-radius: 14px;
-    padding: 1.2rem;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+select:focus, button:hover {
+    border-color: var(--nfl-neon-blue) !important;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    outline: none;
 }
 
-.team-card h2 { 
-    font-size: 1.2rem; 
-    margin-top: 0; 
-    color: var(--nfl-gold); 
-    border-bottom: 2px solid var(--border-color); 
-    padding-bottom: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.team-card h3 { font-size: 0.85rem; color: var(--text-muted); margin: 1rem 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px; }
-
-.team-stats {
-    background: rgba(15, 23, 42, 0.7);
-    padding: 0.8rem;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    line-height: 1.5;
-    border: 1px solid rgba(51, 65, 85, 0.5);
+/* Todennäköisyyspalkki */
+#probBar {
+    background: linear-gradient(90deg, var(--nfl-neon-blue), var(--nfl-neon-green)) !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    height: 10px;
+    border-radius: 5px;
 }
 
-.center-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(180deg, #131c31 0%, #0f172a 100%); }
-.sim-badge { font-size: 0.65rem; background: rgba(251, 191, 36, 0.1); color: var(--nfl-gold); padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 800; margin-bottom: 0.8rem; border: 1px solid rgba(251, 191, 36, 0.3); text-transform: uppercase; letter-spacing: 1px; }
-.matchup-score-box { font-size: 2.6rem; font-weight: 900; color: var(--nfl-gold); margin-bottom: 1rem; text-shadow: 0 0 15px rgba(251, 191, 36, 0.2); }
-.score-dash { margin: 0 0.4rem; color: var(--text-muted); }
-
-.win-prob-display { width: 100%; font-size: 0.85rem; font-weight: bold; }
-.prob-bar-container { width: 100%; height: 10px; background: var(--bg-dark); border-radius: 5px; margin: 0.5rem 0; overflow: hidden; border: 1px solid var(--border-color); }
-.prob-bar { height: 100%; background: linear-gradient(90deg, var(--nfl-gold), #f59e0b); width: 50%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-
-.player-row {
-    background: rgba(15, 23, 42, 0.6);
-    padding: 0.6rem 0.8rem;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    border-left: 4px solid var(--nfl-gold);
-    border-top: 1px solid rgba(51, 65, 85, 0.3);
-    border-right: 1px solid rgba(51, 65, 85, 0.3);
-    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
-    transition: background 0.2s;
-}
-.player-row:hover { background: rgba(15, 23, 42, 0.9); }
-.player-row span { color: var(--text-muted); display: block; font-size: 0.7rem; }
-
-.odd-badge { background: var(--bg-dark); padding: 0.3rem 0.6rem; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); min-width: 55px; }
-.odd-badge span { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; }
-.odd-badge strong { color: var(--nfl-gold); font-size: 0.85rem; font-weight: 800; }
-
-/* Vetovihje / Value Bet -laatikon tyylittely */
-#smartBettingTipsContainer {
-    background: linear-gradient(135deg, #131c31 0%, #1e293b 100%) !important;
-    border: 1px solid var(--nfl-gold) !important;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+/* Loukkaantuneet / OUT -tyylit */
+.player-out {
+    border-color: var(--nfl-accent-red) !important;
+    background: rgba(69, 10, 10, 0.4) !important;
 }
