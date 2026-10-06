@@ -606,7 +606,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     const compareBtn = document.getElementById('compareBtn');
 
     const selectedWeek = weekSelect ? weekSelect.value : "5";
-    const liveData = await fetchRealTimeNFLData(selectedWeek);
+    
+    // Suojattu haku aikakatkaisulla, ettei sivu koskaan jää jumiin "Ladataan tilastoja..." -tilaan
+    let liveData = null;
+    try {
+        const fetchPromise = fetchRealTimeNFLData(selectedWeek);
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 4000));
+        liveData = await Promise.race([fetchPromise, timeoutPromise]);
+    } catch (e) {
+        console.warn("Verkkohaku kesti liikaa tai epäonnistui, siirrytään suoraan paikalliseen ohjelmaan.");
+    }
 
     if (liveData && liveData.events && liveData.events.length > 0) {
         const liveMatches = liveData.events.map(event => {
@@ -616,7 +625,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             
             let weather = "🏟️ Sisäkenttä (Dome)";
             if (competition.weather && competition.weather.displayValue) {
-                weather = `🌤️️ ${competition.weather.displayValue}`;
+                weather = `🌤 ${competition.weather.displayValue}`;
             }
 
             return {
@@ -848,9 +857,8 @@ function renderPlayersWithRecencyAndPoisson(containerId, players, defenders, tea
 
         let lambda = 0;
         if (!p.isInjured) {
-            // Jos kyseessä on QB, lasketaan todennäköisyys maltillisemmin (esim. juoksumaalien tai matalamman kertoimen kautta)
             if (p.pos === "QB") {
-                lambda = (teamEstimatedTDs * 0.1) * recentFormMultiplier; // QB:n omat maalit / matalampi osuus
+                lambda = (teamEstimatedTDs * 0.1) * recentFormMultiplier;
             } else {
                 let marketShare = p.td / totalHealthyTDs;
                 lambda = (teamEstimatedTDs * marketShare * recentFormMultiplier * defFactor);
@@ -883,40 +891,6 @@ function renderPlayersWithRecencyAndPoisson(containerId, players, defenders, tea
         `;
         container.appendChild(div);
     });
-
-    if (defenders && defenders.length > 0) {
-        const defenseTitle = document.createElement('div');
-        defenseTitle.className = 'players-section-title';
-        defenseTitle.style.cssText = 'margin-top: 20px; margin-bottom: 8px; font-weight: bold; color: #38bdf8; font-size: 14px; border-top: 1px solid #334155; pt: 10px;';
-        defenseTitle.innerHTML = '⭐ Puolustuksen Avainpelaajat & Säkkitodennäköisyydet';
-        container.appendChild(defenseTitle);
-
-        defenders.forEach(def => {
-            const isOut = def.status === "OUT";
-            const defDiv = document.createElement('div');
-            defDiv.className = `player-row ${isOut ? 'player-out' : ''}`;
-            if (isOut) {
-                defDiv.style.borderColor = '#ef4444';
-                defDiv.style.backgroundColor = '#450a0a';
-            }
-
-            defDiv.innerHTML = `
-                <div>
-                    <strong>${def.name}</strong> ${isOut ? '<span style="color: #f87171; font-size: 11px; font-weight: bold;">(OUT 🚑)</span>' : ''}
-                    <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
-                        <span>${def.sacks}</span> | <span>${def.pressures}</span> | <span>${def.tackles}</span>
-                    </div>
-                </div>
-                <div class="odd-badge" style="${isOut ? 'background: #7f1d1d; border-color: #ef4444;' : ''}">
-                    <span>1+ Sack</span>
-                    <strong style="${isOut ? 'color: #fca5a5;' : ''}">${isOut ? 'OUT' : def.probability}</strong>
-                </div>
-            `;
-            container.appendChild(defDiv);
-        });
-    }
-}
-
 
     if (defenders && defenders.length > 0) {
         const defenseTitle = document.createElement('div');
