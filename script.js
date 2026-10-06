@@ -33,7 +33,7 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
     }
 }
 
-// Täydellinen 32 joukkueen NFL-tietokanta (Top 5 avainpelaajaa laskevassa TD-järjestyksessä)
+// Täydellinen 32 joukkueen NFL-tietokanta (päivitetyt ja tarkistetut tiedot)
 const nflDatabase = {
     "Cardinals": {
         record: "1-3", games: 4, rush: 370, pass: 890, oppPass: 1040, oppRush: 490, oppTD: 14, turnovers: 7, sacks: 12, redZonePct: 48, thirdDownPct: 36, penalties: 28,
@@ -88,11 +88,11 @@ const nflDatabase = {
         injuredPlayers: [{name: "Jordan Hancock", pos: "S"}, {name: "Zane Durant", pos: "DT"}, {name: "Tyrell Shavers", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 200, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
+            { name: "DJ Moore", pos: "WR", td: 3, yds: "320 yds", rec: "22/31 rec", marketOdds: 2.10, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:85, td:1}, {w:4, yds:80, td:0}] },
             { name: "James Cook III", pos: "RB", td: 3, yds: "470 yds", rec: "18/23 rec", marketOdds: 2.10, gameLog: [{w:1, yds:100, td:1}, {w:2, yds:110, td:1}, {w:3, yds:120, td:1}, {w:4, yds:140, td:0}] },
             { name: "Josh Allen", pos: "QB", td: 3, yds: "160 rush yds", rec: "Dual Threat QB", marketOdds: 1.90, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:50, td:1}, {w:3, yds:30, td:0}, {w:4, yds:40, td:1}] },
             { name: "Keon Coleman", pos: "WR", td: 2, yds: "210 yds", rec: "14/20 rec", marketOdds: 2.80, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:60, td:1}, {w:3, yds:40, td:0}, {w:4, yds:60, td:0}] },
-            { name: "Khalil Shakir", pos: "WR", td: 2, yds: "230 yds", rec: "18/24 rec", marketOdds: 2.60, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:55, td:0}, {w:4, yds:60, td:0}] },
-            { name: "Curtis Samuel", pos: "WR", td: 1, yds: "150 yds", rec: "13/18 rec", marketOdds: 3.30, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] }
+            { name: "Khalil Shakir", pos: "WR", td: 2, yds: "230 yds", rec: "18/24 rec", marketOdds: 2.60, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:55, td:0}, {w:4, yds:60, td:0}] }
         ],
         defenders: [
             { name: "Greg Rousseau (EDGE)", sacks: "4.0 Sacks", pressures: "23 Pressures", tackles: "20 Tackles", probability: "60%", status: "ACTIVE" },
@@ -120,11 +120,11 @@ const nflDatabase = {
         injuredPlayers: [{name: "Braxton Jones", pos: "OT"}, {name: "Coby Bryant", pos: "S"}, {name: "Hayden Large", pos: "TE"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 220, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
-            { name: "DJ Moore", pos: "WR", td: 3, yds: "320 yds", rec: "22/31 rec", marketOdds: 2.10, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:85, td:1}, {w:4, yds:80, td:0}] },
+            { name: "Kyle Monangai", pos: "RB", td: 3, yds: "280 yds", rec: "12/16 rec", marketOdds: 2.30, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:70, td:1}, {w:3, yds:70, td:1}, {w:4, yds:70, td:0}] },
             { name: "D'Andre Swift", pos: "RB", td: 3, yds: "390 yds", rec: "16/22 rec", marketOdds: 2.00, gameLog: [{w:1, yds:90, td:1}, {w:2, yds:100, td:1}, {w:3, yds:95, td:0}, {w:4, yds:105, td:1}] },
-            { name: "Keenan Allen", pos: "WR", td: 2, yds: "260 yds", rec: "20/28 rec", marketOdds: 2.40, gameLog: [{w:1, yds:60, td:1}, {w:2, yds:65, td:1}, {w:3, yds:65, td:0}, {w:4, yds:70, td:0}] },
-            { name: "Cole Kmet", pos: "TE", td: 2, yds: "190 yds", rec: "16/20 rec", marketOdds: 2.70, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:0}, {w:3, yds:45, td:1}, {w:4, yds:50, td:0}] },
-            { name: "Rome Odunze", pos: "WR", td: 1, yds: "210 yds", rec: "15/23 rec", marketOdds: 2.90, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] }
+            { name: "Cole Kmet", pos: "TE", td: 1, yds: "190 yds", rec: "16/20 rec", marketOdds: 2.70, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:0}, {w:3, yds:45, td:1}, {w:4, yds:50, td:0}] },
+            { name: "Rome Odunze", pos: "WR", td: 0, yds: "210 yds", rec: "15/23 rec", marketOdds: 2.90, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:0}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] },
+            { name: "Burden III", pos: "WR", td: 0, yds: "120 yds", rec: "10/15 rec", marketOdds: 3.50, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:30, td:0}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
         ],
         defenders: [
             { name: "Montez Sweat (EDGE)", sacks: "4.5 Sacks", pressures: "22 Pressures", tackles: "17 Tackles", probability: "65%", status: "ACTIVE" },
@@ -219,7 +219,7 @@ const nflDatabase = {
             { name: "Christian Watson", pos: "WR", td: 4, yds: "310 yds", rec: "21/28 rec", marketOdds: 2.10, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:1}, {w:4, yds:80, td:1}] },
             { name: "MarShawn Lloyd", pos: "RB", td: 3, yds: "460 yds", rec: "15/21 rec", marketOdds: 1.80, gameLog: [{w:1, yds:110, td:1}, {w:2, yds:115, td:1}, {w:3, yds:110, td:1}, {w:4, yds:125, td:0}] },
             { name: "Matthew Golden", pos: "WR", td: 2, yds: "230 yds", rec: "17/25 rec", marketOdds: 2.60, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:55, td:0}, {w:4, yds:60, td:0}] },
-            { name: "Skyy Moore", pos: "WR", td: 1, yds: "190 yds", rec: "11/17 rec", marketOdds: 2.90, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
+            { name: "Skyy Moore", pos: "WR", td: 0, yds: "190 yds", rec: "11/17 rec", marketOdds: 2.90, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:0}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
             { name: "Tucker Kraft", pos: "TE", td: 1, yds: "160 yds", rec: "14/19 rec", marketOdds: 3.10, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] }
         ],
         defenders: [
@@ -249,8 +249,8 @@ const nflDatabase = {
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 240, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 105, allowedTDs: 3 } },
         players: [
             { name: "Jonathan Taylor", pos: "RB", td: 4, yds: "450 yds", rec: "11/15 rec", marketOdds: 1.70, gameLog: [{w:1, yds:110, td:1}, {w:2, yds:115, td:1}, {w:3, yds:110, td:1}, {w:4, yds:115, td:1}] },
-            { name: "Laquon Treadwell", pos: "WR", td: 2, yds: "310 yds", rec: "23/33 rec", marketOdds: 2.10, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
             { name: "Keenan Allen", pos: "WR", td: 2, yds: "240 yds", rec: "13/18 rec", marketOdds: 2.80, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:65, td:0}] },
+            { name: "Laquon Treadwell", pos: "WR", td: 2, yds: "310 yds", rec: "23/33 rec", marketOdds: 2.10, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
             { name: "Josh Downs", pos: "WR", td: 1, yds: "190 yds", rec: "16/21 rec", marketOdds: 2.70, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
             { name: "Tyler Warren", pos: "TE", td: 1, yds: "120 yds", rec: "10/14 rec", marketOdds: 3.50, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:30, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
         ],
@@ -522,9 +522,9 @@ const nflDatabase = {
         players: [
             { name: "Tony Pollard", pos: "RB", td: 3, yds: "380 yds", rec: "14/19 rec", marketOdds: 2.05, gameLog: [{w:1, yds:90, td:1}, {w:2, yds:95, td:1}, {w:3, yds:95, td:1}, {w:4, yds:100, td:0}] },
             { name: "Elic Ayomanor", pos: "WR", td: 2, yds: "260 yds", rec: "18/31 rec", marketOdds: 2.30, gameLog: [{w:1, yds:60, td:1}, {w:2, yds:65, td:1}, {w:3, yds:65, td:0}, {w:4, yds:70, td:0}] },
-            { name: "Calvin Ridley", pos: "WR", td: 2, yds: "220 yds", rec: "16/24 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:55, td:1}, {w:3, yds:55, td:0}, {w:4, yds:60, td:0}] },
-            { name: "Wan'Dale Robinson", pos: "WR", td: 1, yds: "180 yds", rec: "15/21 rec", marketOdds: 3.00, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:45, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] },
-            { name: "Gunnar Helm", pos: "TE", td: 1, yds: "150 yds", rec: "13/18 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] }
+            { name: "Calvin Ridley", pos: "WR", td: 0, yds: "220 yds", rec: "16/24 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:0}, {w:3, yds:55, td:0}, {w:4, yds:60, td:0}] },
+            { name: "Wan'Dale Robinson", pos: "WR", td: 2, yds: "180 yds", rec: "15/21 rec", marketOdds: 3.00, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:45, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] },
+            { name: "Gunnar Helm", pos: "TE", td: 0, yds: "150 yds", rec: "13/18 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:0}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] }
         ],
         defenders: [
             { name: "Jeffery Simmons (DT)", sacks: "3.0 Sacks", pressures: "17 Pressures", tackles: "19 Tackles", probability: "55%", status: "ACTIVE" },
