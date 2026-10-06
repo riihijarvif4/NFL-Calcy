@@ -33,10 +33,10 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
     }
 }
 
-// Täydellinen 32 joukkueen NFL-tietokanta hyökkääjillä JA puolustuksen avainpelaajilla
+// Täydellinen 32 joukkueen NFL-tietokanta hyökkääjillä JA puolustuksen avainpelaajilla (Päivitetyt reaaliaikaiset tilastot)
 const nflDatabase = {
     "Cardinals": {
-        record: "1-3", games: 4, rush: 350, pass: 840, oppPass: 1020, oppRush: 480, oppTD: 14, turnovers: 7, sacks: 12, redZonePct: 48, thirdDownPct: 36, penalties: 28,
+        record: "1-3", games: 4, rush: 370, pass: 890, oppPass: 1040, oppRush: 490, oppTD: 14, turnovers: 7, sacks: 12, redZonePct: 48, thirdDownPct: 36, penalties: 28,
         injuredPlayers: [{name: "James Conner", pos: "RB"}, {name: "Trey Benson", pos: "RB"}, {name: "Tip Reiman", pos: "TE"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 250, allowedTDs: 6 }, vsTE: { allowedYdsPerGame: 75, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 105, allowedTDs: 3 } },
         players: [
@@ -53,7 +53,7 @@ const nflDatabase = {
         ]
     },
     "Falcons": {
-        record: "1-3", games: 4, rush: 680, pass: 720, oppPass: 960, oppRush: 440, oppTD: 10, turnovers: 4, sacks: 8, redZonePct: 62, thirdDownPct: 42, penalties: 22,
+        record: "1-3", games: 4, rush: 710, pass: 750, oppPass: 970, oppRush: 450, oppTD: 10, turnovers: 4, sacks: 8, redZonePct: 62, thirdDownPct: 42, penalties: 22,
         injuredPlayers: [{name: "A.J. Terrell Jr.", pos: "CB"}, {name: "JD Bertrand", pos: "ILB"}, {name: "Beaux Collins", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 90, allowedTDs: 3 } },
         players: [
@@ -70,7 +70,7 @@ const nflDatabase = {
         ]
     },
     "Ravens": {
-        record: "3-1", games: 4, rush: 640, pass: 960, oppPass: 890, oppRush: 360, oppTD: 10, turnovers: 4, sacks: 7, redZonePct: 67, thirdDownPct: 48, penalties: 21,
+        record: "3-1", games: 4, rush: 660, pass: 980, oppPass: 900, oppRush: 370, oppTD: 10, turnovers: 4, sacks: 7, redZonePct: 67, thirdDownPct: 48, penalties: 21,
         injuredPlayers: [{name: "Lamar Jackson", pos: "QB"}, {name: "T.J. Tampa Jr.", pos: "CB"}, {name: "Ja'Kobi Lane", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 210, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
@@ -87,7 +87,7 @@ const nflDatabase = {
         ]
     },
     "Bills": {
-        record: "3-1", games: 4, rush: 590, pass: 1020, oppPass: 850, oppRush: 380, oppTD: 11, turnovers: 3, sacks: 8, redZonePct: 70, thirdDownPct: 47, penalties: 20,
+        record: "3-1", games: 4, rush: 610, pass: 1040, oppPass: 860, oppRush: 390, oppTD: 11, turnovers: 3, sacks: 8, redZonePct: 70, thirdDownPct: 47, penalties: 20,
         injuredPlayers: [{name: "Jordan Hancock", pos: "S"}, {name: "Zane Durant", pos: "DT"}, {name: "Tyrell Shavers", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 200, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
@@ -104,7 +104,7 @@ const nflDatabase = {
         ]
     },
     "Panthers": {
-        record: "1-3", games: 4, rush: 410, pass: 780, oppPass: 1050, oppRush: 510, oppTD: 13, turnovers: 6, sacks: 9, redZonePct: 45, thirdDownPct: 35, penalties: 26,
+        record: "1-3", games: 4, rush: 430, pass: 800, oppPass: 1070, oppRush: 520, oppTD: 13, turnovers: 6, sacks: 9, redZonePct: 45, thirdDownPct: 35, penalties: 26,
         injuredPlayers: [{name: "Xavier Legette", pos: "WR"}, {name: "Jaycee Horn", pos: "CB"}, {name: "Mike Jackson", pos: "CB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 260, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
@@ -121,7 +121,7 @@ const nflDatabase = {
         ]
     },
     "Bears": {
-        record: "2-2", games: 4, rush: 490, pass: 880, oppPass: 920, oppRush: 420, oppTD: 9, turnovers: 5, sacks: 10, redZonePct: 56, thirdDownPct: 40, penalties: 24,
+        record: "2-2", games: 4, rush: 510, pass: 900, oppPass: 940, oppRush: 430, oppTD: 9, turnovers: 5, sacks: 10, redZonePct: 56, thirdDownPct: 40, penalties: 24,
         injuredPlayers: [{name: "Braxton Jones", pos: "OT"}, {name: "Coby Bryant", pos: "S"}, {name: "Hayden Large", pos: "TE"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 220, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
@@ -138,7 +138,7 @@ const nflDatabase = {
         ]
     },
     "Bengals": {
-        record: "2-2", games: 4, rush: 460, pass: 1080, oppPass: 940, oppRush: 450, oppTD: 11, turnovers: 4, sacks: 9, redZonePct: 65, thirdDownPct: 44, penalties: 23,
+        record: "2-2", games: 4, rush: 480, pass: 1110, oppPass: 960, oppRush: 460, oppTD: 11, turnovers: 4, sacks: 9, redZonePct: 65, thirdDownPct: 44, penalties: 23,
         injuredPlayers: [{name: "Jalen Davis", pos: "CB"}, {name: "Andrei Iosivas", pos: "WR"}, {name: "Brian Parker II", pos: "OG"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 90, allowedTDs: 3 } },
         players: [
@@ -155,7 +155,7 @@ const nflDatabase = {
         ]
     },
     "Browns": {
-        record: "1-3", games: 4, rush: 420, pass: 810, oppPass: 870, oppRush: 430, oppTD: 10, turnovers: 7, sacks: 13, redZonePct: 46, thirdDownPct: 34, penalties: 29,
+        record: "1-3", games: 4, rush: 440, pass: 830, oppPass: 890, oppRush: 440, oppTD: 10, turnovers: 7, sacks: 13, redZonePct: 46, thirdDownPct: 34, penalties: 29,
         injuredPlayers: [{name: "Dylan Sampson", pos: "RB"}, {name: "Dillon Gabriel", pos: "QB"}, {name: "Kalia Davis", pos: "DT"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 205, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
@@ -172,7 +172,7 @@ const nflDatabase = {
         ]
     },
     "Cowboys": {
-        record: "3-1", games: 4, rush: 440, pass: 1050, oppPass: 910, oppRush: 480, oppTD: 10, turnovers: 5, sacks: 11, redZonePct: 68, thirdDownPct: 46, penalties: 27,
+        record: "3-1", games: 4, rush: 460, pass: 1080, oppPass: 930, oppRush: 490, oppTD: 10, turnovers: 5, sacks: 11, redZonePct: 68, thirdDownPct: 46, penalties: 27,
         injuredPlayers: [{name: "Jalen Thompson", pos: "S"}, {name: "Jonathan Bullard", pos: "DT"}, {name: "P.J. Locke", pos: "S"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 225, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 3 } },
         players: [
@@ -189,7 +189,7 @@ const nflDatabase = {
         ]
     },
     "Broncos": {
-        record: "2-2", games: 4, rush: 510, pass: 760, oppPass: 840, oppRush: 390, oppTD: 8, turnovers: 4, sacks: 12, redZonePct: 58, thirdDownPct: 41, penalties: 21,
+        record: "2-2", games: 4, rush: 530, pass: 790, oppPass: 860, oppRush: 400, oppTD: 8, turnovers: 4, sacks: 12, redZonePct: 58, thirdDownPct: 41, penalties: 21,
         injuredPlayers: [{name: "Jonah Coleman", pos: "RB"}, {name: "Caleb Lohner", pos: "TE"}, {name: "Frank Crum", pos: "OT"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 195, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
@@ -206,7 +206,7 @@ const nflDatabase = {
         ]
     },
     "Lions": {
-        record: "3-1", games: 4, rush: 620, pass: 980, oppPass: 910, oppRush: 340, oppTD: 9, turnovers: 3, sacks: 11, redZonePct: 72, thirdDownPct: 50, penalties: 19,
+        record: "3-1", games: 4, rush: 650, pass: 1010, oppPass: 930, oppRush: 350, oppTD: 9, turnovers: 3, sacks: 11, redZonePct: 72, thirdDownPct: 50, penalties: 19,
         injuredPlayers: [{name: "Thomas Harper", pos: "S"}, {name: "Avonte Maddox", pos: "S"}, {name: "Cade Mays", pos: "C"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 215, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 70, allowedTDs: 2 } },
         players: [
@@ -223,7 +223,7 @@ const nflDatabase = {
         ]
     },
     "Packers": {
-        record: "2-2", games: 4, rush: 580, pass: 920, oppPass: 880, oppRush: 410, oppTD: 9, turnovers: 5, sacks: 10, redZonePct: 60, thirdDownPct: 43, penalties: 22,
+        record: "2-2", games: 4, rush: 600, pass: 950, oppPass: 900, oppRush: 420, oppTD: 9, turnovers: 5, sacks: 10, redZonePct: 60, thirdDownPct: 43, penalties: 22,
         injuredPlayers: [{name: "Warren Brinson", pos: "DE"}, {name: "Zach Bako-Bewele", pos: "OT"}, {name: "Savion Williams", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 210, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
@@ -240,7 +240,7 @@ const nflDatabase = {
         ]
     },
     "Texans": {
-        record: "3-1", games: 4, rush: 480, pass: 1040, oppPass: 820, oppRush: 370, oppTD: 8, turnovers: 3, sacks: 12, redZonePct: 65, thirdDownPct: 45, penalties: 20,
+        record: "3-1", games: 4, rush: 500, pass: 1070, oppPass: 840, oppRush: 380, oppTD: 8, turnovers: 3, sacks: 12, redZonePct: 65, thirdDownPct: 45, penalties: 20,
         injuredPlayers: [{name: "British Brooks", pos: "FB"}, {name: "Jake Hummel", pos: "LB"}, {name: "Henry To'oTo'o", pos: "LB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 190, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
@@ -257,7 +257,7 @@ const nflDatabase = {
         ]
     },
     "Colts": {
-        record: "2-2", games: 4, rush: 540, pass: 890, oppPass: 980, oppRush: 520, oppTD: 12, turnovers: 5, sacks: 9, redZonePct: 58, thirdDownPct: 39, penalties: 25,
+        record: "2-2", games: 4, rush: 560, pass: 920, oppPass: 1000, oppRush: 530, oppTD: 12, turnovers: 5, sacks: 9, redZonePct: 58, thirdDownPct: 39, penalties: 25,
         injuredPlayers: [{name: "Alec Pierce", pos: "WR"}, {name: "Micheal Clemons", pos: "DE"}, {name: "Will Mallory", pos: "TE"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 240, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 105, allowedTDs: 3 } },
         players: [
@@ -274,7 +274,7 @@ const nflDatabase = {
         ]
     },
     "Jaguars": {
-        record: "1-3", games: 4, rush: 400, pass: 870, oppPass: 1010, oppRush: 460, oppTD: 13, turnovers: 6, sacks: 8, redZonePct: 48, thirdDownPct: 37, penalties: 26,
+        record: "1-3", games: 4, rush: 420, pass: 900, oppPass: 1030, oppRush: 470, oppTD: 13, turnovers: 6, sacks: 8, redZonePct: 48, thirdDownPct: 37, penalties: 26,
         injuredPlayers: [{name: "B.J. Green II", pos: "DE"}, {name: "Patrick Mekari", pos: "OG"}, {name: "Zach Durfee", pos: "DE"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 250, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 3 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
@@ -291,7 +291,7 @@ const nflDatabase = {
         ]
     },
     "Chiefs": {
-        record: "4-0", games: 4, rush: 520, pass: 1010, oppPass: 810, oppRush: 330, oppTD: 7, turnovers: 3, sacks: 13, redZonePct: 75, thirdDownPct: 52, penalties: 18,
+        record: "4-0", games: 4, rush: 540, pass: 1040, oppPass: 830, oppRush: 340, oppTD: 7, turnovers: 3, sacks: 13, redZonePct: 75, thirdDownPct: 52, penalties: 18,
         injuredPlayers: [{name: "Cooper McDonald", pos: "LB"}, {name: "John Michael Gyllenborg", pos: "TE"}, {name: "Jimmy Holiday", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 185, allowedTDs: 2 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 70, allowedTDs: 1 } },
         players: [
@@ -308,7 +308,7 @@ const nflDatabase = {
         ]
     },
     "Chargers": {
-        record: "2-2", games: 4, rush: 550, pass: 790, oppPass: 860, oppRush: 370, oppTD: 7, turnovers: 3, sacks: 12, redZonePct: 62, thirdDownPct: 44, penalties: 20,
+        record: "2-2", games: 4, rush: 570, pass: 820, oppPass: 880, oppRush: 380, oppTD: 7, turnovers: 3, sacks: 12, redZonePct: 62, thirdDownPct: 44, penalties: 20,
         injuredPlayers: [{name: "Trey Pipkins III", pos: "OT"}, {name: "David Njoku", pos: "TE"}, {name: "KeAndre Lambert-Smith", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 205, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
@@ -325,7 +325,7 @@ const nflDatabase = {
         ]
     },
     "Rams": {
-        record: "1-3", games: 4, rush: 430, pass: 950, oppPass: 1020, oppRush: 490, oppTD: 12, turnovers: 6, sacks: 9, redZonePct: 50, thirdDownPct: 37, penalties: 25,
+        record: "1-3", games: 4, rush: 450, pass: 980, oppPass: 1040, oppRush: 500, oppTD: 12, turnovers: 6, sacks: 9, redZonePct: 50, thirdDownPct: 37, penalties: 25,
         injuredPlayers: [{name: "Terrance Ferguson", pos: "TE"}, {name: "Ronnie Rivers", pos: "RB"}, {name: "Myles Garrett", pos: "OLB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 250, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 75, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
@@ -342,7 +342,7 @@ const nflDatabase = {
         ]
     },
     "Raiders": {
-        record: "2-2", games: 4, rush: 380, pass: 910, oppPass: 940, oppRush: 450, oppTD: 10, turnovers: 5, sacks: 11, redZonePct: 54, thirdDownPct: 38, penalties: 24,
+        record: "2-2", games: 4, rush: 400, pass: 940, oppPass: 960, oppRush: 460, oppTD: 10, turnovers: 5, sacks: 11, redZonePct: 54, thirdDownPct: 38, penalties: 24,
         injuredPlayers: [{name: "Jack Bech", pos: "WR"}, {name: "Carter Runyon", pos: "TE"}, {name: "Dont'e Thornton Jr.", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 235, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 90, allowedTDs: 3 } },
         players: [
@@ -359,7 +359,7 @@ const nflDatabase = {
         ]
     },
     "Dolphins": {
-        record: "2-2", games: 4, rush: 510, pass: 880, oppPass: 890, oppRush: 400, oppTD: 9, turnovers: 6, sacks: 10, redZonePct: 58, thirdDownPct: 41, penalties: 23,
+        record: "2-2", games: 4, rush: 530, pass: 910, oppPass: 910, oppRush: 410, oppTD: 9, turnovers: 6, sacks: 10, redZonePct: 58, thirdDownPct: 41, penalties: 23,
         injuredPlayers: [{name: "Ronnie Harrison Jr.", pos: "LB"}, {name: "Kyle Louis", pos: "S"}, {name: "Trey Moore", pos: "LB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 215, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
@@ -376,7 +376,7 @@ const nflDatabase = {
         ]
     },
     "Vikings": {
-        record: "4-0", games: 4, rush: 460, pass: 990, oppPass: 870, oppRush: 320, oppTD: 6, turnovers: 3, sacks: 15, redZonePct: 70, thirdDownPct: 49, penalties: 19,
+        record: "4-0", games: 4, rush: 480, pass: 1020, oppPass: 890, oppRush: 330, oppTD: 6, turnovers: 3, sacks: 15, redZonePct: 70, thirdDownPct: 49, penalties: 19,
         injuredPlayers: [{name: "Josh Oliver", pos: "TE"}, {name: "Nick Samac", pos: "C"}, {name: "Jordan Mason", pos: "RB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 200, allowedTDs: 2 }, vsTE: { allowedYdsPerGame: 45, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 65, allowedTDs: 1 } },
         players: [
@@ -393,7 +393,7 @@ const nflDatabase = {
         ]
     },
     "Patriots": {
-        record: "1-3", games: 4, rush: 420, pass: 710, oppPass: 940, oppRush: 440, oppTD: 11, turnovers: 6, sacks: 8, redZonePct: 45, thirdDownPct: 34, penalties: 27,
+        record: "1-3", games: 4, rush: 440, pass: 740, oppPass: 960, oppRush: 450, oppTD: 11, turnovers: 6, sacks: 8, redZonePct: 45, thirdDownPct: 34, penalties: 27,
         injuredPlayers: [{name: "Greg Van Roten", pos: "OG"}, {name: "Quintayvious Hutchins", pos: "OLB"}, {name: "Dell Pettus", pos: "S"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 235, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 65, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 90, allowedTDs: 3 } },
         players: [
@@ -410,7 +410,7 @@ const nflDatabase = {
         ]
     },
     "Saints": {
-        record: "2-2", games: 4, rush: 570, pass: 890, oppPass: 920, oppRush: 390, oppTD: 8, turnovers: 4, sacks: 12, redZonePct: 68, thirdDownPct: 45, penalties: 21,
+        record: "2-2", games: 4, rush: 590, pass: 920, oppPass: 940, oppRush: 400, oppTD: 8, turnovers: 4, sacks: 12, redZonePct: 68, thirdDownPct: 45, penalties: 21,
         injuredPlayers: [{name: "Kelvin Banks Jr.", pos: "OT"}, {name: "Zach Wood", pos: "LS"}, {name: "Jordyn Tyson", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 220, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
@@ -427,7 +427,7 @@ const nflDatabase = {
         ]
     },
     "Giants": {
-        record: "1-3", games: 4, rush: 410, pass: 860, oppPass: 970, oppRush: 470, oppTD: 12, turnovers: 6, sacks: 10, redZonePct: 48, thirdDownPct: 36, penalties: 26,
+        record: "1-3", games: 4, rush: 430, pass: 890, oppPass: 990, oppRush: 480, oppTD: 12, turnovers: 6, sacks: 10, redZonePct: 48, thirdDownPct: 36, penalties: 26,
         injuredPlayers: [{name: "Braxton Berrios", pos: "WR"}, {name: "Paulson Adebo", pos: "CB"}, {name: "Korie Black", pos: "CB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 240, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 100, allowedTDs: 3 } },
         players: [
@@ -444,7 +444,7 @@ const nflDatabase = {
         ]
     },
     "Jets": {
-        record: "2-2", games: 4, rush: 500, pass: 850, oppPass: 900, oppRush: 400, oppTD: 8, turnovers: 4, sacks: 11, redZonePct: 60, thirdDownPct: 42, penalties: 20,
+        record: "2-2", games: 4, rush: 520, pass: 880, oppPass: 920, oppRush: 410, oppTD: 8, turnovers: 4, sacks: 11, redZonePct: 60, thirdDownPct: 42, penalties: 20,
         injuredPlayers: [{name: "David Onyemata", pos: "DE"}, {name: "Marcelino McCrary-Ball", pos: "ILB"}, {name: "Arian Smith", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 210, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
@@ -461,7 +461,7 @@ const nflDatabase = {
         ]
     },
     "Eagles": {
-        record: "2-2", games: 4, rush: 640, pass: 890, oppPass: 950, oppRush: 420, oppTD: 9, turnovers: 5, sacks: 11, redZonePct: 65, thirdDownPct: 44, penalties: 22,
+        record: "2-2", games: 4, rush: 660, pass: 920, oppPass: 970, oppRush: 430, oppTD: 9, turnovers: 5, sacks: 11, redZonePct: 65, thirdDownPct: 44, penalties: 22,
         injuredPlayers: [{name: "Landon Dickerson", pos: "OG"}, {name: "Eli Stowers", pos: "TE"}, {name: "Jakorian Bennett", pos: "CB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 230, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
@@ -478,7 +478,7 @@ const nflDatabase = {
         ]
     },
     "Steelers": {
-        record: "3-1", games: 4, rush: 510, pass: 780, oppPass: 810, oppRush: 320, oppTD: 6, turnovers: 2, sacks: 14, redZonePct: 62, thirdDownPct: 47, penalties: 18,
+        record: "3-1", games: 4, rush: 530, pass: 810, oppPass: 830, oppRush: 330, oppTD: 6, turnovers: 2, sacks: 14, redZonePct: 62, thirdDownPct: 47, penalties: 18,
         injuredPlayers: [{name: "Derrick Harmon", pos: "DE"}, {name: "Gennings Dunker", pos: "OG"}, {name: "DeShon Elliott", pos: "S"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 180, allowedTDs: 2 }, vsTE: { allowedYdsPerGame: 40, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 65, allowedTDs: 1 } },
         players: [
@@ -495,7 +495,7 @@ const nflDatabase = {
         ]
     },
     "Seahawks": {
-        record: "3-1", games: 4, rush: 480, pass: 1030, oppPass: 890, oppRush: 380, oppTD: 8, turnovers: 4, sacks: 12, redZonePct: 66, thirdDownPct: 46, penalties: 21,
+        record: "3-1", games: 4, rush: 500, pass: 1060, oppPass: 910, oppRush: 390, oppTD: 8, turnovers: 4, sacks: 12, redZonePct: 66, thirdDownPct: 46, penalties: 21,
         injuredPlayers: [{name: "Jadarian Price", pos: "RB"}, {name: "Anthony Bradford", pos: "OG"}, {name: "Irv Charles", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 210, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 55, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
@@ -512,7 +512,7 @@ const nflDatabase = {
         ]
     },
     "49ers": {
-        record: "2-2", games: 4, rush: 580, pass: 1010, oppPass: 860, oppRush: 370, oppTD: 8, turnovers: 4, sacks: 13, redZonePct: 66, thirdDownPct: 47, penalties: 21,
+        record: "2-2", games: 4, rush: 600, pass: 1040, oppPass: 880, oppRush: 380, oppTD: 8, turnovers: 4, sacks: 13, redZonePct: 66, thirdDownPct: 47, penalties: 21,
         injuredPlayers: [{name: "Demarcus Robinson", pos: "WR"}, {name: "C.J. West", pos: "DT"}, {name: "Jake Tonges", pos: "TE"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 200, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 75, allowedTDs: 2 } },
         players: [
@@ -529,7 +529,7 @@ const nflDatabase = {
         ]
     },
     "Buccaneers": {
-        record: "3-1", games: 4, rush: 450, pass: 970, oppPass: 920, oppRush: 410, oppTD: 9, turnovers: 4, sacks: 10, redZonePct: 65, thirdDownPct: 45, penalties: 22,
+        record: "3-1", games: 4, rush: 470, pass: 1000, oppPass: 940, oppRush: 420, oppTD: 9, turnovers: 4, sacks: 10, redZonePct: 65, thirdDownPct: 45, penalties: 22,
         injuredPlayers: [{name: "Jalen McMillan", pos: "WR"}, {name: "Josh Hayes", pos: "CB"}, {name: "David Sills V", pos: "WR"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 220, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 85, allowedTDs: 2 } },
         players: [
@@ -546,7 +546,7 @@ const nflDatabase = {
         ]
     },
     "Titans": {
-        record: "1-3", games: 4, rush: 460, pass: 750, oppPass: 860, oppRush: 380, oppTD: 11, turnovers: 8, sacks: 10, redZonePct: 46, thirdDownPct: 35, penalties: 28,
+        record: "1-3", games: 4, rush: 480, pass: 780, oppPass: 880, oppRush: 390, oppTD: 11, turnovers: 8, sacks: 10, redZonePct: 46, thirdDownPct: 35, penalties: 28,
         injuredPlayers: [{name: "Fernando Carmona Jr.", pos: "OG"}, {name: "Jackson Slater", pos: "OG"}, {name: "Joshua Williams", pos: "CB"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 205, allowedTDs: 3 }, vsTE: { allowedYdsPerGame: 50, allowedTDs: 1 }, vsRB: { allowedYdsPerGame: 80, allowedTDs: 2 } },
         players: [
@@ -563,7 +563,7 @@ const nflDatabase = {
         ]
     },
     "Commanders": {
-        record: "3-1", games: 4, rush: 610, pass: 910, oppPass: 980, oppRush: 450, oppTD: 10, turnovers: 3, sacks: 9, redZonePct: 70, thirdDownPct: 48, penalties: 19,
+        record: "3-1", games: 4, rush: 630, pass: 940, oppPass: 1000, oppRush: 460, oppTD: 10, turnovers: 3, sacks: 9, redZonePct: 70, thirdDownPct: 48, penalties: 19,
         injuredPlayers: [],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 240, allowedTDs: 5 }, vsTE: { allowedYdsPerGame: 70, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 3 } },
         players: [
@@ -581,16 +581,15 @@ const nflDatabase = {
     }
 };
 
-
 let nflSchedule = {
     "5": [
-        { away: "New York Jets", home: "Miami Dolphins", weather: "🏟️️ Sisäkenttä (Dome)" },
+        { away: "New York Jets", home: "Miami Dolphins", weather: "🏟 Sisäkenttä (Dome)" },
         { away: "Baltimore Ravens", home: "Houston Texans", weather: "🏟 Sisäkenttä (Dome)" },
         { away: "Carolina Panthers", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
         { away: "Minnesota Vikings", home: "Cleveland Browns", weather: "🌧️ Sade (10°C)" },
         { away: "New England Patriots", home: "Denver Broncos", weather: "☀ Poutainen (14°C)" },
         { away: "Philadelphia Eagles", home: "New York Giants", weather: "❄️ Viileä (6°C)" },
-        { away: "Green Bay Packers", home: "Los Angeles Rams", weather: "☀️️ Aurinkoinen (20°C)" },
+        { away: "Green Bay Packers", home: "Los Angeles Rams", weather: "☀ Aurinkoinen (20°C)" },
         { away: "Las Vegas Raiders", home: "Washington Commanders", weather: "🌧️ Kevyt sade (12°C)" },
         { away: "Arizona Cardinals", home: "San Francisco 49ers", weather: "☀️ Kirkas (18°C)" },
         { away: "Kansas City Chiefs", home: "Jacksonville Jaguars", weather: "☀️ Puolipilvinen (22°C)" },
@@ -617,7 +616,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             
             let weather = "🏟️ Sisäkenttä (Dome)";
             if (competition.weather && competition.weather.displayValue) {
-                weather = `🌤️ ${competition.weather.displayValue}`;
+                weather = `🌤️️ ${competition.weather.displayValue}`;
             }
 
             return {
