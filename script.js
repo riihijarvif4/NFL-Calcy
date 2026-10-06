@@ -33,7 +33,7 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
     }
 }
 
-// Täydellinen 32 joukkueen NFL-tietokanta (kaikki alkuperäiset tilastot + uudet pelipaikkakohtaiset puolustukset ja game log -historiat)
+// Täydellinen 32 joukkueen NFL-tietokanta hyökkääjillä JA puolustuksen avainpelaajilla
 const nflDatabase = {
     "Rams": { 
         record: "2-2", games: 4, rush: 520, pass: 1100, oppPass: 950, oppRush: 440, oppTD: 9, turnovers: 5, sacks: 10, redZonePct: 58, thirdDownPct: 41, penalties: 22, 
@@ -44,6 +44,10 @@ const nflDatabase = {
             { name: "Williams", pos: "RB", td: 3, yds: "410 total yds", rec: "16/20 rec", marketOdds: 2.10, gameLog: [{w:1, yds:80, td:1}, {w:2, yds:120, td:1}, {w:3, yds:90, td:0}, {w:4, yds:120, td:1}] },
             { name: "Higbee", pos: "TE", td: 1, yds: "95 yds", rec: "10/14 rec", marketOdds: 3.50, gameLog: [{w:1, yds:20, td:0}, {w:2, yds:35, td:1}, {w:3, yds:10, td:0}, {w:4, yds:30, td:0}] },
             { name: "Stafford", pos: "QB", td: 1, yds: "45 yds", rec: "Passing QB", marketOdds: 4.20, gameLog: [{w:1, yds:10, td:0}, {w:2, yds:15, td:0}, {w:3, yds:0, td:0}, {w:4, yds:20, td:1}] }
+        ],
+        defenders: [
+            { name: "Kobie Turner (DT)", sacks: "4.0 Sacks", pressures: "21 Pressures", tackles: "24 Tackles", probability: "62%", status: "ACTIVE" },
+            { name: "Byron Young (EDGE)", sacks: "3.5 Sacks", pressures: "19 Pressures", tackles: "18 Tackles", probability: "55%", status: "ACTIVE" }
         ]
     },
     "Broncos": { 
@@ -55,6 +59,10 @@ const nflDatabase = {
             { name: "Adkins", pos: "TE", td: 2, yds: "55 yds", rec: "7/10 rec", marketOdds: 3.10, gameLog: [{w:1, yds:10, td:0}, {w:2, yds:15, td:1}, {w:3, yds:10, td:0}, {w:4, yds:20, td:1}] },
             { name: "Engram", pos: "TE", td: 1, yds: "75 yds", rec: "8/12 rec", marketOdds: 3.40, gameLog: [{w:1, yds:20, td:0}, {w:2, yds:25, td:1}, {w:3, yds:15, td:0}, {w:4, yds:15, td:0}] },
             { name: "Williams", pos: "RB", td: 1, yds: "210 yds", rec: "11/15 rec", marketOdds: 2.30, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:40, td:0}, {w:4, yds:60, td:0}] }
+        ],
+        defenders: [
+            { name: "Nik Bonitto (EDGE)", sacks: "5.0 Sacks", pressures: "26 Pressures", tackles: "19 Tackles", probability: "74%", status: "ACTIVE" },
+            { name: "Zach Allen (DE)", sacks: "3.0 Sacks", pressures: "22 Pressures", tackles: "27 Tackles", probability: "50%", status: "ACTIVE" }
         ]
     },
     "Bills": { 
@@ -66,6 +74,10 @@ const nflDatabase = {
             { name: "Cook", pos: "RB", td: 3, yds: "470 yds", rec: "18/23 rec", marketOdds: 2.10, gameLog: [{w:1, yds:100, td:1}, {w:2, yds:110, td:1}, {w:3, yds:120, td:1}, {w:4, yds:140, td:0}] },
             { name: "Moore", pos: "WR", td: 2, yds: "210 yds", rec: "14/20 rec", marketOdds: 2.80, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:60, td:1}, {w:3, yds:40, td:0}, {w:4, yds:60, td:0}] },
             { name: "Kincaid", pos: "TE", td: 1, yds: "130 yds", rec: "12/16 rec", marketOdds: 3.20, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:40, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
+        ],
+        defenders: [
+            { name: "Greg Rousseau (EDGE)", sacks: "4.0 Sacks", pressures: "23 Pressures", tackles: "20 Tackles", probability: "60%", status: "ACTIVE" },
+            { name: "A.J. Epenesa (DE)", sacks: "2.5 Sacks", pressures: "14 Pressures", tackles: "15 Tackles", probability: "45%", status: "ACTIVE" }
         ]
     },
     "Chargers": { 
@@ -76,6 +88,10 @@ const nflDatabase = {
             { name: "Hampton", pos: "RB", td: 2, yds: "240 yds", rec: "13/18 rec", marketOdds: 2.50, gameLog: [{w:1, yds:60, td:1}, {w:2, yds:50, td:0}, {w:3, yds:70, td:1}, {w:4, yds:60, td:0}] },
             { name: "McConkley", pos: "WR", td: 2, yds: "230 yds", rec: "16/25 rec", marketOdds: 2.70, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:60, td:0}] },
             { name: "Palmer", pos: "WR", td: 1, yds: "170 yds", rec: "12/19 rec", marketOdds: 3.30, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:40, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] }
+        ],
+        defenders: [
+            { name: "Khalil Mack (EDGE)", sacks: "4.5 Sacks", pressures: "25 Pressures", tackles: "17 Tackles", probability: "68%", status: "ACTIVE" },
+            { name: "Joey Bosa (EDGE)", sacks: "3.0 Sacks", pressures: "18 Pressures", tackles: "12 Tackles", probability: "52%", status: "ACTIVE" }
         ]
     },
     "Browns": { 
@@ -87,6 +103,10 @@ const nflDatabase = {
             { name: "Fannin Jr", pos: "WR", td: 2, yds: "160 yds", rec: "11/16 rec", marketOdds: 2.90, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] },
             { name: "Chubb", pos: "RB", td: 2, yds: "190 yds", rec: "6/8 rec", marketOdds: 2.20, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
             { name: "Judkins", pos: "RB", td: 1, yds: "155 yds", rec: "10/13 rec", marketOdds: 3.10, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] }
+        ],
+        defenders: [
+            { name: "Myles Garrett (EDGE)", sacks: "6.0 Sacks", pressures: "32 Pressures", tackles: "21 Tackles", probability: "85%", status: "ACTIVE" },
+            { name: "Za'Darius Smith (DE)", sacks: "3.5 Sacks", pressures: "20 Pressures", tackles: "19 Tackles", probability: "58%", status: "ACTIVE" }
         ]
     },
     "Panthers": { 
@@ -98,6 +118,10 @@ const nflDatabase = {
             { name: "Hubbard", pos: "RB", td: 3, yds: "340 yds", rec: "14/18 rec", marketOdds: 2.20, gameLog: [{w:1, yds:80, td:1}, {w:2, yds:90, td:1}, {w:3, yds:80, td:1}, {w:4, yds:90, td:0}] },
             { name: "Coker", pos: "WR", td: 3, yds: "290 yds", rec: "19/28 rec", marketOdds: 2.40, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:75, td:1}, {w:4, yds:70, td:0}] },
             { name: "Wallen", pos: "TE", td: 2, yds: "145 yds", rec: "11/15 rec", marketOdds: 3.10, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:35, td:1}, {w:4, yds:35, td:0}] }
+        ],
+        defenders: [
+            { name: "Derrick Brown (DT)", sacks: "2.0 Sacks", pressures: "16 Pressures", tackles: "31 Tackles", probability: "40%", status: "ACTIVE" },
+            { name: "Jadeveon Clowney (EDGE)", sacks: "3.0 Sacks", pressures: "18 Pressures", tackles: "20 Tackles", probability: "50%", status: "ACTIVE" }
         ]
     },
     "Cowboys": { 
@@ -109,6 +133,10 @@ const nflDatabase = {
             { name: "Williams", pos: "RB", td: 3, yds: "290 yds", rec: "18/23 rec", marketOdds: 2.20, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:1}, {w:4, yds:75, td:0}] },
             { name: "Ferguson", pos: "TE", td: 3, yds: "105 yds", rec: "14/18 rec", marketOdds: 2.60, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:1}, {w:4, yds:25, td:0}] },
             { name: "Prescott", pos: "QB", td: 1, yds: "50 yds", rec: "Passing QB", marketOdds: 3.80, gameLog: [{w:1, yds:10, td:0}, {w:2, yds:15, td:1}, {w:3, yds:10, td:0}, {w:4, yds:15, td:0}] }
+        ],
+        defenders: [
+            { name: "Micah Parsons (EDGE)", sacks: "5.5 Sacks", pressures: "30 Pressures", tackles: "22 Tackles", probability: "80%", status: "ACTIVE" },
+            { name: "DeMarcus Lawrence (DE)", sacks: "3.0 Sacks", pressures: "17 Pressures", tackles: "24 Tackles", probability: "52%", status: "ACTIVE" }
         ]
     },
     "Ravens": { 
@@ -120,6 +148,10 @@ const nflDatabase = {
             { name: "Flowers", pos: "WR", td: 2, yds: "310 yds", rec: "23/32 rec", marketOdds: 2.60, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:80, td:1}, {w:3, yds:80, td:0}, {w:4, yds:80, td:0}] },
             { name: "Jackson", pos: "QB", td: 2, yds: "180 yds", rec: "Passing QB", marketOdds: 2.40, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] },
             { name: "Likely", pos: "TE", td: 1, yds: "140 yds", rec: "11/15 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:35, td:0}] }
+        ],
+        defenders: [
+            { name: "Nnamdi Madubuike (DT)", sacks: "4.0 Sacks", pressures: "22 Pressures", tackles: "20 Tackles", probability: "60%", status: "ACTIVE" },
+            { name: "Kyle Van Noy (EDGE)", sacks: "4.5 Sacks", pressures: "19 Pressures", tackles: "16 Tackles", probability: "65%", status: "ACTIVE" }
         ]
     },
     "Saints": { 
@@ -131,6 +163,10 @@ const nflDatabase = {
             { name: "Olave", pos: "WR", td: 2, yds: "480 yds", rec: "32/45 rec", marketOdds: 2.30, gameLog: [{w:1, yds:115, td:1}, {w:2, yds:120, td:1}, {w:3, yds:120, td:0}, {w:4, yds:125, td:0}] },
             { name: "Fant", pos: "TE", td: 3, yds: "85 yds", rec: "9/13 rec", marketOdds: 2.80, gameLog: [{w:1, yds:20, td:1}, {w:2, yds:20, td:1}, {w:3, yds:20, td:1}, {w:4, yds:25, td:0}] },
             { name: "Kamara", pos: "RB", td: 2, yds: "310 yds", rec: "20/26 rec", marketOdds: 2.20, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] }
+        ],
+        defenders: [
+            { name: "Cameron Jordan (DE)", sacks: "2.5 Sacks", pressures: "15 Pressures", tackles: "21 Tackles", probability: "45%", status: "ACTIVE" },
+            { name: "Carl Granderson (DE)", sacks: "4.0 Sacks", pressures: "21 Pressures", tackles: "23 Tackles", probability: "60%", status: "ACTIVE" }
         ]
     },
     "Raiders": { 
@@ -142,6 +178,10 @@ const nflDatabase = {
             { name: "White", pos: "WR", td: 3, yds: "45 yds", rec: "5/8 rec", marketOdds: 2.50, gameLog: [{w:1, yds:10, td:1}, {w:2, yds:10, td:1}, {w:3, yds:10, td:1}, {w:4, yds:15, td:0}] },
             { name: "Bowers", pos: "TE", td: 2, yds: "160 yds", rec: "15/20 rec", marketOdds: 2.70, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] },
             { name: "Meyers", pos: "WR", td: 1, yds: "190 yds", rec: "14/21 rec", marketOdds: 3.10, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] }
+        ],
+        defenders: [
+            { name: "Maxx Crosby (EDGE)", sacks: "6.5 Sacks", pressures: "34 Pressures", tackles: "28 Tackles", probability: "90%", status: "ACTIVE" },
+            { name: "Christian Wilkins (DT)", sacks: "2.0 Sacks", pressures: "15 Pressures", tackles: "25 Tackles", probability: "38%", status: "ACTIVE" }
         ]
     },
     "49ers": { 
@@ -153,6 +193,10 @@ const nflDatabase = {
             { name: "Kittle", pos: "TE", td: 3, yds: "230 yds", rec: "18/23 rec", marketOdds: 2.30, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:55, td:1}, {w:4, yds:60, td:0}] },
             { name: "Samuel", pos: "WR", td: 2, yds: "210 yds", rec: "17/23 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:1}, {w:2, yds:50, td:1}, {w:3, yds:55, td:0}, {w:4, yds:55, td:0}] },
             { name: "Aiyuk", pos: "WR", td: 1, yds: "190 yds", rec: "14/20 rec", marketOdds: 3.10, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:45, td:1}, {w:3, yds:50, td:0}, {w:4, yds:50, td:0}] }
+        ],
+        defenders: [
+            { name: "Nick Bosa (EDGE)", sacks: "5.0 Sacks", pressures: "29 Pressures", tackles: "19 Tackles", probability: "75%", status: "ACTIVE" },
+            { name: "Fred Warner (LB)", sacks: "2.0 Sacks", pressures: "12 Pressures", tackles: "44 Tackles", probability: "40%", status: "ACTIVE" }
         ]
     },
     "Cardinals": { 
@@ -164,6 +208,10 @@ const nflDatabase = {
             { name: "Love", pos: "RB", td: 3, yds: "260 yds", rec: "15/21 rec", marketOdds: 2.40, gameLog: [{w:1, yds:65, td:1}, {w:2, yds:65, td:1}, {w:3, yds:65, td:1}, {w:4, yds:65, td:0}] },
             { name: "Harrison Jr", pos: "WR", td: 2, yds: "310 yds", rec: "20/33 rec", marketOdds: 2.50, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
             { name: "Wilson", pos: "WR", td: 1, yds: "200 yds", rec: "14/21 rec", marketOdds: 3.30, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:50, td:1}, {w:3, yds:50, td:0}, {w:4, yds:50, td:0}] }
+        ],
+        defenders: [
+            { name: "Budda Baker (S)", sacks: "1.0 Sacks", pressures: "8 Pressures", tackles: "41 Tackles", probability: "25%", status: "ACTIVE" },
+            { name: "Zaven Collins (LB)", sacks: "2.5 Sacks", pressures: "12 Pressures", tackles: "24 Tackles", probability: "45%", status: "ACTIVE" }
         ]
     },
     "Buccaneers": { 
@@ -175,6 +223,10 @@ const nflDatabase = {
             { name: "Egbuka", pos: "WR", td: 2, yds: "190 yds", rec: "13/19 rec", marketOdds: 2.80, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
             { name: "Evans", pos: "WR", td: 1, yds: "220 yds", rec: "15/24 rec", marketOdds: 3.10, gameLog: [{w:1, yds:55, td:0}, {w:2, yds:55, td:1}, {w:3, yds:55, td:0}, {w:4, yds:55, td:0}] },
             { name: "Mayfield", pos: "QB", td: 1, yds: "80 yds", rec: "Passing QB", marketOdds: 4.00, gameLog: [{w:1, yds:20, td:0}, {w:2, yds:20, td:1}, {w:3, yds:20, td:0}, {w:4, yds:20, td:0}] }
+        ],
+        defenders: [
+            { name: "Vita Vea (DT)", sacks: "3.5 Sacks", pressures: "18 Pressures", tackles: "17 Tackles", probability: "55%", status: "ACTIVE" },
+            { name: "Yaya Diaby (EDGE)", sacks: "3.0 Sacks", pressures: "20 Pressures", tackles: "22 Tackles", probability: "50%", status: "ACTIVE" }
         ]
     },
     "Vikings": { 
@@ -186,6 +238,10 @@ const nflDatabase = {
             { name: "Jones", pos: "RB", td: 2, yds: "310 yds", rec: "18/23 rec", marketOdds: 2.30, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
             { name: "Hockenson", pos: "TE", td: 1, yds: "110 yds", rec: "11/15 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:35, td:0}] },
             { name: "Addison", pos: "WR", td: 1, yds: "160 yds", rec: "12/18 rec", marketOdds: 3.00, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] }
+        ],
+        defenders: [
+            { name: "Jonathan Greenard (EDGE)", sacks: "5.5 Sacks", pressures: "28 Pressures", tackles: "18 Tackles", probability: "80%", status: "ACTIVE" },
+            { name: "Andrew Van Ginkel (LB)", sacks: "4.0 Sacks", pressures: "19 Pressures", tackles: "24 Tackles", probability: "62%", status: "ACTIVE" }
         ]
     },
     "Lions": { 
@@ -197,6 +253,10 @@ const nflDatabase = {
             { name: "St. Brown", pos: "WR", td: 6, yds: "310 yds", rec: "26/34 rec", marketOdds: 1.65, gameLog: [{w:1, yds:75, td:2}, {w:2, yds:80, td:2}, {w:3, yds:75, td:1}, {w:4, yds:80, td:1}] },
             { name: "LaPorta", pos: "TE", td: 2, yds: "190 yds", rec: "16/21 rec", marketOdds: 2.60, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
             { name: "Montgomery", pos: "RB", td: 2, yds: "280 yds", rec: "10/14 rec", marketOdds: 2.40, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:70, td:1}, {w:3, yds:70, td:0}, {w:4, yds:70, td:0}] }
+        ],
+        defenders: [
+            { name: "Aidan Hutchinson (EDGE)", sacks: "7.5 Sacks", pressures: "38 Pressures", tackles: "22 Tackles", probability: "95%", status: "ACTIVE" },
+            { name: "Alim McNeill (DT)", sacks: "3.0 Sacks", pressures: "17 Pressures", tackles: "19 Tackles", probability: "48%", status: "ACTIVE" }
         ]
     },
     "Jets": { 
@@ -208,6 +268,10 @@ const nflDatabase = {
             { name: "Hall", pos: "RB", td: 2, yds: "330 yds", rec: "19/25 rec", marketOdds: 2.40, gameLog: [{w:1, yds:80, td:1}, {w:2, yds:85, td:1}, {w:3, yds:80, td:0}, {w:4, yds:85, td:0}] },
             { name: "Sadiq", pos: "TE", td: 1, yds: "170 yds", rec: "11/15 rec", marketOdds: 3.40, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:45, td:1}, {w:3, yds:40, td:0}, {w:4, yds:45, td:0}] },
             { name: "Conklin", pos: "TE", td: 1, yds: "120 yds", rec: "10/14 rec", marketOdds: 3.60, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:30, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
+        ],
+        defenders: [
+            { name: "Will McDonald IV (EDGE)", sacks: "5.0 Sacks", pressures: "22 Pressures", tackles: "14 Tackles", probability: "70%", status: "ACTIVE" },
+            { name: "Quinnen Williams (DT)", sacks: "2.5 Sacks", pressures: "19 Pressures", tackles: "21 Tackles", probability: "45%", status: "ACTIVE" }
         ]
     },
     "Colts": { 
@@ -219,6 +283,10 @@ const nflDatabase = {
             { name: "Warren", pos: "TE", td: 2, yds: "120 yds", rec: "10/14 rec", marketOdds: 2.80, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:30, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] },
             { name: "Allen", pos: "WR", td: 2, yds: "150 yds", rec: "11/17 rec", marketOdds: 2.90, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
             { name: "Pittman Jr", pos: "WR", td: 1, yds: "210 yds", rec: "16/24 rec", marketOdds: 3.10, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] }
+        ],
+        defenders: [
+            { name: "Kwity Paye (DE)", sacks: "3.5 Sacks", pressures: "18 Pressures", tackles: "19 Tackles", probability: "55%", status: "ACTIVE" },
+            { name: "DeForest Buckner (DT)", sacks: "2.5 Sacks", pressures: "16 Pressures", tackles: "22 Tackles", probability: "45%", status: "ACTIVE" }
         ]
     },
     "Texans": { 
@@ -230,6 +298,10 @@ const nflDatabase = {
             { name: "Collins", pos: "WR", td: 2, yds: "160 yds", rec: "11/16 rec", marketOdds: 2.70, gameLog: [{w:1, yds:40, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] },
             { name: "Nico Collins", pos: "WR", td: 1, yds: "240 yds", rec: "18/25 rec", marketOdds: 3.00, gameLog: [{w:1, yds:60, td:0}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:60, td:0}] },
             { name: "Marks", pos: "RB", td: 1, yds: "120 yds", rec: "11/15 rec", marketOdds: 3.50, gameLog: [{w:1, yds:30, td:0}, {w:2, yds:30, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] }
+        ],
+        defenders: [
+            { name: "Will Anderson Jr. (EDGE)", sacks: "5.0 Sacks", pressures: "31 Pressures", tackles: "20 Tackles", probability: "75%", status: "ACTIVE" },
+            { name: "Danielle Hunter (EDGE)", sacks: "4.5 Sacks", pressures: "27 Pressures", tackles: "22 Tackles", probability: "70%", status: "ACTIVE" }
         ]
     },
     "Jaguars": { 
@@ -241,6 +313,10 @@ const nflDatabase = {
             { name: "Washington", pos: "WR", td: 2, yds: "290 yds", rec: "19/27 rec", marketOdds: 2.60, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] },
             { name: "Meyers", pos: "WR", td: 2, yds: "180 yds", rec: "14/19 rec", marketOdds: 2.70, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:45, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] },
             { name: "Engram", pos: "TE", td: 1, yds: "150 yds", rec: "13/17 rec", marketOdds: 3.20, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] }
+        ],
+        defenders: [
+            { name: "Josh Hines-Allen (EDGE)", sacks: "4.0 Sacks", pressures: "24 Pressures", tackles: "19 Tackles", probability: "62%", status: "ACTIVE" },
+            { name: "Travon Walker (EDGE)", sacks: "4.5 Sacks", pressures: "22 Pressures", tackles: "21 Tackles", probability: "65%", status: "ACTIVE" }
         ]
     },
     "Patriots": { 
@@ -252,6 +328,10 @@ const nflDatabase = {
             { name: "Maye", pos: "QB", td: 2, yds: "110 yds", rec: "Passing QB", marketOdds: 2.80, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
             { name: "Hollins", pos: "WR", td: 1, yds: "210 yds", rec: "15/23 rec", marketOdds: 3.10, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] },
             { name: "Bourne", pos: "WR", td: 1, yds: "140 yds", rec: "11/16 rec", marketOdds: 3.40, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:35, td:0}] }
+        ],
+        defenders: [
+            { name: "Keion White (DE)", sacks: "3.5 Sacks", pressures: "18 Pressures", tackles: "20 Tackles", probability: "52%", status: "ACTIVE" },
+            { name: "Christian Barmore (DT)", sacks: "2.0 Sacks", pressures: "14 Pressures", tackles: "15 Tackles", probability: "38%", status: "ACTIVE" }
         ]
     },
     "Dolphins": { 
@@ -263,6 +343,10 @@ const nflDatabase = {
             { name: "Washington", pos: "WR", td: 1, yds: "210 yds", rec: "14/22 rec", marketOdds: 3.10, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] },
             { name: "Hill", pos: "WR", td: 1, yds: "260 yds", rec: "18/27 rec", marketOdds: 2.10, gameLog: [{w:1, yds:60, td:0}, {w:2, yds:70, td:1}, {w:3, yds:60, td:0}, {w:4, yds:70, td:0}] },
             { name: "Waddle", pos: "WR", td: 1, yds: "220 yds", rec: "16/24 rec", marketOdds: 2.40, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:50, td:0}, {w:4, yds:60, td:0}] }
+        ],
+        defenders: [
+            { name: "Jaelan Phillips (EDGE)", sacks: "4.0 Sacks", pressures: "21 Pressures", tackles: "19 Tackles", probability: "60%", status: "ACTIVE" },
+            { name: "Zach Sieler (DT)", sacks: "3.0 Sacks", pressures: "17 Pressures", tackles: "24 Tackles", probability: "48%", status: "ACTIVE" }
         ]
     },
     "Chiefs": { 
@@ -274,6 +358,10 @@ const nflDatabase = {
             { name: "Kelce", pos: "TE", td: 3, yds: "310 yds", rec: "24/32 rec", marketOdds: 2.05, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:80, td:1}, {w:3, yds:60, td:0}, {w:4, yds:100, td:1}] },
             { name: "Worthy", pos: "WR", td: 2, yds: "110 yds", rec: "8/13 rec", marketOdds: 2.60, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
             { name: "Mahomes", pos: "QB", td: 1, yds: "70 yds", rec: "Passing QB", marketOdds: 3.50, gameLog: [{w:1, yds:15, td:0}, {w:2, yds:20, td:1}, {w:3, yds:15, td:0}, {w:4, yds:20, td:0}] }
+        ],
+        defenders: [
+            { name: "Chris Jones (DT)", sacks: "4.5 Sacks", pressures: "28 Pressures", tackles: "17 Tackles", probability: "68%", status: "ACTIVE" },
+            { name: "George Karlaftis (EDGE)", sacks: "3.5 Sacks", pressures: "22 Pressures", tackles: "20 Tackles", probability: "55%", status: "ACTIVE" }
         ]
     },
     "Giants": { 
@@ -285,6 +373,10 @@ const nflDatabase = {
             { name: "Skattebo", pos: "RB", td: 2, yds: "310 yds", rec: "16/22 rec", marketOdds: 2.40, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
             { name: "Singletary", pos: "RB", td: 2, yds: "110 yds", rec: "8/12 rec", marketOdds: 2.70, gameLog: [{w:1, yds:25, td:1}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
             { name: "Nabers", pos: "WR", td: 1, yds: "290 yds", rec: "22/33 rec", marketOdds: 2.50, gameLog: [{w:1, yds:70, td:0}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] }
+        ],
+        defenders: [
+            { name: "Dexter Lawrence (DT)", sacks: "5.5 Sacks", pressures: "26 Pressures", tackles: "21 Tackles", probability: "78%", status: "ACTIVE" },
+            { name: "Brian Burns (EDGE)", sacks: "4.0 Sacks", pressures: "23 Pressures", tackles: "19 Tackles", probability: "60%", status: "ACTIVE" }
         ]
     },
     "Titans": { 
@@ -296,6 +388,10 @@ const nflDatabase = {
             { name: "Robinson", pos: "WR", td: 2, yds: "140 yds", rec: "11/16 rec", marketOdds: 2.90, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:35, td:1}, {w:3, yds:30, td:0}, {w:4, yds:35, td:0}] },
             { name: "Ayomaoyr", pos: "WR", td: 1, yds: "120 yds", rec: "9/14 rec", marketOdds: 3.40, gameLog: [{w:1, yds:25, td:0}, {w:2, yds:30, td:1}, {w:3, yds:25, td:0}, {w:4, yds:30, td:0}] },
             { name: "Pollard", pos: "RB", td: 1, yds: "210 yds", rec: "12/17 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] }
+        ],
+        defenders: [
+            { name: "Jeffery Simmons (DT)", sacks: "3.0 Sacks", pressures: "17 Pressures", tackles: "19 Tackles", probability: "48%", status: "ACTIVE" },
+            { name: "Harold Landry III (EDGE)", sacks: "4.5 Sacks", pressures: "21 Pressures", tackles: "23 Tackles", probability: "65%", status: "ACTIVE" }
         ]
     },
     "Steelers": { 
@@ -307,6 +403,10 @@ const nflDatabase = {
             { name: "Freiermuth", pos: "TE", td: 2, yds: "140 yds", rec: "12/17 rec", marketOdds: 2.70, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:35, td:1}, {w:3, yds:30, td:0}, {w:4, yds:35, td:0}] },
             { name: "Wilson", pos: "WR", td: 2, yds: "160 yds", rec: "11/18 rec", marketOdds: 2.50, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
             { name: "Harris", pos: "RB", td: 1, yds: "240 yds", rec: "9/13 rec", marketOdds: 2.30, gameLog: [{w:1, yds:55, td:0}, {w:2, yds:60, td:1}, {w:3, yds:55, td:0}, {w:4, yds:60, td:0}] }
+        ],
+        defenders: [
+            { name: "T.J. Watt (EDGE)", sacks: "7.0 Sacks", pressures: "35 Pressures", tackles: "24 Tackles", probability: "92%", status: "ACTIVE" },
+            { name: "Alex Highsmith (EDGE)", sacks: "4.0 Sacks", pressures: "22 Pressures", tackles: "18 Tackles", probability: "60%", status: "ACTIVE" }
         ]
     },
     "Bengals": { 
@@ -318,6 +418,10 @@ const nflDatabase = {
             { name: "Gesicki", pos: "TE", td: 3, yds: "160 yds", rec: "14/19 rec", marketOdds: 2.50, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:40, td:1}, {w:4, yds:45, td:0}] },
             { name: "Brown", pos: "RB", td: 2, yds: "290 yds", rec: "18/23 rec", marketOdds: 2.30, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] },
             { name: "Higgins", pos: "WR", td: 1, yds: "210 yds", rec: "15/22 rec", marketOdds: 2.60, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:50, td:0}, {w:4, yds:55, td:0}] }
+        ],
+        defenders: [
+            { name: "Trey Hendrickson (EDGE)", sacks: "6.0 Sacks", pressures: "30 Pressures", tackles: "17 Tackles", probability: "82%", status: "ACTIVE" },
+            { name: "Sam Hubbard (DE)", sacks: "2.0 Sacks", pressures: "14 Pressures", tackles: "22 Tackles", probability: "38%", status: "ACTIVE" }
         ]
     },
     "Commanders": { 
@@ -329,6 +433,10 @@ const nflDatabase = {
             { name: "Croskey-Merritt", pos: "RB", td: 2, yds: "190 yds", rec: "12/16 rec", marketOdds: 2.50, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] },
             { name: "McLaurin", pos: "WR", td: 1, yds: "141 yds", rec: "10/15 rec", marketOdds: 2.90, gameLog: [{w:1, yds:35, td:0}, {w:2, yds:35, td:1}, {w:3, yds:35, td:0}, {w:4, yds:36, td:0}] },
             { name: "Robinson Jr", pos: "RB", td: 1, yds: "220 yds", rec: "11/15 rec", marketOdds: 2.40, gameLog: [{w:1, yds:55, td:0}, {w:2, yds:55, td:1}, {w:3, yds:55, td:0}, {w:4, yds:55, td:0}] }
+        ],
+        defenders: [
+            { name: "Dorance Armstrong (DE)", sacks: "3.5 Sacks", pressures: "19 Pressures", tackles: "18 Tackles", probability: "55%", status: "ACTIVE" },
+            { name: "Frankie Luvu (LB)", sacks: "3.0 Sacks", pressures: "16 Pressures", tackles: "35 Tackles", probability: "50%", status: "ACTIVE" }
         ]
     },
     "Seahawks": { 
@@ -339,6 +447,10 @@ const nflDatabase = {
             { name: "Smith-Njigba", pos: "WR", td: 7, yds: "520 yds", rec: "35/47 rec", marketOdds: 1.60, gameLog: [{w:1, yds:120, td:2}, {w:2, yds:130, td:2}, {w:3, yds:135, td:2}, {w:4, yds:135, td:1}] },
             { name: "Kupp", pos: "TE", td: 2, yds: "150 yds", rec: "13/18 rec", marketOdds: 2.70, gameLog: [{w:1, yds:35, td:1}, {w:2, yds:40, td:1}, {w:3, yds:35, td:0}, {w:4, yds:40, td:0}] },
             { name: "Walker", pos: "RB", td: 1, yds: "270 yds", rec: "12/16 rec", marketOdds: 2.20, gameLog: [{w:1, yds:65, td:0}, {w:2, yds:70, td:1}, {w:3, yds:65, td:0}, {w:4, yds:70, td:0}] }
+        ],
+        defenders: [
+            { name: "Boye Mafe (EDGE)", sacks: "4.5 Sacks", pressures: "23 Pressures", tackles: "16 Tackles", probability: "65%", status: "ACTIVE" },
+            { name: "Leonard Williams (DT)", sacks: "3.0 Sacks", pressures: "19 Pressures", tackles: "24 Tackles", probability: "48%", status: "ACTIVE" }
         ]
     },
     "Packers": { 
@@ -350,6 +462,10 @@ const nflDatabase = {
             { name: "Golden", pos: "WR", td: 2, yds: "310 yds", rec: "19/27 rec", marketOdds: 2.50, gameLog: [{w:1, yds:75, td:1}, {w:2, yds:80, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
             { name: "Jacobs", pos: "RB", td: 2, yds: "300 yds", rec: "14/19 rec", marketOdds: 2.10, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:75, td:0}, {w:4, yds:80, td:0}] },
             { name: "Reed", pos: "WR", td: 1, yds: "240 yds", rec: "17/24 rec", marketOdds: 2.80, gameLog: [{w:1, yds:60, td:0}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:60, td:0}] }
+        ],
+        defenders: [
+            { name: "Rashan Gary (EDGE)", sacks: "4.0 Sacks", pressures: "25 Pressures", tackles: "18 Tackles", probability: "60%", status: "ACTIVE" },
+            { name: "Lukas Van Ness (DE)", sacks: "2.5 Sacks", pressures: "15 Pressures", tackles: "16 Tackles", probability: "42%", status: "ACTIVE" }
         ]
     },
     "Eagles": { 
@@ -361,6 +477,10 @@ const nflDatabase = {
             { name: "Saquon Barkley", pos: "RB", td: 3, yds: "380 yds", rec: "14/18 rec", marketOdds: 1.70, gameLog: [{w:1, yds:120, td:1}, {w:2, yds:130, td:1}, {w:3, yds:130, td:1}] },
             { name: "Wicks", pos: "WR", td: 1, yds: "147 yds", rec: "9/13 rec", marketOdds: 3.10, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:1}, {w:3, yds:52, td:0}] },
             { name: "Smith", pos: "WR", td: 1, yds: "170 yds", rec: "11/16 rec", marketOdds: 2.80, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}] }
+        ],
+        defenders: [
+            { name: "Jalen Carter (DT)", sacks: "3.5 Sacks", pressures: "20 Pressures", tackles: "19 Tackles", probability: "55%", status: "ACTIVE" },
+            { name: "Bryce Huff (EDGE)", sacks: "3.0 Sacks", pressures: "16 Pressures", tackles: "12 Tackles", probability: "50%", status: "ACTIVE" }
         ]
     },
     "Bears": { 
@@ -372,6 +492,10 @@ const nflDatabase = {
             { name: "Williams", pos: "QB", td: 2, yds: "107 yds", rec: "Passing QB", marketOdds: 3.00, gameLog: [{w:1, yds:30, td:1}, {w:2, yds:40, td:1}, {w:3, yds:37, td:0}] },
             { name: "Monangai", pos: "RB", td: 1, yds: "182 yds", rec: "8/11 rec", marketOdds: 3.20, gameLog: [{w:1, yds:50, td:0}, {w:2, yds:60, td:1}, {w:3, yds:72, td:0}] },
             { name: "Moore", pos: "WR", td: 1, yds: "210 yds", rec: "15/22 rec", marketOdds: 2.70, gameLog: [{w:1, yds:65, td:0}, {w:2, yds:70, td:1}, {w:3, yds:75, td:0}] }
+        ],
+        defenders: [
+            { name: "Montez Sweat (EDGE)", sacks: "4.5 Sacks", pressures: "22 Pressures", tackles: "18 Tackles", probability: "68%", status: "ACTIVE" },
+            { name: "Gervon Dexter Sr. (DT)", sacks: "3.0 Sacks", pressures: "15 Pressures", tackles: "20 Tackles", probability: "45%", status: "ACTIVE" }
         ]
     },
     "Falcons": { 
@@ -383,6 +507,10 @@ const nflDatabase = {
             { name: "Brian Robinson", pos: "RB", td: 2, yds: "190 yds", rec: "12/17 rec", marketOdds: 2.60, gameLog: [{w:1, yds:45, td:1}, {w:2, yds:45, td:1}, {w:3, yds:50, td:0}, {w:4, yds:50, td:0}] },
             { name: "London", pos: "WR", td: 2, yds: "290 yds", rec: "21/30 rec", marketOdds: 2.40, gameLog: [{w:1, yds:70, td:1}, {w:2, yds:75, td:1}, {w:3, yds:70, td:0}, {w:4, yds:75, td:0}] },
             { name: "Pitts", pos: "TE", td: 1, yds: "180 yds", rec: "14/20 rec", marketOdds: 3.10, gameLog: [{w:1, yds:40, td:0}, {w:2, yds:45, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] }
+        ],
+        defenders: [
+            { name: "Matthew Judon (EDGE)", sacks: "4.0 Sacks", pressures: "21 Pressures", tackles: "19 Tackles", probability: "60%", status: "ACTIVE" },
+            { name: "Grady Jarrett (DT)", sacks: "2.5 Sacks", pressures: "16 Pressures", tackles: "23 Tackles", probability: "42%", status: "ACTIVE" }
         ]
     }
 };
@@ -390,7 +518,7 @@ const nflDatabase = {
 let nflSchedule = {
     "5": [
         { away: "New York Jets", home: "Miami Dolphins", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "Baltimore Ravens", home: "Houston Texans", weather: "🏟️ Sisäkenttä (Dome)" },
+        { away: "Baltimore Ravens", home: "Houston Texans", weather: "🏟️️ Sisäkenttä (Dome)" },
         { away: "Carolina Panthers", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
         { away: "Minnesota Vikings", home: "Cleveland Browns", weather: "🌧️ Sade (10°C)" },
         { away: "New England Patriots", home: "Denver Broncos", weather: "☀ Poutainen (14°C)" },
@@ -473,7 +601,6 @@ function calculateTeamInjuryFactor(injuredList) {
     return Math.max(0.5, penalty);
 }
 
-// Dome vs Ulkokenttä -sääalgoritmi
 function calculateWeatherFactor(weatherString) {
     if (weatherString.includes("Dome") || weatherString.includes("Sisäkenttä")) {
         return 1.03; 
@@ -571,7 +698,7 @@ function runMonteCarloSimulation() {
     document.getElementById('awayTitle').innerText = `${match.away} (${awayData.record})`;
 
     document.getElementById('homeStats').innerHTML = `
-        🌤️ <strong>Olosuhteet:</strong> ${match.weather}<br>
+        🌤️️ <strong>Olosuhteet:</strong> ${match.weather}<br>
         📊 <strong>Hyökkäys / peli:</strong> Heitto ${homePassPG} yds | Juoksu ${homeRushPG} yds<br>
         🛡 <strong>Vastustaja (${match.away}) päästää / peli:</strong> Heitto ${awayOppPassPG} yds | Juoksu ${awayOppRushPG} yds<br>
         ⚡ <strong>TD-arvio:</strong> <span style="color: #38bdf8;">${homeTDEval}</span>
@@ -596,8 +723,8 @@ function runMonteCarloSimulation() {
     let homeEstimatedTDs = avgHomeScore / 7;
     let awayEstimatedTDs = avgAwayScore / 7;
 
-    renderPlayersWithRecencyAndPoisson('homePlayers', homeData.players, homeEstimatedTDs, awayData.defensiveVsPosition, homeData.injuredPlayers);
-    renderPlayersWithRecencyAndPoisson('awayPlayers', awayData.players, awayEstimatedTDs, homeData.defensiveVsPosition, awayData.injuredPlayers);
+    renderPlayersWithRecencyAndPoisson('homePlayers', homeData.players, homeData.defenders, homeEstimatedTDs, awayData.defensiveVsPosition, homeData.injuredPlayers);
+    renderPlayersWithRecencyAndPoisson('awayPlayers', awayData.players, awayData.defenders, awayEstimatedTDs, homeData.defensiveVsPosition, awayData.injuredPlayers);
 
     renderSmartBettingTipsWithValue(match, homeData.players, awayData.players, homeEstimatedTDs, awayEstimatedTDs, awayData.defensiveVsPosition, homeData.defensiveVsPosition);
 }
@@ -613,8 +740,8 @@ function getTDProbabilityText(teamPass, teamRush, oppPassAllowed, oppRushAllowed
     return "Matala todennäköisyys; vaikeuksia edetä red zonelle asti";
 }
 
-// Pelaajien renderöinti otteluhistorialla, vireellä ja pelipaikkakohtaisella puolustuksella
-function renderPlayersWithRecencyAndPoisson(containerId, players, teamEstimatedTDs, oppDefVsPos, injuredList) {
+// Päivitetty renderöinti, joka piirtää hyökkääjien lisäksi myös puolustuksen avainpelaajat ja säkkitodennäköisyydet
+function renderPlayersWithRecencyAndPoisson(containerId, players, defenders, teamEstimatedTDs, oppDefVsPos, injuredList) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
 
@@ -630,7 +757,7 @@ function renderPlayersWithRecencyAndPoisson(containerId, players, teamEstimatedT
         }
     });
 
-    processedPlayers = uniquePlayers.map(p => {
+    let processedPlayers = uniquePlayers.map(p => {
         let isInjured = injuredNames.some(inj => inj.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(inj));
         return { ...p, isInjured };
     });
@@ -639,6 +766,7 @@ function renderPlayersWithRecencyAndPoisson(containerId, players, teamEstimatedT
     let totalHealthyTDs = healthyPlayers.reduce((sum, p) => sum + p.td, 0);
     if (totalHealthyTDs === 0) totalHealthyTDs = 1;
 
+    // Piirretään hyökkäyspelaajat
     processedPlayers.forEach(p => {
         let recentFormMultiplier = 1.0;
         if (p.gameLog && p.gameLog.length > 0) {
@@ -686,9 +814,41 @@ function renderPlayersWithRecencyAndPoisson(containerId, players, teamEstimatedT
         `;
         container.appendChild(div);
     });
+
+    // Lisätään puolustuksen avainpelaajat ja säkkitodennäköisyydet osio hyökkäyksen alle
+    if (defenders && defenders.length > 0) {
+        const defenseTitle = document.createElement('div');
+        defenseTitle.className = 'players-section-title';
+        defenseTitle.style.cssText = 'margin-top: 20px; margin-bottom: 8px; font-weight: bold; color: #38bdf8; font-size: 14px; border-top: 1px solid #334155; pt: 10px;';
+        defenseTitle.innerHTML = '⭐ Puolustuksen Avainpelaajat & Säkkitodennäköisyydet';
+        container.appendChild(defenseTitle);
+
+        defenders.forEach(def => {
+            const isOut = def.status === "OUT";
+            const defDiv = document.createElement('div');
+            defDiv.className = `player-row ${isOut ? 'player-out' : ''}`;
+            if (isOut) {
+                defDiv.style.borderColor = '#ef4444';
+                defDiv.style.backgroundColor = '#450a0a';
+            }
+
+            defDiv.innerHTML = `
+                <div>
+                    <strong>${def.name}</strong> ${isOut ? '<span style="color: #f87171; font-size: 11px; font-weight: bold;">(OUT 🚑)</span>' : ''}
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+                        <span>${def.sacks}</span> | <span>${def.pressures}</span> | <span>${def.tackles}</span>
+                    </div>
+                </div>
+                <div class="odd-badge" style="${isOut ? 'background: #7f1d1d; border-color: #ef4444;' : ''}">
+                    <span>1+ Sack</span>
+                    <strong style="${isOut ? 'color: #fca5a5;' : ''}">${isOut ? 'OUT' : def.probability}</strong>
+                </div>
+            `;
+            container.appendChild(defDiv);
+        });
+    }
 }
 
-// Vetovihjeet ja markkinoiden ylikertoimet (Value Bets)
 function renderSmartBettingTipsWithValue(match, homePlayers, awayPlayers, homeEstimatedTDs, awayEstimatedTDs, homeOppDef, awayOppDef) {
     let tipBox = document.getElementById('smartBettingTipsContainer');
     if (!tipBox) {
