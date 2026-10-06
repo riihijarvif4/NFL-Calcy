@@ -18,6 +18,8 @@ body {
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
+    <div class="referee-stripe"></div>
+
 }
 
 /* Aidot NFL-tuomarin raidat yläreunaan */
