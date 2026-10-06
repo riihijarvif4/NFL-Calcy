@@ -549,6 +549,7 @@ const nflDatabase = {
     }
 };
 
+
 let nflSchedule = {
     "5": [
         { away: "New York Jets", home: "Miami Dolphins", weather: "🏟 Sisäkenttä (Dome)" },
