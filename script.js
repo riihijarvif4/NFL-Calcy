@@ -2,7 +2,7 @@
 async function fetchRealTimeNFLData(weekNumber = 5) {
     const cacheKey = `nfl_data_week_${weekNumber}_2026`;
     const cachedData = localStorage.getItem(cacheKey);
-    
+   
     if (cachedData) {
         try {
             const parsed = JSON.parse(cachedData);
