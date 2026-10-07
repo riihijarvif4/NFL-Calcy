@@ -73,28 +73,32 @@ function calculateTeamInjuryFactor(injuredList) {
     if (!injuredList || !Array.isArray(injuredList)) return 1.0;
     let penalty = 1.0;
     injuredList.forEach(p => {
-        const multiplier = (p.status && p.status.includes("Out")) ? 1.0 : 0.5;
-        if (p.pos && p.pos.includes("QB")) penalty -= (0.22 * multiplier);
-        else if (p.pos && (p.pos.includes("RB") || p.pos.includes("WR") || p.pos.includes("TE"))) penalty -= (0.05 * multiplier);
+        const multiplier = (p.status && String(p.status).includes("Out")) ? 1.0 : 0.5;
+        const pPos = p.pos ? String(p.pos) : "";
+        if (pPos.includes("QB")) penalty -= (0.22 * multiplier);
+        else if (pPos.includes("RB") || pPos.includes("WR") || pPos.includes("TE")) penalty -= (0.05 * multiplier);
         else penalty -= (0.03 * multiplier);
     });
     return Math.max(0.5, penalty);
 }
 
 function calculateWeatherFactor(weatherString) {
-    if (weatherString.includes("Dome") || weatherString.includes("Sisäkenttä")) return 1.03;
-    if (weatherString.includes("Sade") || weatherString.includes("Rankkasade")) return 0.90;
-    if (weatherString.includes("Tuulinen")) return 0.94;
-    if (weatherString.includes("Viileä") || weatherString.includes("Kylmä")) return 0.97;
+    const wStr = weatherString ? String(weatherString) : "";
+    if (wStr.includes("Dome") || wStr.includes("Sisäkenttä")) return 1.03;
+    if (wStr.includes("Sade") || wStr.includes("Rankkasade")) return 0.90;
+    if (wStr.includes("Tuulinen")) return 0.94;
+    if (wStr.includes("Viileä") || wStr.includes("Kylmä")) return 0.97;
     return 1.0;
 }
 
 function getWeatherPositionMultiplier(pos, weatherString) {
     if (!weatherString || !pos) return 1.0;
-    const isBadWeather = weatherString.includes("Sade") || weatherString.includes("Rankkasade") || weatherString.includes("Tuulinen");
+    const wStr = String(weatherString);
+    const pStr = String(pos);
+    const isBadWeather = wStr.includes("Sade") || wStr.includes("Rankkasade") || wStr.includes("Tuulinen");
     if (isBadWeather) {
-        if (pos.includes("WR") || pos.includes("TE")) return 0.92;
-        if (pos.includes("RB")) return 1.08;
+        if (pStr.includes("WR") || pStr.includes("TE")) return 0.92;
+        if (pStr.includes("RB")) return 1.08;
     }
     return 1.0;
 }
@@ -105,7 +109,8 @@ function calculateGameLogMomentum(player) {
     let momentumBoost = 0;
     recentGames.forEach(game => {
         if (typeof game === 'object' && game !== null) {
-            if ((game.td && game.td > 0) || (game.stats && game.stats.includes('TD'))) {
+            const gameStats = game.stats ? String(game.stats) : "";
+            if ((game.td && game.td > 0) || gameStats.includes('TD')) {
                 momentumBoost += 0.08;
             }
         } else if (typeof game === 'string' && game.includes('TD')) {
@@ -141,20 +146,21 @@ function getRandomPoisson(lambda) {
 
 function getPlayedGamesCount(recordStr) {
     if (!recordStr) return 4;
-    const parts = recordStr.split('-');
+    const parts = String(recordStr).split('-');
     const played = parseInt(parts[0]) + parseInt(parts[1]);
     return played > 0 ? played : 4;
 }
 
 function isPlayerOut(playerName, injuredList) {
     if (!injuredList || !Array.isArray(injuredList)) return false;
-    return injuredList.some(p => p.name === playerName && p.status && p.status.includes("Out"));
+    return injuredList.some(p => p.name === playerName && p.status && String(p.status).includes("Out"));
 }
 
 function extractTargets(recStr) {
-    if (!recStr || typeof recStr !== 'string') return 0;
-    if (recStr.includes('/')) {
-        const parts = recStr.split('/');
+    if (!recStr) return 0;
+    const rStr = String(recStr);
+    if (rStr.includes('/')) {
+        const parts = rStr.split('/');
         const t = parseInt(parts[1]);
         return isNaN(t) ? 0 : t;
     }
@@ -279,38 +285,41 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
 
     playersList.forEach(player => {
         const isOut = isPlayerOut(player.name, injuredList);
-        const isQB = player.pos && player.pos.includes("QB");
+        const posStr = player.pos ? String(player.pos) : "";
+        const isQB = posStr.includes("QB");
         
         let statTd = player.td || 0;
         
         let statYds = 0;
-        if (player.yds && player.yds.includes('/')) {
-            const parts = player.yds.split('/');
+        const ydsStr = player.yds !== undefined && player.yds !== null ? String(player.yds) : "";
+        
+        if (ydsStr.includes('/')) {
+            const parts = ydsStr.split('/');
             if (isQB) {
-                const rushPart = parts.find(p => p.includes('rush')) || parts[1];
+                const rushPart = parts.find(p => p && String(p).includes('rush')) || parts[1];
                 statYds = parseInt(rushPart) || 0;
             } else {
                 statYds = parseInt(parts[0]) || 100;
             }
         } else {
-            statYds = parseInt(player.yds) || 100;
+            statYds = parseInt(ydsStr) || 100;
         }
 
         let targetsCount = extractTargets(player.rec);
         
         let positionWeight = 12;
-        if (player.pos && player.pos.includes("RB")) positionWeight = 32;
-        else if (player.pos && player.pos.includes("WR")) positionWeight = 26;
-        else if (player.pos && player.pos.includes("TE")) positionWeight = 20;
+        if (posStr.includes("RB")) positionWeight = 32;
+        else if (posStr.includes("WR")) positionWeight = 26;
+        else if (posStr.includes("TE")) positionWeight = 20;
         else if (isQB) {
-            const isDualThreat = player.yds && player.yds.includes("rush") && statYds > 75;
+            const isDualThreat = ydsStr.includes("rush") && statYds > 75;
             positionWeight = isDualThreat ? 16 : 2;
         }
 
         let matchMultiplier = 1.0;
-        if (player.pos && player.pos.includes("RB")) {
+        if (posStr.includes("RB")) {
             matchMultiplier = opponentRushDefYPG / 100;
-        } else if (player.pos && (player.pos.includes("WR") || player.pos.includes("TE"))) {
+        } else if (posStr.includes("WR") || posStr.includes("TE")) {
             matchMultiplier = opponentPassDefYPG / 210;
         } else if (isQB) {
             matchMultiplier = opponentRushDefYPG / 110;
@@ -326,18 +335,16 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         let probability = (rawProductivity * matchMultiplier * momentumMultiplier * weatherPosMultiplier * (estimatedTeamTDs / 2.8));
         
         if (isQB) {
-            const isDualThreat = player.yds && player.yds.includes("rush") && statYds > 75;
+            const isDualThreat = ydsStr.includes("rush") && statYds > 75;
             if (!isDualThreat) {
                 probability = statTd > 0 ? (statTd * 4.0) : 3.0;
             }
         }
 
         const tdProbability = isOut ? 0 : Math.min(72, Math.max(2, Math.round(probability)));
-
-        // Tarkistetaanko onko pelaaja liekeissä (momentum-buusti yli 1.0)
         const isHot = momentumMultiplier > 1.0;
 
-        let statsText = player.rec ? `${player.rec} | ${player.yds || ''}` : `${player.pos} | ${player.yds || ''}`;
+        let statsText = player.rec ? `${player.rec} | ${player.yds || ''}` : `${player.pos || ''} | ${player.yds || ''}`;
         if (player.td !== undefined) {
             statsText += ` | TD:t: <strong>${player.td}</strong>`;
         }
@@ -349,11 +356,10 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         }
 
         const row = document.createElement('div');
-        // Lisätään 'hot'-luokka riville, jos pelaaja on vireessä
         row.className = `player-row${isHot && !isOut ? ' hot' : ''}`;
         row.innerHTML = `
             <div>
-                <strong>${player.name}</strong> (${player.pos})
+                <strong>${player.name}</strong> (${player.pos || ''})
                 <span>${statsText}</span>
             </div>
             <div class="odd-badge" style="${isOut ? 'opacity: 0.5;' : ''}">
