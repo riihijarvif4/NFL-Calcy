@@ -31,7 +31,6 @@ window.addEventListener('DOMContentLoaded', () => {
         matchSelect.innerHTML = '';
         const matches = nflSchedule[currentWeek] || [];
 
-        // Ryhmitellään pelit päivämäärän mukaan
         const groupedMatches = {};
         matches.forEach((m, index) => {
             if (!groupedMatches[m.date]) {
@@ -40,7 +39,6 @@ window.addEventListener('DOMContentLoaded', () => {
             groupedMatches[m.date].push({ ...m, originalIndex: index });
         });
 
-        // Luodaan valikkoon optgroup-ryhmät päivittäin
         for (const [date, dayMatches] of Object.entries(groupedMatches)) {
             const group = document.createElement('optgroup');
             group.label = date;
@@ -84,19 +82,11 @@ function calculateTeamInjuryFactor(injuredList) {
 }
 
 function calculateWeatherFactor(weatherString) {
-    if (weatherString.includes("Dome") || weatherString.includes("Sisäkenttä")) {
-        return 1.03; 
-    }
-    if (weatherString.includes("Sade") || weatherString.includes("Rankkasade")) {
-        return 0.90; 
-    }
-    if (weatherString.includes("Tuulinen")) {
-        return 0.94; 
-    }
-    if (weatherString.includes("Viileä") || weatherString.includes("Kylmä")) {
-        return 0.97;
-    }
-    return 1.0; 
+    if (weatherString.includes("Dome") || weatherString.includes("Sisäkenttä")) return 1.03;
+    if (weatherString.includes("Sade") || weatherString.includes("Rankkasade")) return 0.90;
+    if (weatherString.includes("Tuulinen")) return 0.94;
+    if (weatherString.includes("Viileä") || weatherString.includes("Kylmä")) return 0.97;
+    return 1.0;
 }
 
 function getClosestValidScore(rawScore) {
@@ -110,6 +100,18 @@ function getClosestValidScore(rawScore) {
         }
     }
     return closest;
+}
+
+// Poisson-generaattori tarkkaan lopputulosmallinnukseen
+function getRandomPoisson(lambda) {
+    let L = Math.exp(-lambda);
+    let k = 0;
+    let p = 1;
+    do {
+        k++;
+        p *= Math.random();
+    } while (p > L);
+    return k - 1;
 }
 
 function runMonteCarloSimulation() {
@@ -132,20 +134,31 @@ function runMonteCarloSimulation() {
 
     let homeInjuryPenalty = calculateTeamInjuryFactor(homeData?.injuredPlayers);
     let awayInjuryPenalty = calculateTeamInjuryFactor(awayData?.injuredPlayers);
-
     let weatherFactor = calculateWeatherFactor(match.weather);
+
+    // Otetaan huomioon hyökkäys- ja puolustusvuodot (jaardit)
+    const homePassOffense = homeData?.pass || 900;
+    const homeRushOffense = homeData?.rush || 400;
+    const awayPassDefense = awayData?.allowedPass || 900;
+    const awayRushDefense = awayData?.allowedRush || 400;
+
+    const awayPassOffense = awayData?.pass || 900;
+    const awayRushOffense = awayData?.rush || 400;
+    const homePassDefense = homeData?.allowedPass || 900;
+    const homeRushDefense = homeData?.allowedRush || 400;
+
+    // Lasketut odotusarvot (lambdat) huomioiden vastustajan puolustuksen vuodot
+    const homeLambda = Math.max(7, (((homePassOffense + awayPassDefense) / 1800) * 11 + ((homeRushOffense + awayRushDefense) / 800) * 3) * homeInjuryPenalty * weatherFactor * 0.75);
+    const awayLambda = Math.max(7, (((awayPassOffense + homePassDefense) / 1800) * 11 + ((awayRushOffense + homeRushDefense) / 800) * 3) * awayInjuryPenalty * weatherFactor * 0.72);
 
     const SIM_ITERATIONS = 1000;
     let homeWins = 0;
     let homeScoreSum = 0;
     let awayScoreSum = 0;
 
-    const homeBaseOffense = ((homeData?.rush || 400) + (homeData?.pass || 900)) / 40 * homeInjuryPenalty * weatherFactor;
-    const awayBaseOffense = ((awayData?.rush || 400) + (awayData?.pass || 900)) / 40 * awayInjuryPenalty * weatherFactor;
-
     for (let i = 0; i < SIM_ITERATIONS; i++) {
-        let homeRaw = homeBaseOffense * (0.85 + Math.random() * 0.30);
-        let awayRaw = awayBaseOffense * (0.85 + Math.random() * 0.30);
+        let homeRaw = getRandomPoisson(homeLambda) * 3;
+        let awayRaw = getRandomPoisson(awayLambda) * 3;
 
         let homeScore = getClosestValidScore(homeRaw);
         let awayScore = getClosestValidScore(awayRaw);
@@ -169,36 +182,52 @@ function runMonteCarloSimulation() {
     if (document.getElementById('awayWinProb')) document.getElementById('awayWinProb').textContent = `${match.away}: ${awayWinPct}%`;
     if (document.getElementById('probBar')) document.getElementById('probBar').style.width = `${homeWinPct}%`;
 
+    // Päivitetään joukkuelaatikot jaarditiedoilla (näkyy mikä vuotaa ja dataa H2H-vertailuun)
     if (document.getElementById('homeTitle')) document.getElementById('homeTitle').textContent = `Kotijoukkue: ${match.home} (${homeData.record || "0-0"})`;
     if (document.getElementById('homeStats')) {
         document.getElementById('homeStats').innerHTML = `
-            Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
-            Sää: ${match.weather}<br>
-            Loukkaantumiset: ${homeData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}<br>
-            Seuraava ottelu: ${homeData.scheduleStatus || 'Ei tietoa'}
+            📅 Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
+            ⛅ Sää: ${match.weather}<br>
+            📊 <strong>Hyökkäysjaardit:</strong> Syöttö ${homePassOffense} | Juoksu ${homeRushOffense}<br>
+            🛡️ <strong>Puolustus (Sallitut jaardit / Vuoto):</strong> Syöttöä ${homePassDefense} | Juoksua ${homeRushDefense}<br>
+            ⚠️ Loukkaantumiset: ${homeData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}
         `;
     }
 
     if (document.getElementById('awayTitle')) document.getElementById('awayTitle').textContent = `Vierasjoukkue: ${match.away} (${awayData.record || "0-0"})`;
     if (document.getElementById('awayStats')) {
         document.getElementById('awayStats').innerHTML = `
-            Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
-            Sää: ${match.weather}<br>
-            Loukkaantumiset: ${awayData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}<br>
-            Seuraava ottelu: ${awayData.scheduleStatus || 'Ei tietoa'}
+            📅 Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
+            ⛅ Sää: ${match.weather}<br>
+            📊 <strong>Hyökkäysjaardit:</strong> Syöttö ${awayPassOffense} | Juoksu ${awayRushOffense}<br>
+            🛡️ <strong>Puolustus (Sallitut jaardit / Vuoto):</strong> Syöttöä ${awayPassDefense} | Juoksua ${awayRushDefense}<br>
+            ⚠️ Loukkaantumiset: ${awayData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}
         `;
     }
 
-    renderPlayers('homePlayers', homeData.players);
-    renderPlayers('awayPlayers', awayData.players);
+    renderPlayers('homePlayers', homeData.players, avgHomeScore, awayPassDefense, awayRushDefense);
+    renderPlayers('awayPlayers', awayData.players, avgAwayScore, homePassDefense, homeRushDefense);
 }
 
-function renderPlayers(containerId, playersList) {
+function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassDef, opponentRushDef) {
     const container = document.getElementById(containerId);
     if (!container || !playersList) return;
 
     container.innerHTML = '';
     playersList.forEach(player => {
+        let baseChance = 25;
+        if (player.pos === "RB") baseChance = 42;
+        else if (player.pos === "WR") baseChance = 38;
+        else if (player.pos === "TE") baseChance = 30;
+        else if (player.pos === "QB") baseChance = 20; // Vain juoksu/vastaanotto-TD sääntöjen mukaisesti
+
+        // Tarkka Anytime TD -laskenta vastustajan puolustuksen vuotojen ja joukkueen maalimäärän mukaan
+        let defMultiplier = 1.0;
+        if (player.pos === "RB") defMultiplier = (opponentRushDef / 400);
+        else if (player.pos === "WR" || player.pos === "TE") defMultiplier = (opponentPassDef / 900);
+
+        const tdProbability = Math.min(96, Math.max(4, Math.round(baseChance * (teamOffenseScore / 26) * defMultiplier)));
+
         const row = document.createElement('div');
         row.className = 'player-row';
         row.innerHTML = `
@@ -207,8 +236,8 @@ function renderPlayers(containerId, playersList) {
                 <span>${player.rec || ''} | ${player.yds || ''}</span>
             </div>
             <div class="odd-badge">
-                <span>Markkinakerroin</span>
-                <strong>${player.marketOdds ? player.marketOdds.toFixed(2) : '-'}</strong>
+                <span>Anytime TD</span>
+                <strong>${tdProbability}%</strong>
             </div>
         `;
         container.appendChild(row);
