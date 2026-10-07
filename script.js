@@ -120,7 +120,6 @@ function getPlayedGamesCount(recordStr) {
     return played > 0 ? played : 4;
 }
 
-// Tarkistetaan onko yksittäinen pelaaja loukkaantunut (Out)
 function isPlayerOut(playerName, injuredList) {
     if (!injuredList || !Array.isArray(injuredList)) return false;
     return injuredList.some(p => p.name === playerName && p.status && p.status.includes("Out"));
@@ -161,11 +160,10 @@ function runMonteCarloSimulation() {
     const awayPassDefYPG = Math.round((awayData?.allowedPass || 900) / awayGames);
     const awayRushDefYPG = Math.round((awayData?.allowedRush || 400) / awayGames);
 
-    // H2H-historian painotus (jos datasta löytyy h2h-kenttä, hyödynnetään sitä)
     let h2hHomeBoost = 1.0;
     let h2hAwayBoost = 1.0;
     if (homeData.h2h && homeData.h2h[awayKey]) {
-        const h2h = homeData.h2h[awayKey]; // esim. { wins: 2, losses: 1 }
+        const h2h = homeData.h2h[awayKey];
         const totalMeetings = h2h.wins + h2h.losses;
         if (totalMeetings > 0) {
             h2hHomeBoost += ((h2h.wins / totalMeetings) - 0.5) * 0.15;
@@ -173,10 +171,11 @@ function runMonteCarloSimulation() {
         }
     }
 
-    const homeFieldAdvantage = 0.8;
+    const homeFieldAdvantage = 1.2; // Palautettu oikea kotikenttäetupiste
 
-    const homeLambda = Math.max(3.5, (((homePassYPG * 0.55 + awayPassDefYPG * 0.45) / 240 + (homeRushYPG * 0.55 + awayRushDefYPG * 0.45) / 110) * h2hHomeBoost) * homeInjuryPenalty * weatherFactor * 1.15 + homeFieldAdvantage);
-    const awayLambda = Math.max(3.0, (((awayPassYPG * 0.55 + homePassDefYPG * 0.45) / 240 + (awayRushYPG * 0.55 + homeRushDefYPG * 0.45) / 110) * h2hAwayBoost) * awayInjuryPenalty * weatherFactor * 1.10);
+    // Korjatut lambdat, jotka tuottavat normaaleja NFL-pistemääriä (~20-28 pistettä)
+    const homeLambda = Math.max(5.0, (((homePassYPG * 0.55 + awayPassDefYPG * 0.45) / 180 + (homeRushYPG * 0.55 + awayRushDefYPG * 0.45) / 80) * h2hHomeBoost) * homeInjuryPenalty * weatherFactor * 2.1 + homeFieldAdvantage);
+    const awayLambda = Math.max(4.5, (((awayPassYPG * 0.55 + homePassDefYPG * 0.45) / 180 + (awayRushYPG * 0.55 + homeRushDefYPG * 0.45) / 80) * h2hAwayBoost) * awayInjuryPenalty * weatherFactor * 2.0);
 
     const SIM_ITERATIONS = 1000;
     let homeWins = 0;
@@ -184,11 +183,11 @@ function runMonteCarloSimulation() {
     let awayScoreSum = 0;
 
     for (let i = 0; i < SIM_ITERATIONS; i++) {
-        let homeRaw = getRandomPoisson(homeLambda) * 3.2 + (Math.random() * 2 - 1);
-        let awayRaw = getRandomPoisson(awayLambda) * 3.2 + (Math.random() * 2 - 1);
+        let homeRaw = getRandomPoisson(homeLambda) * 3.5 + (Math.random() * 4 - 2);
+        let awayRaw = getRandomPoisson(awayLambda) * 3.5 + (Math.random() * 4 - 2);
 
-        let homeScore = getClosestValidScore(Math.max(0, homeRaw));
-        let awayScore = getClosestValidScore(Math.max(0, awayRaw));
+        let homeScore = getClosestValidScore(Math.max(3, homeRaw));
+        let awayScore = getClosestValidScore(Math.max(3, awayRaw));
 
         homeScoreSum += homeScore;
         awayScoreSum += awayScore;
@@ -243,7 +242,6 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
 
     container.innerHTML = '';
     playersList.forEach(player => {
-        // Jos pelaaja on merkitty loukkaantuneeksi (Out), TD-todennäköisyys on 0%
         const isOut = isPlayerOut(player.name, injuredList);
         
         let baseChance = 25;
