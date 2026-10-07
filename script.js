@@ -33,7 +33,7 @@ async function fetchRealTimeNFLData(weekNumber = 5) {
     }
 }
 
-// Täydellinen 32 joukkueen NFL-tietokanta (Tarkat, aidot viralliset TD-tilastot)
+// Täydellinen 32 joukkueen NFL-tietokanta (Kaikki alkuperäiset pelaajat palautettu + tilastokorjaukset)
 const nflDatabase = {
     "Cardinals": {
         record: "1-3", games: 4, rush: 370, pass: 890, oppPass: 1040, oppRush: 490, oppTD: 14, turnovers: 7, sacks: 12, redZonePct: 48, thirdDownPct: 36, penalties: 28,
@@ -168,8 +168,8 @@ const nflDatabase = {
         injuredPlayers: [{name: "Jalen Thompson", pos: "S"}, {name: "Jonathan Bullard", pos: "DT"}, {name: "P.J. Locke", pos: "S"}],
         defensiveVsPosition: { vsWR: { allowedYdsPerGame: 225, allowedTDs: 4 }, vsTE: { allowedYdsPerGame: 60, allowedTDs: 2 }, vsRB: { allowedYdsPerGame: 95, allowedTDs: 3 } },
         players: [
+            { name: "CeeDee Lamb", pos: "WR", td: 4, yds: "498 yds", rec: "37/45 rec", marketOdds: 1.85, gameLog: [{w:1, yds:44, td:0}, {w:2, yds:153, td:1}, {w:3, yds:112, td:1}, {w:4, yds:189, td:2}] },
             { name: "J. Williams", pos: "RB", td: 6, yds: "310 yds", rec: "13/18 rec", marketOdds: 2.40, gameLog: [{w:1, yds:70, td:2}, {w:2, yds:75, td:1}, {w:3, yds:80, td:2}, {w:4, yds:85, td:1}] },
-            { name: "CeeDee Lamb", pos: "WR", td: 3, yds: "380 yds", rec: "27/38 rec", marketOdds: 1.85, gameLog: [{w:1, yds:90, td:1}, {w:2, yds:95, td:1}, {w:3, yds:100, td:1}, {w:4, yds:95, td:0}] },
             { name: "George Pickens", pos: "WR", td: 2, yds: "250 yds", rec: "17/25 rec", marketOdds: 2.30, gameLog: [{w:1, yds:60, td:1}, {w:2, yds:65, td:1}, {w:3, yds:60, td:0}, {w:4, yds:65, td:0}] },
             { name: "Jake Ferguson", pos: "TE", td: 2, yds: "240 yds", rec: "21/28 rec", marketOdds: 2.30, gameLog: [{w:1, yds:55, td:1}, {w:2, yds:60, td:1}, {w:3, yds:60, td:0}, {w:4, yds:65, td:0}] },
             { name: "Kavontae Turpin", pos: "WR", td: 1, yds: "180 yds", rec: "12/17 rec", marketOdds: 3.20, gameLog: [{w:1, yds:45, td:0}, {w:2, yds:45, td:1}, {w:3, yds:45, td:0}, {w:4, yds:45, td:0}] }
