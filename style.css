@@ -143,3 +143,8 @@ select:focus, button:focus {
     background: linear-gradient(90deg, rgba(69, 10, 10, 0.5), rgba(40, 5, 5, 0.6)) !important;
     box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
 }
+/* Lisää tämä style.css tiedoston loppuun */
+.player-row.hot {
+    border-left: 3px solid #ff9900;
+    background: linear-gradient(90deg, rgba(255, 153, 0, 0.08) 0%, transparent 100%);
+}
