@@ -1,40 +1,48 @@
 /* --- Man Cave & NFL Sportsbook -teeman tyylit --- */
 
 :root {
-    --nfl-dark-bg: #0b0f19;
-    --nfl-card-bg: #131c2e;
+    --nfl-dark-bg: #07090e;
+    --nfl-card-bg: #101726;
     --nfl-card-border: #1e293b;
-    --nfl-neon-green: #10b981;
-    --nfl-neon-gold: #f59e0b;
-    --nfl-neon-blue: #38bdf8;
-    --nfl-accent-red: #ef4444;
+    --nfl-neon-green: #00ff87;
+    --nfl-neon-gold: #ffb703;
+    --nfl-neon-blue: #00d2ff;
+    --nfl-accent-red: #ff3366;
+    --nfl-panel-glow: rgba(0, 210, 255, 0.07);
 }
 
 body {
     background-color: var(--nfl-dark-bg);
     background-image: 
-        radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
-    color: #f8fafc;
+        radial-gradient(circle at 15% 10%, rgba(0, 210, 255, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 90%, rgba(0, 255, 135, 0.06) 0%, transparent 45%),
+        linear-gradient(to bottom, rgba(7, 9, 14, 0.8), rgba(7, 9, 14, 0.95));
+    color: #f1f5f9;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    letter-spacing: 0.2px;
 }
 
-/* Pääkontti ja kortit */
+/* Pääkontti ja paneelit (Sportsbook Lounge look) */
 .container, .panel, #smartBettingTipsContainer {
-    background: var(--nfl-card-bg) !important;
-    border: 1px solid var(--nfl-card-border) !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.03);
-    border-radius: 16px !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: linear-gradient(145deg, #101726, #0b101b) !important;
+    border: 1px solid rgba(51, 65, 85, 0.6) !important;
+    box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.7), 0 0 20px var(--nfl-panel-glow);
+    border-radius: 18px !important;
+    backdrop-filter: blur(10px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.container:hover, .panel:hover {
+    border-color: rgba(0, 210, 255, 0.3) !important;
 }
 
 /* Pelaajarivit ja kortit interaktiivisiksi */
 .player-row {
-    background: rgba(19, 28, 46, 0.6);
-    border: 1px solid #1e293b;
-    border-radius: 10px;
-    padding: 10px 14px;
-    margin-bottom: 8px;
+    background: linear-gradient(90deg, rgba(16, 23, 38, 0.8), rgba(11, 16, 27, 0.9));
+    border: 1px solid rgba(30, 41, 59, 0.8);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -42,67 +50,96 @@ body {
 }
 
 .player-row:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     border-color: var(--nfl-neon-blue);
-    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+    background: linear-gradient(90deg, rgba(20, 30, 50, 0.9), rgba(15, 22, 36, 0.95));
+    box-shadow: 0 6px 15px rgba(0, 210, 255, 0.15);
 }
 
 /* Odd-badge (kertoimet ja todennäköisyydet) */
 .odd-badge {
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 6px 12px;
+    background: linear-gradient(135deg, #1e293b, #090d16);
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    border-radius: 10px;
+    padding: 8px 14px;
     text-align: center;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(0, 210, 255, 0.05);
+}
+
+.odd-badge span {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    display: block;
 }
 
 .odd-badge strong {
     color: var(--nfl-neon-green);
-    text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(0, 255, 135, 0.5);
 }
 
 /* Ylikertoimet / Top Value Bets -laatikko */
 #smartBettingTipsContainer {
-    background: linear-gradient(145deg, #131c2e, #0f172a) !important;
-    border-left: 4px solid var(--nfl-neon-gold) !important;
-    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.1) !important;
+    background: linear-gradient(145deg, #141c2f, #0c1220) !important;
+    border-left: 5px solid var(--nfl-neon-gold) !important;
+    box-shadow: 0 10px 25px rgba(255, 183, 3, 0.12) !important;
 }
 
 #smartBettingTipsContainer h3 {
     color: var(--nfl-neon-gold) !important;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 15px;
+    letter-spacing: 1px;
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(255, 183, 3, 0.3);
 }
 
 /* Valikot ja napit (Dropdownit & Buttons) */
 select, button {
-    background-color: #1e293b !important;
-    color: #fff !important;
-    border: 1px solid #334155 !important;
-    border-radius: 8px !important;
-    padding: 8px 12px;
+    background: linear-gradient(145deg, #1e293b, #0f172a) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(51, 65, 85, 0.8) !important;
+    border-radius: 10px !important;
+    padding: 10px 16px;
     font-weight: 600;
-    transition: all 0.2s;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.25s ease;
 }
 
-select:focus, button:hover {
+select:hover, button:hover {
     border-color: var(--nfl-neon-blue) !important;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    background: linear-gradient(145deg, #25334d, #131c2e) !important;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+select:focus, button:focus {
+    border-color: var(--nfl-neon-blue) !important;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
     outline: none;
 }
 
 /* Todennäköisyyspalkki */
 #probBar {
     background: linear-gradient(90deg, var(--nfl-neon-blue), var(--nfl-neon-green)) !important;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-    height: 10px;
-    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 255, 135, 0.6);
+    height: 12px;
+    border-radius: 6px;
+}
+
+/* Tulostaulun numerot (Scoreboard LED look) */
+#homeScoreNum, #awayScoreNum {
+    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+    font-weight: 800;
+    letter-spacing: 2px;
 }
 
 /* Loukkaantuneet / OUT -tyylit */
 .player-out {
     border-color: var(--nfl-accent-red) !important;
-    background: rgba(69, 10, 10, 0.4) !important;
+    background: linear-gradient(90deg, rgba(69, 10, 10, 0.5), rgba(40, 5, 5, 0.6)) !important;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
 }
