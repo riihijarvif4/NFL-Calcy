@@ -125,6 +125,17 @@ function isPlayerOut(playerName, injuredList) {
     return injuredList.some(p => p.name === playerName && p.status && p.status.includes("Out"));
 }
 
+// Apufunktio targetien poimimiseen rec-merkkijonosta (esim. "12/16 rec" -> 16 targetia)
+function extractTargets(recStr) {
+    if (!recStr || typeof recStr !== 'string') return 0;
+    if (recStr.includes('/')) {
+        const parts = recStr.split('/');
+        const t = parseInt(parts[1]);
+        return isNaN(t) ? 0 : t;
+    }
+    return 0;
+}
+
 function runMonteCarloSimulation() {
     const selectedWeekElement = document.getElementById('weekSelect');
     const matchIndexElement = document.getElementById('matchSelect');
@@ -152,13 +163,13 @@ function runMonteCarloSimulation() {
 
     const homePassYPG = Math.round((homeData?.pass || 900) / homeGames);
     const homeRushYPG = Math.round((homeData?.rush || 400) / homeGames);
-    const homePassDefYPG = Math.round((homeData?.allowedPass || 900) / homeGames);
-    const homeRushDefYPG = Math.round((homeData?.allowedRush || 400) / homeGames);
+    const homePassDefYPG = Math.round((homeData?.oppPass || 900) / homeGames);
+    const homeRushDefYPG = Math.round((homeData?.oppRush || 400) / homeGames);
 
     const awayPassYPG = Math.round((awayData?.pass || 900) / awayGames);
     const awayRushYPG = Math.round((awayData?.rush || 400) / awayGames);
-    const awayPassDefYPG = Math.round((awayData?.allowedPass || 900) / awayGames);
-    const awayRushDefYPG = Math.round((awayData?.allowedRush || 400) / awayGames);
+    const awayPassDefYPG = Math.round((awayData?.oppPass || 900) / awayGames);
+    const awayRushDefYPG = Math.round((awayData?.oppRush || 400) / awayGames);
 
     let h2hHomeBoost = 1.0;
     let h2hAwayBoost = 1.0;
@@ -171,9 +182,8 @@ function runMonteCarloSimulation() {
         }
     }
 
-    const homeFieldAdvantage = 1.2; // Palautettu oikea kotikenttäetupiste
+    const homeFieldAdvantage = 1.2;
 
-    // Korjatut lambdat, jotka tuottavat normaaleja NFL-pistemääriä (~20-28 pistettä)
     const homeLambda = Math.max(5.0, (((homePassYPG * 0.55 + awayPassDefYPG * 0.45) / 180 + (homeRushYPG * 0.55 + awayRushDefYPG * 0.45) / 80) * h2hHomeBoost) * homeInjuryPenalty * weatherFactor * 2.1 + homeFieldAdvantage);
     const awayLambda = Math.max(4.5, (((awayPassYPG * 0.55 + homePassDefYPG * 0.45) / 180 + (awayRushYPG * 0.55 + homeRushDefYPG * 0.45) / 80) * h2hAwayBoost) * awayInjuryPenalty * weatherFactor * 2.0);
 
@@ -241,24 +251,41 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
     if (!container || !playersList) return;
 
     container.innerHTML = '';
+
     playersList.forEach(player => {
         const isOut = isPlayerOut(player.name, injuredList);
         
-        let baseChance = 25;
-        if (player.pos === "RB") baseChance = 42;
-        else if (player.pos === "WR") baseChance = 38;
-        else if (player.pos === "TE") baseChance = 30;
-        else if (player.pos === "QB") baseChance = 20;
+        let statTd = player.td || 0;
+        let statYds = parseInt(player.yds) || 100;
+        let targetsCount = extractTargets(player.rec); // Poimitaan targetit automaattisesti rec-kentästä
+        
+        let positionWeight = 22;
+        if (player.pos === "RB") positionWeight = 38;
+        else if (player.pos === "WR") positionWeight = 32;
+        else if (player.pos === "TE") positionWeight = 26;
+        else if (player.pos === "QB") positionWeight = 16;
 
-        let defMultiplier = 1.0;
-        if (player.pos === "RB") defMultiplier = (opponentRushDefYPG / 100);
-        else if (player.pos === "WR" || player.pos === "TE") defMultiplier = (opponentPassDefYPG / 225);
+        let matchMultiplier = 1.0;
+        if (player.pos === "RB") {
+            matchMultiplier = opponentRushDefYPG / 100;
+        } else if (player.pos === "WR" || player.pos === "TE") {
+            matchMultiplier = opponentPassDefYPG / 210;
+        } else if (player.pos === "QB") {
+            matchMultiplier = (opponentRushDefYPG + opponentPassDefYPG) / 310;
+        }
 
-        const tdProbability = isOut ? 0 : Math.min(96, Math.max(4, Math.round(baseChance * (teamOffenseScore / 24) * defMultiplier)));
+        // Target-bonus nostaa aktiivisten heittokohteiden todennäköisyyttä merkittävästi
+        let targetBonus = targetsCount > 0 ? (targetsCount * 0.42) : (statYds / 15);
+        let rawProductivity = positionWeight + (statTd * 7.5) + targetBonus + (statYds / 30);
+
+        let estimatedTeamTDs = Math.max(1, teamOffenseScore / 7.0);
+        let probability = (rawProductivity * matchMultiplier * (estimatedTeamTDs / 2.7));
+        
+        const tdProbability = isOut ? 0 : Math.min(94, Math.max(4, Math.round(probability)));
 
         let statsText = player.rec ? `${player.rec} | ${player.yds || ''}` : `${player.pos} | ${player.yds || ''}`;
         if (player.td !== undefined) {
-            statsText += ` | Kauden TD:t: <strong>${player.td}</strong>`;
+            statsText += ` | TD:t: <strong>${player.td}</strong>`;
         }
         if (isOut) {
             statsText += ` <span style="color: #ff4d4d; font-weight: bold;">(OUT)</span>`;
