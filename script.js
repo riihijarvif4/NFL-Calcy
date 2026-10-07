@@ -1,20 +1,21 @@
-// Manuaalinen otteluohjelma ryhmiteltynä päivittäin Suomen aikoina (EEST)
+// Virallinen NFL viikon 5 otteluohjelma (2026) Suomen aikoina (EEST)
 const nflSchedule = {
     "5": [
-        { date: "Perjantai 9.10.2026", time: "03:15", away: "Tampa Bay Buccaneers", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Jacksonville Jaguars", home: "Philadelphia Eagles", weather: "🌤 18°C, Aurinkoinen" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "New York Jets", home: "Minnesota Vikings", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "New England Patriots", home: "Miami Dolphins", weather: "🌤 26°C, Puolipilvinen" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Buffalo Bills", home: "Houston Texans", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Carolina Panthers", home: "Chicago Bears", weather: "🌥 15°C, Pilvinen" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Las Vegas Raiders", home: "Washington Commanders", weather: "🌤 20°C, Aurinkoinen" },
-        { date: "Sunnuntai 11.10.2026", time: "23:05", away: "Los Angeles Rams", home: "Green Bay Packers", weather: "❄️ 8°C, Viileä" },
-        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "Arizona Cardinals", home: "San Francisco 49ers", weather: "🌤 22°C, Aurinkoinen" },
-        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "New York Giants", home: "New Orleans Saints", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Maanantai 12.10.2026", time: "03:20", away: "Baltimore Ravens", home: "Pittsburgh Steelers", weather: "🌧 12°C, Sadetta" },
-        { date: "Maanantai 12.10.2026", time: "20:00", away: "Cincinnati Bengals", home: "Cleveland Browns", weather: "🌥 14°C, Pilvinen" },
-        { date: "Maanantai 12.10.2026", time: "20:00", away: "Dallas Cowboys", home: "Detroit Lions", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Tiistai 13.10.2026", time: "03:15", away: "Kansas City Chiefs", home: "Denver Broncos", weather: "❄️ 6°C, Tuulinen" }
+        { date: "Perjantai 9.10.2026", time: "03:15", away: "Tampa Bay Buccaneers", home: "Dallas Cowboys", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "16:30", away: "Philadelphia Eagles", home: "Jacksonville Jaguars", weather: "☁️ 15°C, Pilvinen (Lontoo)" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Las Vegas Raiders", home: "New England Patriots", weather: "❄️ 12°C, Viileä" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Chicago Bears", home: "Green Bay Packers", weather: "❄️ 9°C, Viileä" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Cincinnati Bengals", home: "Miami Dolphins", weather: "🌤 27°C, Aurinkoinen" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Minnesota Vikings", home: "New Orleans Saints", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Houston Texans", home: "Tennessee Titans", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Indianapolis Colts", home: "Pittsburgh Steelers", weather: "🌥 13°C, Pilvinen" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Cleveland Browns", home: "New York Jets", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "New York Giants", home: "Washington Commanders", weather: "🌤 17°C, Aurinkoinen" },
+        { date: "Sunnuntai 11.10.2026", time: "23:05", away: "Denver Broncos", home: "Los Angeles Chargers", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "Detroit Lions", home: "Arizona Cardinals", weather: "🌤 24°C, Aurinkoinen" },
+        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "San Francisco 49ers", home: "Seattle Seahawks", weather: "🌧 11°C, Sadetta" },
+        { date: "Maanantai 12.10.2026", time: "03:20", away: "Baltimore Ravens", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Tiistai 13.10.2026", time: "03:15", away: "Buffalo Bills", home: "Los Angeles Rams", weather: "🏟️ Sisäkenttä (Dome)" }
     ]
 };
 
