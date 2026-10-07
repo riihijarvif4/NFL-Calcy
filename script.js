@@ -69,12 +69,13 @@ window.addEventListener('DOMContentLoaded', async () => {
             };
         });
 
-        if (liveMatches.length > 0) {
+        if (liveMatches.length > 0 && typeof nflSchedule !== 'undefined') {
             nflSchedule[selectedWeek] = liveMatches;
         }
     }
 
     function updateMatches() {
+        if (!weekSelect || !matchSelect || typeof nflSchedule === 'undefined') return;
         const currentWeek = weekSelect.value;
         matchSelect.innerHTML = '';
         const matches = nflSchedule[currentWeek] || [];
@@ -97,15 +98,20 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 function findTeamKey(teamName) {
     if (teamName.includes("49ers")) return "49ers";
-    return Object.keys(nflDatabase).find(k => teamName.includes(k)) || "Chiefs";
+    // Varmistetaan yhteensopivuus nflDatabase / nflData -muuttujanimen kanssa
+    const db = typeof nflDatabase !== 'undefined' ? nflDatabase : (typeof nflData !== 'undefined' ? nflData : {});
+    return Object.keys(db).find(k => teamName.includes(k)) || "Chiefs";
 }
 
 function calculateTeamInjuryFactor(injuredList) {
+    if (!injuredList || !Array.isArray(injuredList)) return 1.0;
     let penalty = 1.0;
     injuredList.forEach(p => {
-        if (p.pos === "QB") penalty -= 0.22;
-        else if (p.pos === "RB" || p.pos === "WR" || p.pos === "TE") penalty -= 0.05;
-        else penalty -= 0.03;
+        // Jos pelaaja on virallisesti poissa ("Out"), rangaistus on suurempi
+        const multiplier = (p.status && p.status.includes("Out")) ? 1.0 : 0.5;
+        if (p.pos === "QB") penalty -= (0.22 * multiplier);
+        else if (p.pos === "RB" || p.pos === "WR" || p.pos === "TE") penalty -= (0.05 * multiplier);
+        else penalty -= (0.03 * multiplier);
     });
     return Math.max(0.5, penalty);
 }
@@ -126,25 +132,68 @@ function calculateWeatherFactor(weatherString) {
     return 1.0; 
 }
 
+function getClosestValidScore(rawScore) {
+    let closest = VALID_SCORES[0];
+    let minDiff = Math.abs(rawScore - closest);
+    for (let i = 1; i < VALID_SCORES.length; i++) {
+        let diff = Math.abs(rawScore - VALID_SCORES[i]);
+        if (diff < minDiff) {
+            minDiff = diff;
+            closest = VALID_SCORES[i];
+        }
+    }
+    return closest;
+}
+
 function runMonteCarloSimulation() {
-    const selectedWeek = document.getElementById('weekSelect').value;
-    const matchIndex = document.getElementById('matchSelect').value;
-    const match = nflSchedule[selectedWeek]?.[matchIndex];
+    const selectedWeekElement = document.getElementById('weekSelect');
+    const matchIndexElement = document.getElementById('matchSelect');
+    if (!selectedWeekElement || !matchIndexElement) return;
+
+    const selectedWeek = selectedWeekElement.value;
+    const matchIndex = matchIndexElement.value;
+    
+    const scheduleSource = typeof nflSchedule !== 'undefined' ? nflSchedule : {};
+    const match = scheduleSource[selectedWeek]?.[matchIndex];
 
     if (!match) return;
 
     const homeKey = findTeamKey(match.home);
     const awayKey = findTeamKey(match.away);
 
-    const homeData = nflDatabase[homeKey] || nflDatabase["Chiefs"];
-    const awayData = nflDatabase[awayKey] || nflDatabase["Rams"];
+    const db = typeof nflDatabase !== 'undefined' ? nflDatabase : (typeof nflData !== 'undefined' ? nflData : {});
+    const homeData = db[homeKey] || db["Chiefs"];
+    const awayData = db[awayKey] || db["Rams"];
 
-    let homeInjuryPenalty = calculateTeamInjuryFactor(homeData.injuredPlayers);
-    let awayInjuryPenalty = calculateTeamInjuryFactor(awayData.injuredPlayers);
+    let homeInjuryPenalty = calculateTeamInjuryFactor(homeData?.injuredPlayers);
+    let awayInjuryPenalty = calculateTeamInjuryFactor(awayData?.injuredPlayers);
 
     let weatherFactor = calculateWeatherFactor(match.weather);
 
     const SIM_ITERATIONS = 1000;
     let homeWins = 0;
     let homeScoreSum = 0;
-    let away
+    let awayScoreSum = 0;
+
+    // Perustehojen laskenta kauden tilastojen pohjalta
+    const homeBaseOffense = ((homeData?.rush || 400) + (homeData?.pass || 900)) / 40 * homeInjuryPenalty * weatherFactor;
+    const awayBaseOffense = ((awayData?.rush || 400) + (awayData?.pass || 900)) / 40 * awayInjuryPenalty * weatherFactor;
+
+    for (let i = 0; i < SIM_ITERATIONS; i++) {
+        // Satunnaistus Monte Carlo -ajoa varten
+        let homeRaw = homeBaseOffense * (0.85 + Math.random() * 0.30);
+        let awayRaw = awayBaseOffense * (0.85 + Math.random() * 0.30);
+
+        let homeScore = getClosestValidScore(homeRaw);
+        let awayScore = getClosestValidScore(awayRaw);
+
+        homeScoreSum += homeScore;
+        awayScoreSum += awayScore;
+
+        if (homeScore > awayScore) {
+            homeWins++;
+        }
+    }
+
+    console.log(`Simulaatio valmis (${SIM_ITERATIONS} ajoa): Kotivoittoprosentti: ${((homeWins / SIM_ITERATIONS) * 100).toFixed(1)}%`);
+}
