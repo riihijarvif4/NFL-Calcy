@@ -89,6 +89,35 @@ function calculateWeatherFactor(weatherString) {
     return 1.0;
 }
 
+// Apufunktio sään vaikutukselle pelipaikkakohtaisesti
+function getWeatherPositionMultiplier(pos, weatherString) {
+    if (!weatherString) return 1.0;
+    const isBadWeather = weatherString.includes("Sade") || weatherString.includes("Rankkasade") || weatherString.includes("Tuulinen");
+    if (isBadWeather) {
+        if (pos === "WR" || pos === "TE") return 0.92; // Heittopeli vaikeutuu säässä
+        if (pos === "RB") return 1.08; // Juoksupeli korostuu säässä
+    }
+    return 1.0;
+}
+
+// Apufunktio pelaajan vireen (gameLog) tarkistukseen
+function calculateGameLogMomentum(player) {
+    if (!player.gameLog || !Array.isArray(player.gameLog) || player.gameLog.length === 0) return 1.0;
+    // Tarkistetaan viimeiset 2 peliä
+    const recentGames = player.gameLog.slice(-2);
+    let momentumBoost = 0;
+    recentGames.forEach(game => {
+        if (typeof game === 'object' && game !== null) {
+            if ((game.td && game.td > 0) || (game.stats && game.stats.includes('TD'))) {
+                momentumBoost += 0.08;
+            }
+        } else if (typeof game === 'string' && game.includes('TD')) {
+            momentumBoost += 0.08;
+        }
+    });
+    return 1.0 + Math.min(0.18, momentumBoost); // Max 18% lisäbuusti kuumasta putkesta
+}
+
 function getClosestValidScore(rawScore) {
     let closest = VALID_SCORES[0];
     let minDiff = Math.abs(rawScore - closest);
@@ -241,11 +270,11 @@ function runMonteCarloSimulation() {
         `;
     }
 
-    renderPlayers('homePlayers', homeData.players, avgHomeScore, awayPassDefYPG, awayRushDefYPG, homeData.injuredPlayers);
-    renderPlayers('awayPlayers', awayData.players, avgAwayScore, homePassDefYPG, homeRushDefYPG, awayData.injuredPlayers);
+    renderPlayers('homePlayers', homeData.players, avgHomeScore, awayPassDefYPG, awayRushDefYPG, homeData.injuredPlayers, match.weather);
+    renderPlayers('awayPlayers', awayData.players, avgAwayScore, homePassDefYPG, homeRushDefYPG, awayData.injuredPlayers, match.weather);
 }
 
-function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassDefYPG, opponentRushDefYPG, injuredList) {
+function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassDefYPG, opponentRushDefYPG, injuredList, weatherString) {
     const container = document.getElementById(containerId);
     if (!container || !playersList) return;
 
@@ -255,17 +284,29 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         const isOut = isPlayerOut(player.name, injuredList);
         
         let statTd = player.td || 0;
-        let statYds = parseInt(player.yds) || 100;
+        
+        let statYds = 0;
+        if (player.yds && player.yds.includes('/')) {
+            const parts = player.yds.split('/');
+            if (player.pos === 'QB') {
+                const rushPart = parts.find(p => p.includes('rush')) || parts[1];
+                statYds = parseInt(rushPart) || 0;
+            } else {
+                statYds = parseInt(parts[0]) || 100;
+            }
+        } else {
+            statYds = parseInt(player.yds) || 100;
+        }
+
         let targetsCount = extractTargets(player.rec);
         
-        // Pelipaikkakohtainen peruspaino (QB:lle matala, koska heitetyt maalit eivät kerrytä Anytime TD -vetoja)
         let positionWeight = 12;
         if (player.pos === "RB") positionWeight = 32;
         else if (player.pos === "WR") positionWeight = 26;
         else if (player.pos === "TE") positionWeight = 20;
         else if (player.pos === "QB") {
-            const isDualThreat = player.yds && (player.yds.includes("rush") || player.yds.includes("Dual Threat"));
-            positionWeight = isDualThreat ? 18 : 5;
+            const isDualThreat = player.yds && player.yds.includes("rush") && statYds > 75;
+            positionWeight = isDualThreat ? 16 : 2;
         }
 
         let matchMultiplier = 1.0;
@@ -274,17 +315,27 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         } else if (player.pos === "WR" || player.pos === "TE") {
             matchMultiplier = opponentPassDefYPG / 210;
         } else if (player.pos === "QB") {
-            matchMultiplier = (opponentRushDefYPG + opponentPassDefYPG) / 320;
+            matchMultiplier = opponentRushDefYPG / 110;
         }
 
-        let targetBonus = targetsCount > 0 ? (targetsCount * 0.22) : (statYds / 40);
-        let rawProductivity = positionWeight + (statTd * 6.0) + targetBonus + (statYds / 50);
+        // Haetaan pelaajan tuore vire ja sään pelipaikkakohtainen kerroin
+        let momentumMultiplier = calculateGameLogMomentum(player);
+        let weatherPosMultiplier = getWeatherPositionMultiplier(player.pos, weatherString);
+
+        let targetBonus = targetsCount > 0 ? (targetsCount * 0.20) : (player.pos === 'QB' ? 0 : statYds / 40);
+        let rawProductivity = positionWeight + (statTd * 6.0) + targetBonus + (player.pos === 'QB' ? (statYds / 15) : (statYds / 50));
 
         let estimatedTeamTDs = Math.max(1, teamOffenseScore / 7.5);
-        let probability = (rawProductivity * matchMultiplier * (estimatedTeamTDs / 2.8));
+        let probability = (rawProductivity * matchMultiplier * momentumMultiplier * weatherPosMultiplier * (estimatedTeamDs / 2.8));
         
-        // Realistinen katto: huippupelaajilla max ~72%, minimi 4%
-        const tdProbability = isOut ? 0 : Math.min(72, Math.max(4, Math.round(probability)));
+        if (player.pos === "QB") {
+            const isDualThreat = player.yds && player.yds.includes("rush") && statYds > 75;
+            if (!isDualThreat) {
+                probability = statTd > 0 ? (statTd * 4.0) : 3.0;
+            }
+        }
+
+        const tdProbability = isOut ? 0 : Math.min(72, Math.max(2, Math.round(probability)));
 
         let statsText = player.rec ? `${player.rec} | ${player.yds || ''}` : `${player.pos} | ${player.yds || ''}`;
         if (player.td !== undefined) {
