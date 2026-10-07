@@ -125,7 +125,6 @@ function isPlayerOut(playerName, injuredList) {
     return injuredList.some(p => p.name === playerName && p.status && p.status.includes("Out"));
 }
 
-// Apufunktio targetien poimimiseen rec-merkkijonosta (esim. "12/16 rec" -> 16 targetia)
 function extractTargets(recStr) {
     if (!recStr || typeof recStr !== 'string') return 0;
     if (recStr.includes('/')) {
@@ -257,13 +256,17 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         
         let statTd = player.td || 0;
         let statYds = parseInt(player.yds) || 100;
-        let targetsCount = extractTargets(player.rec); // Poimitaan targetit automaattisesti rec-kentästä
+        let targetsCount = extractTargets(player.rec);
         
-        let positionWeight = 22;
-        if (player.pos === "RB") positionWeight = 38;
-        else if (player.pos === "WR") positionWeight = 32;
-        else if (player.pos === "TE") positionWeight = 26;
-        else if (player.pos === "QB") positionWeight = 16;
+        // Pelipaikkakohtainen peruspaino (QB:lle matala, koska heitetyt maalit eivät kerrytä Anytime TD -vetoja)
+        let positionWeight = 12;
+        if (player.pos === "RB") positionWeight = 32;
+        else if (player.pos === "WR") positionWeight = 26;
+        else if (player.pos === "TE") positionWeight = 20;
+        else if (player.pos === "QB") {
+            const isDualThreat = player.yds && (player.yds.includes("rush") || player.yds.includes("Dual Threat"));
+            positionWeight = isDualThreat ? 18 : 5;
+        }
 
         let matchMultiplier = 1.0;
         if (player.pos === "RB") {
@@ -271,17 +274,17 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         } else if (player.pos === "WR" || player.pos === "TE") {
             matchMultiplier = opponentPassDefYPG / 210;
         } else if (player.pos === "QB") {
-            matchMultiplier = (opponentRushDefYPG + opponentPassDefYPG) / 310;
+            matchMultiplier = (opponentRushDefYPG + opponentPassDefYPG) / 320;
         }
 
-        // Target-bonus nostaa aktiivisten heittokohteiden todennäköisyyttä merkittävästi
-        let targetBonus = targetsCount > 0 ? (targetsCount * 0.42) : (statYds / 15);
-        let rawProductivity = positionWeight + (statTd * 7.5) + targetBonus + (statYds / 30);
+        let targetBonus = targetsCount > 0 ? (targetsCount * 0.22) : (statYds / 40);
+        let rawProductivity = positionWeight + (statTd * 6.0) + targetBonus + (statYds / 50);
 
-        let estimatedTeamTDs = Math.max(1, teamOffenseScore / 7.0);
-        let probability = (rawProductivity * matchMultiplier * (estimatedTeamTDs / 2.7));
+        let estimatedTeamTDs = Math.max(1, teamOffenseScore / 7.5);
+        let probability = (rawProductivity * matchMultiplier * (estimatedTeamTDs / 2.8));
         
-        const tdProbability = isOut ? 0 : Math.min(94, Math.max(4, Math.round(probability)));
+        // Realistinen katto: huippupelaajilla max ~72%, minimi 4%
+        const tdProbability = isOut ? 0 : Math.min(72, Math.max(4, Math.round(probability)));
 
         let statsText = player.rec ? `${player.rec} | ${player.yds || ''}` : `${player.pos} | ${player.yds || ''}`;
         if (player.td !== undefined) {
