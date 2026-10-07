@@ -74,8 +74,8 @@ function calculateTeamInjuryFactor(injuredList) {
     let penalty = 1.0;
     injuredList.forEach(p => {
         const multiplier = (p.status && p.status.includes("Out")) ? 1.0 : 0.5;
-        if (p.pos === "QB") penalty -= (0.22 * multiplier);
-        else if (p.pos === "RB" || p.pos === "WR" || p.pos === "TE") penalty -= (0.05 * multiplier);
+        if (p.pos && p.pos.includes("QB")) penalty -= (0.22 * multiplier);
+        else if (p.pos && (p.pos.includes("RB") || p.pos.includes("WR") || p.pos.includes("TE"))) penalty -= (0.05 * multiplier);
         else penalty -= (0.03 * multiplier);
     });
     return Math.max(0.5, penalty);
@@ -89,21 +89,18 @@ function calculateWeatherFactor(weatherString) {
     return 1.0;
 }
 
-// Apufunktio sään vaikutukselle pelipaikkakohtaisesti
 function getWeatherPositionMultiplier(pos, weatherString) {
-    if (!weatherString) return 1.0;
+    if (!weatherString || !pos) return 1.0;
     const isBadWeather = weatherString.includes("Sade") || weatherString.includes("Rankkasade") || weatherString.includes("Tuulinen");
     if (isBadWeather) {
-        if (pos === "WR" || pos === "TE") return 0.92; // Heittopeli vaikeutuu säässä
-        if (pos === "RB") return 1.08; // Juoksupeli korostuu säässä
+        if (pos.includes("WR") || pos.includes("TE")) return 0.92;
+        if (pos.includes("RB")) return 1.08;
     }
     return 1.0;
 }
 
-// Apufunktio pelaajan vireen (gameLog) tarkistukseen
 function calculateGameLogMomentum(player) {
     if (!player.gameLog || !Array.isArray(player.gameLog) || player.gameLog.length === 0) return 1.0;
-    // Tarkistetaan viimeiset 2 peliä
     const recentGames = player.gameLog.slice(-2);
     let momentumBoost = 0;
     recentGames.forEach(game => {
@@ -115,7 +112,7 @@ function calculateGameLogMomentum(player) {
             momentumBoost += 0.08;
         }
     });
-    return 1.0 + Math.min(0.18, momentumBoost); // Max 18% lisäbuusti kuumasta putkesta
+    return 1.0 + Math.min(0.18, momentumBoost);
 }
 
 function getClosestValidScore(rawScore) {
@@ -282,13 +279,14 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
 
     playersList.forEach(player => {
         const isOut = isPlayerOut(player.name, injuredList);
+        const isQB = player.pos && player.pos.includes("QB");
         
         let statTd = player.td || 0;
         
         let statYds = 0;
         if (player.yds && player.yds.includes('/')) {
             const parts = player.yds.split('/');
-            if (player.pos === 'QB') {
+            if (isQB) {
                 const rushPart = parts.find(p => p.includes('rush')) || parts[1];
                 statYds = parseInt(rushPart) || 0;
             } else {
@@ -301,34 +299,33 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         let targetsCount = extractTargets(player.rec);
         
         let positionWeight = 12;
-        if (player.pos === "RB") positionWeight = 32;
-        else if (player.pos === "WR") positionWeight = 26;
-        else if (player.pos === "TE") positionWeight = 20;
-        else if (player.pos === "QB") {
+        if (player.pos && player.pos.includes("RB")) positionWeight = 32;
+        else if (player.pos && player.pos.includes("WR")) positionWeight = 26;
+        else if (player.pos && player.pos.includes("TE")) positionWeight = 20;
+        else if (isQB) {
             const isDualThreat = player.yds && player.yds.includes("rush") && statYds > 75;
             positionWeight = isDualThreat ? 16 : 2;
         }
 
         let matchMultiplier = 1.0;
-        if (player.pos === "RB") {
+        if (player.pos && player.pos.includes("RB")) {
             matchMultiplier = opponentRushDefYPG / 100;
-        } else if (player.pos === "WR" || player.pos === "TE") {
+        } else if (player.pos && (player.pos.includes("WR") || player.pos.includes("TE"))) {
             matchMultiplier = opponentPassDefYPG / 210;
-        } else if (player.pos === "QB") {
+        } else if (isQB) {
             matchMultiplier = opponentRushDefYPG / 110;
         }
 
-        // Haetaan pelaajan tuore vire ja sään pelipaikkakohtainen kerroin
         let momentumMultiplier = calculateGameLogMomentum(player);
         let weatherPosMultiplier = getWeatherPositionMultiplier(player.pos, weatherString);
 
-        let targetBonus = targetsCount > 0 ? (targetsCount * 0.20) : (player.pos === 'QB' ? 0 : statYds / 40);
-        let rawProductivity = positionWeight + (statTd * 6.0) + targetBonus + (player.pos === 'QB' ? (statYds / 15) : (statYds / 50));
+        let targetBonus = targetsCount > 0 ? (targetsCount * 0.20) : (isQB ? 0 : statYds / 40);
+        let rawProductivity = positionWeight + (statTd * 6.0) + targetBonus + (isQB ? (statYds / 15) : (statYds / 50));
 
         let estimatedTeamTDs = Math.max(1, teamOffenseScore / 7.5);
-        let probability = (rawProductivity * matchMultiplier * momentumMultiplier * weatherPosMultiplier * (estimatedTeamDs / 2.8));
+        let probability = (rawProductivity * matchMultiplier * momentumMultiplier * weatherPosMultiplier * (estimatedTeamTDs / 2.8));
         
-        if (player.pos === "QB") {
+        if (isQB) {
             const isDualThreat = player.yds && player.yds.includes("rush") && statYds > 75;
             if (!isDualThreat) {
                 probability = statTd > 0 ? (statTd * 4.0) : 3.0;
@@ -337,6 +334,9 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
 
         const tdProbability = isOut ? 0 : Math.min(72, Math.max(2, Math.round(probability)));
 
+        // Tarkistetaanko onko pelaaja liekeissä (momentum-buusti yli 1.0)
+        const isHot = momentumMultiplier > 1.0;
+
         let statsText = player.rec ? `${player.rec} | ${player.yds || ''}` : `${player.pos} | ${player.yds || ''}`;
         if (player.td !== undefined) {
             statsText += ` | TD:t: <strong>${player.td}</strong>`;
@@ -344,9 +344,13 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         if (isOut) {
             statsText += ` <span style="color: #ff4d4d; font-weight: bold;">(OUT)</span>`;
         }
+        if (isHot && !isOut) {
+            statsText += ` <span title="Kuuma vire!" style="cursor: help;">🔥</span>`;
+        }
 
         const row = document.createElement('div');
-        row.className = 'player-row';
+        // Lisätään 'hot'-luokka riville, jos pelaaja on vireessä
+        row.className = `player-row${isHot && !isOut ? ' hot' : ''}`;
         row.innerHTML = `
             <div>
                 <strong>${player.name}</strong> (${player.pos})
