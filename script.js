@@ -1,110 +1,60 @@
-// Staattinen varataulukko viikolle 5 varmistamaan, että pelit näkyvät heti varmasti
+// Manuaalinen otteluohjelma ryhmiteltynä päivittäin Suomen aikoina (EEST)
 const nflSchedule = {
     "5": [
-        { away: "Tampa Bay Buccaneers", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "Jacksonville Jaguars", home: "Philadelphia Eagles", weather: "🌤 18°C, Aurinkoinen" },
-        { away: "New York Jets", home: "Minnesota Vikings", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "New England Patriots", home: "Miami Dolphins", weather: "🌤 26°C, Puolipilvinen" },
-        { away: "Buffalo Bills", home: "Houston Texans", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "Carolina Panthers", home: "Chicago Bears", weather: "🌥 15°C, Pilvinen" },
-        { away: "Las Vegas Raiders", home: "Washington Commanders", weather: "🌤 20°C, Aurinkoinen" },
-        { away: "Los Angeles Rams", home: "Green Bay Packers", weather: "❄️ 8°C, Viileä" },
-        { away: "Arizona Cardinals", home: "San Francisco 49ers", weather: "🌤 22°C, Aurinkoinen" },
-        { away: "New York Giants", home: "New Orleans Saints", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "Baltimore Ravens", home: "Pittsburgh Steelers", weather: "🌧 12°C, Sadetta" },
-        { away: "Cincinnati Bengals", home: "Cleveland Browns", weather: "🌥 14°C, Pilvinen" },
-        { away: "Dallas Cowboys", home: "Detroit Lions", weather: "🏟️ Sisäkenttä (Dome)" },
-        { away: "Kansas City Chiefs", home: "Denver Broncos", weather: "❄️ 6°C, Tuulinen" }
+        { date: "Perjantai 9.10.2026", time: "03:15", away: "Tampa Bay Buccaneers", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Jacksonville Jaguars", home: "Philadelphia Eagles", weather: "🌤 18°C, Aurinkoinen" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "New York Jets", home: "Minnesota Vikings", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "New England Patriots", home: "Miami Dolphins", weather: "🌤 26°C, Puolipilvinen" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Buffalo Bills", home: "Houston Texans", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Carolina Panthers", home: "Chicago Bears", weather: "🌥 15°C, Pilvinen" },
+        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Las Vegas Raiders", home: "Washington Commanders", weather: "🌤 20°C, Aurinkoinen" },
+        { date: "Sunnuntai 11.10.2026", time: "23:05", away: "Los Angeles Rams", home: "Green Bay Packers", weather: "❄️ 8°C, Viileä" },
+        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "Arizona Cardinals", home: "San Francisco 49ers", weather: "🌤 22°C, Aurinkoinen" },
+        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "New York Giants", home: "New Orleans Saints", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Maanantai 12.10.2026", time: "03:20", away: "Baltimore Ravens", home: "Pittsburgh Steelers", weather: "🌧 12°C, Sadetta" },
+        { date: "Maanantai 12.10.2026", time: "20:00", away: "Cincinnati Bengals", home: "Cleveland Browns", weather: "🌥 14°C, Pilvinen" },
+        { date: "Maanantai 12.10.2026", time: "20:00", away: "Dallas Cowboys", home: "Detroit Lions", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Tiistai 13.10.2026", time: "03:15", away: "Kansas City Chiefs", home: "Denver Broncos", weather: "❄️ 6°C, Tuulinen" }
     ]
 };
 
-// Funktio, joka hakee reaaliaikaisen NFL-datan ilmaiseksi ESPN:n rajapinnasta
-async function fetchRealTimeNFLData(weekNumber = 5) {
-    const cacheKey = `nfl_data_week_${weekNumber}_2026`;
-    const cachedData = localStorage.getItem(cacheKey);
-   
-    if (cachedData) {
-        try {
-            const parsed = JSON.parse(cachedData);
-            if (new Date().getTime() - parsed.timestamp < 24 * 60 * 60 * 1000) {
-                console.log("Ladattu otteluohjelma selaimen muistista (cache)");
-                return parsed.data;
-            }
-        } catch (e) {
-            console.error("Virhe välimuistin luvussa:", e);
-        }
-    }
-
-    try {
-        console.log("Haetaan tuoretta otteludataa ESPN:n rajapinnasta...");
-        const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${weekNumber}`);
-        if (!response.ok) throw new Error("Verkkovastaus ei ollut kunnossa");
-        
-        const data = await response.json();
-        localStorage.setItem(cacheKey, JSON.stringify({
-            timestamp: new Date().getTime(),
-            data: data
-        }));
-
-        return data;
-    } catch (error) {
-        console.error("Virhe verkkoyhteydessä, käytetään staattista varakantaa:", error);
-        return null;
-    }
-}
-
 const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 31, 34, 35, 38, 41, 42];
 
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
     const weekSelect = document.getElementById('weekSelect');
     const matchSelect = document.getElementById('matchSelect');
     const compareBtn = document.getElementById('compareBtn');
 
-    const selectedWeek = weekSelect ? weekSelect.value : "5";
-    
-    let liveData = null;
-    try {
-        const fetchPromise = fetchRealTimeNFLData(selectedWeek);
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 4000));
-        liveData = await Promise.race([fetchPromise, timeoutPromise]);
-    } catch (e) {
-        console.warn("Verkkohaku kesti liikaa tai epäonnistui, siirrytään suoraan paikalliseen ohjelmaan.");
-    }
-
-    if (liveData && liveData.events && liveData.events.length > 0) {
-        const liveMatches = liveData.events.map(event => {
-            const competition = event.competitions[0];
-            const homeCompetitor = competition.competitors.find(c => c.homeAway === 'home');
-            const awayCompetitor = competition.competitors.find(c => c.homeAway === 'away');
-            
-            let weather = "🏟️ Sisäkenttä (Dome)";
-            if (competition.weather && competition.weather.displayValue) {
-                weather = `🌤 ${competition.weather.displayValue}`;
-            }
-
-            return {
-                away: awayCompetitor ? awayCompetitor.team.displayName : "Away Team",
-                home: homeCompetitor ? homeCompetitor.team.displayName : "Home Team",
-                weather: weather
-            };
-        });
-
-        if (liveMatches.length > 0) {
-            nflSchedule[selectedWeek] = liveMatches;
-        }
-    }
-
     function updateMatches() {
+        if (!weekSelect || !matchSelect) return;
         const currentWeek = weekSelect.value;
         matchSelect.innerHTML = '';
         const matches = nflSchedule[currentWeek] || [];
-        
+
+        // Ryhmitellään pelit päivämäärän mukaan
+        const groupedMatches = {};
         matches.forEach((m, index) => {
-            const opt = document.createElement('option');
-            opt.value = index;
-            opt.textContent = `${m.away} @ ${m.home}`;
-            matchSelect.appendChild(opt);
+            if (!groupedMatches[m.date]) {
+                groupedMatches[m.date] = [];
+            }
+            groupedMatches[m.date].push({ ...m, originalIndex: index });
         });
+
+        // Luodaan valikkoon optgroup-ryhmät päivittäin
+        for (const [date, dayMatches] of Object.entries(groupedMatches)) {
+            const group = document.createElement('optgroup');
+            group.label = date;
+
+            dayMatches.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.originalIndex;
+                opt.textContent = `${m.time} - ${m.away} @ ${m.home}`;
+                group.appendChild(opt);
+            });
+
+            matchSelect.appendChild(group);
+        }
+
         runMonteCarloSimulation();
     }
 
@@ -163,8 +113,12 @@ function getClosestValidScore(rawScore) {
 }
 
 function runMonteCarloSimulation() {
-    const selectedWeek = document.getElementById('weekSelect').value;
-    const matchIndex = document.getElementById('matchSelect').value;
+    const selectedWeekElement = document.getElementById('weekSelect');
+    const matchIndexElement = document.getElementById('matchSelect');
+    if (!selectedWeekElement || !matchIndexElement) return;
+
+    const selectedWeek = selectedWeekElement.value;
+    const matchIndex = matchIndexElement.value;
     const match = nflSchedule[selectedWeek]?.[matchIndex];
 
     if (!match) return;
@@ -209,7 +163,6 @@ function runMonteCarloSimulation() {
     const homeWinPct = ((homeWins / SIM_ITERATIONS) * 100).toFixed(1);
     const awayWinPct = (100 - homeWinPct).toFixed(1);
 
-    // Päivitetään käyttöliittymä
     if (document.getElementById('homeScoreNum')) document.getElementById('homeScoreNum').textContent = avgHomeScore;
     if (document.getElementById('awayScoreNum')) document.getElementById('awayScoreNum').textContent = avgAwayScore;
     if (document.getElementById('homeWinProb')) document.getElementById('homeWinProb').textContent = `${match.home}: ${homeWinPct}%`;
@@ -219,6 +172,7 @@ function runMonteCarloSimulation() {
     if (document.getElementById('homeTitle')) document.getElementById('homeTitle').textContent = `Kotijoukkue: ${match.home} (${homeData.record || "0-0"})`;
     if (document.getElementById('homeStats')) {
         document.getElementById('homeStats').innerHTML = `
+            Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
             Sää: ${match.weather}<br>
             Loukkaantumiset: ${homeData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}<br>
             Seuraava ottelu: ${homeData.scheduleStatus || 'Ei tietoa'}
@@ -228,6 +182,7 @@ function runMonteCarloSimulation() {
     if (document.getElementById('awayTitle')) document.getElementById('awayTitle').textContent = `Vierasjoukkue: ${match.away} (${awayData.record || "0-0"})`;
     if (document.getElementById('awayStats')) {
         document.getElementById('awayStats').innerHTML = `
+            Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
             Sää: ${match.weather}<br>
             Loukkaantumiset: ${awayData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}<br>
             Seuraava ottelu: ${awayData.scheduleStatus || 'Ei tietoa'}
