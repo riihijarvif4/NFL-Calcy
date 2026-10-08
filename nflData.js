@@ -142,8 +142,7 @@ const nflData = {
             { name: "W. Marks", pos: "RB", td: 2, yds: "130 yds", rec: "9/13 rec", marketOdds: 1.85, yac: "45 YAC", gameLog: [{w:1, yds:30, td:1}, {w:2, yds:40, td:1}, {w:3, yds:30, td:0}, {w:4, yds:30, td:0}] },
             { name: "Hutchinson", pos: "WR", td: 0, yds: "160 yds", rec: "12/17 rec", marketOdds: 2.30, yac: "60 YAC", gameLog: [{w:1, yds:40, td:0}, {w:2, yds:40, td:0}, {w:3, yds:40, td:0}, {w:4, yds:40, td:0}] },
             { name: "Dalton Schultz", pos: "TE", td: 1, yds: "214 yds", rec: "16/22 rec", marketOdds: 2.50, yac: "75 YAC", gameLog: [{w:1, yds:50, td:0}, {w:2, yds:55, td:1}, {w:3, yds:55, td:0}, {w:4, yds:54, td:0}] },
-            { name: "Tank Dell", pos: "WR", td: 1, yds: "190 yds", rec: "15/24 rec", marketOdds: 2.30, yac: "80 YAC", gameLog: [{w:1, yds:45, td:0}, {w:2, yds:50, td:1}, {w:3, yds:45, td:0}, {w:4, yds:50, td:0}] }
-        ],
+            { name: "David Montgomery", pos: "RB", td: 2, yds: "127 yds", rec: "8/12 rec", marketOdds: 1.85, yac: "45 YAC", gameLog: [{w:1, yds:30, td:0}, {w:2, yds:40, td:1}, {w:3, yds:27, td:0}, {w:4, yds:30, td:1}] }        ],
         defenders: [
             { name: "Will Anderson Jr. (DE)", sacks: "4.5 Sacks", pressures: "18 Pressures", tackles: "22 Tackles", tacklesForLoss: 5, probability: "75%", status: "ACTIVE" },
             { name: "Azeez Al-Shaair (LB)", sacks: "1.0 Sacks", pressures: "5 Pressures", tackles: "31 Tackles", tacklesForLoss: 3, probability: "60%", status: "ACTIVE" }
