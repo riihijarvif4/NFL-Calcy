@@ -1,4 +1,5 @@
 // Virallinen NFL viikon 6 otteluohjelma (Lokakuu 2026) Suomen aikoina (EEST)
+// Huom: Viikolla 6 huilivuorossa (Bye Week) ovat Bengals, Lions, Dolphins ja Vikings.
 const nflSchedule = {
     "6": [
         { date: "Perjantai 16.10.2026", time: "03:15", away: "Seattle Seahawks", home: "Denver Broncos", weather: "🌤 15°C, Aurinkoinen" },
@@ -18,8 +19,7 @@ const nflSchedule = {
     ]
 };
 
-
-const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 31, 34, 35, 38, 41, 42];
+const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 30, 31, 34, 35, 37, 38, 41, 42, 45];
 
 window.addEventListener('DOMContentLoaded', () => {
     const weekSelect = document.getElementById('weekSelect');
@@ -74,7 +74,9 @@ function calculateTeamInjuryFactor(injuredList) {
     if (!injuredList || !Array.isArray(injuredList)) return 1.0;
     let penalty = 1.0;
     injuredList.forEach(p => {
-        const multiplier = (p.status && String(p.status).includes("Out")) ? 1.0 : 0.5;
+        const statusStr = p.status ? String(p.status) : "";
+        if (statusStr.includes("Active")) return; // Active ei laske tehoja
+        const multiplier = statusStr.includes("Out") ? 1.0 : 0.45;
         const pPos = p.pos ? String(p.pos) : "";
         if (pPos.includes("QB")) penalty -= (0.22 * multiplier);
         else if (pPos.includes("RB") || pPos.includes("WR") || pPos.includes("TE")) penalty -= (0.05 * multiplier);
@@ -114,6 +116,9 @@ function calculateGameLogMomentum(player) {
             if ((game.td && game.td > 0) || gameStats.includes('TD')) {
                 momentumBoost += 0.08;
             }
+            if (game.yds && game.yds >= 90 && !String(player.pos).includes("QB")) {
+                momentumBoost += 0.03; // Bonus vahvasta jaardivireestä
+            }
         } else if (typeof game === 'string' && game.includes('TD')) {
             momentumBoost += 0.08;
         }
@@ -145,16 +150,24 @@ function getRandomPoisson(lambda) {
     return k - 1;
 }
 
-function getPlayedGamesCount(recordStr) {
-    if (!recordStr) return 5;
-    const parts = String(recordStr).split('-');
-    const played = parseInt(parts[0]) + parseInt(parts[1]);
+// KORJATTU: Huomioi suoraan teamData.games sekä mahdolliset tasapelit (esim. "3-1-1")
+function getPlayedGamesCount(teamData) {
+    if (!teamData) return 5;
+    if (teamData.games && teamData.games > 0) return teamData.games;
+    if (!teamData.record) return 5;
+    const parts = String(teamData.record).split('-');
+    const played = parts.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
     return played > 0 ? played : 5;
 }
 
-function isPlayerOut(playerName, injuredList) {
-    if (!injuredList || !Array.isArray(injuredList)) return false;
-    return injuredList.some(p => p.name === playerName && p.status && String(p.status).includes("Out"));
+function getPlayerInjuryStatus(playerName, injuredList) {
+    if (!injuredList || !Array.isArray(injuredList)) return "ACTIVE";
+    const found = injuredList.find(p => p.name === playerName);
+    if (!found || !found.status) return "ACTIVE";
+    const st = String(found.status).toUpperCase();
+    if (st.includes("OUT")) return "OUT";
+    if (st.includes("QUESTIONABLE") || st.includes("DOUBTFUL")) return "QUESTIONABLE";
+    return "ACTIVE";
 }
 
 function extractTargets(recStr) {
@@ -166,6 +179,11 @@ function extractTargets(recStr) {
         return isNaN(t) ? 0 : t;
     }
     return 0;
+}
+
+function extractYAC(yacStr) {
+    if (!yacStr) return 0;
+    return parseInt(String(yacStr)) || 0;
 }
 
 function runMonteCarloSimulation() {
@@ -190,8 +208,8 @@ function runMonteCarloSimulation() {
     let awayInjuryPenalty = calculateTeamInjuryFactor(awayData?.injuredPlayers);
     let weatherFactor = calculateWeatherFactor(match.weather);
 
-    const homeGames = getPlayedGamesCount(homeData.record);
-    const awayGames = getPlayedGamesCount(awayData.record);
+    const homeGames = getPlayedGamesCount(homeData);
+    const awayGames = getPlayedGamesCount(awayData);
 
     const homePassYPG = Math.round((homeData?.pass || 1000) / homeGames);
     const homeRushYPG = Math.round((homeData?.rush || 500) / homeGames);
@@ -202,6 +220,18 @@ function runMonteCarloSimulation() {
     const awayRushYPG = Math.round((awayData?.rush || 500) / awayGames);
     const awayPassDefYPG = Math.round((awayData?.oppPass || 1000) / awayGames);
     const awayRushDefYPG = Math.round((awayData?.oppRush || 500) / awayGames);
+
+    // UUSI: Hyödynnetään Red Zone %, 3rd Down % ja Turnovereita tehokkuuskertoimena
+    const homeRedZone = (homeData?.redZonePct || 55) / 58;
+    const awayRedZone = (awayData?.redZonePct || 55) / 58;
+    const homeThirdDown = (homeData?.thirdDownPct || 40) / 40;
+    const awayThirdDown = (awayData?.thirdDownPct || 40) / 40;
+    
+    const homeTurnoverDiff = ((awayData?.turnovers || 5) / awayGames - (homeData?.turnovers || 5) / homeGames) * 0.04;
+    const awayTurnoverDiff = -homeTurnoverDiff;
+
+    const homeEfficiency = Math.max(0.85, Math.min(1.18, (homeRedZone * 0.6 + homeThirdDown * 0.4) + homeTurnoverDiff));
+    const awayEfficiency = Math.max(0.85, Math.min(1.18, (awayRedZone * 0.6 + awayThirdDown * 0.4) + awayTurnoverDiff));
 
     let h2hHomeBoost = 1.0;
     let h2hAwayBoost = 1.0;
@@ -214,12 +244,12 @@ function runMonteCarloSimulation() {
         }
     }
 
-    const homeFieldAdvantage = 1.2;
+    const homeFieldAdvantage = 0.85;
 
-    const homeLambda = Math.max(5.0, (((homePassYPG * 0.55 + awayPassDefYPG * 0.45) / 180 + (homeRushYPG * 0.55 + awayRushDefYPG * 0.45) / 80) * h2hHomeBoost) * homeInjuryPenalty * weatherFactor * 2.1 + homeFieldAdvantage);
-    const awayLambda = Math.max(4.5, (((awayPassYPG * 0.55 + homePassDefYPG * 0.45) / 180 + (awayRushYPG * 0.55 + homeRushDefYPG * 0.45) / 80) * h2hAwayBoost) * awayInjuryPenalty * weatherFactor * 2.0);
+    const homeLambda = Math.max(4.5, (((homePassYPG * 0.55 + awayPassDefYPG * 0.45) / 180 + (homeRushYPG * 0.55 + awayRushDefYPG * 0.45) / 80) * h2hHomeBoost * homeEfficiency) * homeInjuryPenalty * weatherFactor * 2.1 + homeFieldAdvantage);
+    const awayLambda = Math.max(4.2, (((awayPassYPG * 0.55 + homePassDefYPG * 0.45) / 180 + (awayRushYPG * 0.55 + homeRushDefYPG * 0.45) / 80) * h2hAwayBoost * awayEfficiency) * awayInjuryPenalty * weatherFactor * 2.0);
 
-    const SIM_ITERATIONS = 1000;
+    const SIM_ITERATIONS = 2500;
     let homeWins = 0;
     let homeScoreSum = 0;
     let awayScoreSum = 0;
@@ -228,8 +258,8 @@ function runMonteCarloSimulation() {
         let homeRaw = getRandomPoisson(homeLambda) * 3.5 + (Math.random() * 4 - 2);
         let awayRaw = getRandomPoisson(awayLambda) * 3.5 + (Math.random() * 4 - 2);
 
-        let homeScore = getClosestValidScore(Math.max(3, homeRaw));
-        let awayScore = getClosestValidScore(Math.max(3, awayRaw));
+        let homeScore = getClosestValidScore(Math.max(0, homeRaw));
+        let awayScore = getClosestValidScore(Math.max(0, awayRaw));
 
         homeScoreSum += homeScore;
         awayScoreSum += awayScore;
@@ -241,10 +271,16 @@ function runMonteCarloSimulation() {
         }
     }
 
-    const avgHomeScore = Math.round(homeScoreSum / SIM_ITERATIONS);
-    const avgAwayScore = Math.round(awayScoreSum / SIM_ITERATIONS);
+    let avgHomeScore = Math.round(homeScoreSum / SIM_ITERATIONS);
+    let avgAwayScore = Math.round(awayScoreSum / SIM_ITERATIONS);
     const homeWinPct = ((homeWins / SIM_ITERATIONS) * 100).toFixed(1);
     const awayWinPct = (100 - parseFloat(homeWinPct)).toFixed(1);
+
+    // Estetään tasapelitulos näytöllä, jos toinen joukkue on selkeä suosikki
+    if (avgHomeScore === avgAwayScore && parseFloat(homeWinPct) !== 50.0) {
+        if (parseFloat(homeWinPct) > 50.0) avgHomeScore += 1;
+        else avgAwayScore += 1;
+    }
 
     if (document.getElementById('homeScoreNum')) document.getElementById('homeScoreNum').textContent = avgHomeScore;
     if (document.getElementById('awayScoreNum')) document.getElementById('awayScoreNum').textContent = avgAwayScore;
@@ -257,9 +293,9 @@ function runMonteCarloSimulation() {
         document.getElementById('homeStats').innerHTML = `
             📅 Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
             ⛅ Sää: ${match.weather}<br>
-            📊 <strong>Hyökkäys (keskiarvo / peli):</strong> Syöttö ${homePassYPG} yds | Juoksu ${homeRushYPG} yds<br>
-            🛡️ <strong>Puolustusvuoto (sallitut / peli):</strong> Syöttöä ${homePassDefYPG} yds | Juoksua ${homeRushDefYPG} yds<br>
-            ⚠️ Loukkaantumiset: ${homeData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}
+            📊 <strong>Hyökkäys (/peli):</strong> Syöttö ${homePassYPG} yds | Juoksu ${homeRushYPG} yds | Red Zone ${homeData.redZonePct || 55}% | 3rd Down ${homeData.thirdDownPct || 40}%<br>
+            🛡️ <strong>Puolustus (sallitut /peli):</strong> Syöttö ${homePassDefYPG} yds | Juoksu ${homeRushDefYPG} yds | Säkit ${homeData.sacks || 0} kpl<br>
+            ⚠️ Loukkaantumiset: ${homeData.injuredPlayers?.map(p => `${p.name} (${p.pos} -${p.status || 'Out'})`).join(', ') || 'Ei merkittäviä'}
         `;
     }
 
@@ -268,92 +304,123 @@ function runMonteCarloSimulation() {
         document.getElementById('awayStats').innerHTML = `
             📅 Otteluaika: ${match.date} klo ${match.time} (Suomen aika)<br>
             ⛅ Sää: ${match.weather}<br>
-            📊 <strong>Hyökkäys (keskiarvo / peli):</strong> Syöttö ${awayPassYPG} yds | Juoksu ${awayRushYPG} yds<br>
-            🛡️ <strong>Puolustusvuoto (sallitut / peli):</strong> Syöttöä ${awayPassDefYPG} yds | Juoksua ${awayRushDefYPG} yds<br>
-            ⚠️ Loukkaantumiset: ${awayData.injuredPlayers?.map(p => `${p.name} (${p.pos})`).join(', ') || 'Ei merkittäviä'}
+            📊 <strong>Hyökkäys (/peli):</strong> Syöttö ${awayPassYPG} yds | Juoksu ${awayRushYPG} yds | Red Zone ${awayData.redZonePct || 55}% | 3rd Down ${awayData.thirdDownPct || 40}%<br>
+            🛡️ <strong>Puolustus (sallitut /peli):</strong> Syöttö ${awayPassDefYPG} yds | Juoksu ${awayRushDefYPG} yds | Säkit ${awayData.sacks || 0} kpl<br>
+            ⚠️ Loukkaantumiset: ${awayData.injuredPlayers?.map(p => `${p.name} (${p.pos} -${p.status || 'Out'})`).join(', ') || 'Ei merkittäviä'}
         `;
     }
 
-    renderPlayers('homePlayers', homeData.players, avgHomeScore, awayPassDefYPG, awayRushDefYPG, homeData.injuredPlayers, match.weather);
-    renderPlayers('awayPlayers', awayData.players, avgAwayScore, homePassDefYPG, homeRushDefYPG, awayData.injuredPlayers, match.weather);
+    renderPlayers('homePlayers', homeData, awayData, avgHomeScore, awayPassDefYPG, awayRushDefYPG, match.weather);
+    renderPlayers('awayPlayers', awayData, homeData, avgAwayScore, homePassDefYPG, homeRushDefYPG, match.weather);
 }
 
-function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassDefYPG, opponentRushDefYPG, injuredList, weatherString) {
+function renderPlayers(containerId, teamData, opponentData, teamOffenseScore, opponentPassDefYPG, opponentRushDefYPG, weatherString) {
     const container = document.getElementById(containerId);
-    if (!container || !playersList) return;
+    if (!container || !teamData || !teamData.players) return;
 
     container.innerHTML = '';
 
-    playersList.forEach(player => {
-        const isOut = isPlayerOut(player.name, injuredList);
+    const teamGames = getPlayedGamesCount(teamData);
+    // Skaalauskerroin (4 pelin perusotantaan nähden), jotta kaava ei hajoa kauden edetessä
+    const gameScale = 4 / teamGames;
+
+    teamData.players.forEach(player => {
+        const injuryStatus = getPlayerInjuryStatus(player.name, teamData.injuredPlayers);
+        const isOut = injuryStatus === "OUT";
+        const isQuestionable = injuryStatus === "QUESTIONABLE";
         const posStr = player.pos ? String(player.pos) : "";
         const isQB = posStr.includes("QB");
         
-        let statTd = player.td || 0;
+        let rawTd = player.td || 0;
+        let scaledTd = rawTd * gameScale;
         
-        let statYds = 0;
+        let rawYds = 0;
         const ydsStr = player.yds !== undefined && player.yds !== null ? String(player.yds) : "";
         
         if (ydsStr.includes('/')) {
             const parts = ydsStr.split('/');
             if (isQB) {
                 const rushPart = parts.find(p => p && String(p).includes('rush')) || parts[1];
-                statYds = parseInt(rushPart) || 0;
+                rawYds = parseInt(rushPart) || 0;
             } else {
-                statYds = parseInt(parts[0]) || 100;
+                rawYds = parseInt(parts[0]) || 100;
             }
         } else {
-            statYds = parseInt(ydsStr) || 100;
+            rawYds = parseInt(ydsStr) || 100;
         }
 
-        let targetsCount = extractTargets(player.rec);
+        let scaledYds = rawYds * gameScale;
+        let scaledTargets = extractTargets(player.rec) * gameScale;
+        let scaledYAC = extractYAC(player.yac) * gameScale;
         
         let positionWeight = 12;
         if (posStr.includes("RB")) positionWeight = 32;
         else if (posStr.includes("WR")) positionWeight = 26;
         else if (posStr.includes("TE")) positionWeight = 20;
         else if (isQB) {
-            const isDualThreat = ydsStr.includes("rush") && statYds > 75;
+            const isDualThreat = (ydsStr.includes("rush") && scaledYds > 75) || String(player.rec).includes("Dual Threat");
             positionWeight = isDualThreat ? 16 : 2;
         }
 
+        // UUSI: Hyödynnetään vastustajan pelipaikkakohtaista puolustusdataa (defensiveVsPosition)
         let matchMultiplier = 1.0;
+        const defVsPos = opponentData?.defensiveVsPosition;
         if (posStr.includes("RB")) {
-            matchMultiplier = opponentRushDefYPG / 100;
-        } else if (posStr.includes("WR") || posStr.includes("TE")) {
-            matchMultiplier = opponentPassDefYPG / 210;
+            const vsRB = defVsPos?.vsRB?.allowedYdsPerGame || opponentRushDefYPG;
+            matchMultiplier = (vsRB / 80) * 0.6 + (opponentRushDefYPG / 100) * 0.4;
+        } else if (posStr.includes("WR")) {
+            const vsWR = defVsPos?.vsWR?.allowedYdsPerGame || opponentPassDefYPG;
+            matchMultiplier = (vsWR / 205) * 0.6 + (opponentPassDefYPG / 210) * 0.4;
+        } else if (posStr.includes("TE")) {
+            const vsTE = defVsPos?.vsTE?.allowedYdsPerGame || 50;
+            matchMultiplier = (vsTE / 50) * 0.65 + (opponentPassDefYPG / 210) * 0.35;
         } else if (isQB) {
             matchMultiplier = opponentRushDefYPG / 110;
         }
 
         let momentumMultiplier = calculateGameLogMomentum(player);
         let weatherPosMultiplier = getWeatherPositionMultiplier(player.pos, weatherString);
+        let injuryMultiplier = isQuestionable ? 0.85 : 1.0;
 
-        let targetBonus = targetsCount > 0 ? (targetsCount * 0.20) : (isQB ? 0 : statYds / 40);
-        let rawProductivity = positionWeight + (statTd * 6.0) + targetBonus + (isQB ? (statYds / 15) : (statYds / 50));
+        let targetBonus = scaledTargets > 0 ? (scaledTargets * 0.20) : (isQB ? 0 : scaledYds / 40);
+        let yacBonus = scaledYAC > 0 ? (scaledYAC / 60) : 0;
+        let rawProductivity = positionWeight + (scaledTd * 6.0) + targetBonus + yacBonus + (isQB ? (scaledYds / 15) : (scaledYds / 50));
 
         let estimatedTeamTDs = Math.max(1, teamOffenseScore / 7.5);
-        let probability = (rawProductivity * matchMultiplier * momentumMultiplier * weatherPosMultiplier * (estimatedTeamTDs / 2.8));
+        let probability = (rawProductivity * matchMultiplier * momentumMultiplier * weatherPosMultiplier * injuryMultiplier * (estimatedTeamTDs / 2.8));
         
         if (isQB) {
-            const isDualThreat = ydsStr.includes("rush") && statYds > 75;
+            const isDualThreat = (ydsStr.includes("rush") && scaledYds > 75) || String(player.rec).includes("Dual Threat");
             if (!isDualThreat) {
-                probability = statTd > 0 ? (statTd * 4.0) : 3.0;
+                probability = rawTd > 0 ? (scaledTd * 4.5) : 3.0;
             }
         }
 
         const tdProbability = isOut ? 0 : Math.min(72, Math.max(2, Math.round(probability)));
         const isHot = momentumMultiplier > 1.0;
 
+        // UUSI: Markkinakerroin vs. Laskennallinen todennäköisyys (Value Bet -laskuri)
+        const marketOdds = player.marketOdds ? parseFloat(player.marketOdds) : null;
+        const impliedProb = marketOdds ? Math.round((1 / marketOdds) * 100) : null;
+        const hasValue = !isOut && impliedProb !== null && (tdProbability - impliedProb >= 4);
+
         let statsText = player.rec ? `${player.rec} | ${player.yds || ''}` : `${player.pos || ''} | ${player.yds || ''}`;
         if (player.td !== undefined) {
             statsText += ` | TD:t: <strong>${player.td}</strong>`;
         }
+        if (marketOdds) {
+            statsText += ` | Kerroin: <strong>${marketOdds.toFixed(2)}</strong>`;
+        }
         if (isOut) {
             statsText += ` <span style="color: #ff4d4d; font-weight: bold;">(OUT)</span>`;
+        } else if (isQuestionable) {
+            statsText += ` <span style="color: #f59e0b; font-weight: bold;" title="Pelaaminen epävarmaa (-15% teho)">(Q)</span>`;
         }
         if (isHot && !isOut) {
-            statsText += ` <span title="Kuuma vire!" style="cursor: help;">🔥</span>`;
+            statsText += ` <span title="Kuuma vire viime peleissä!" style="cursor: help;">🔥</span>`;
+        }
+        if (hasValue) {
+            statsText += ` <span title="Ylikerroin! Mallin arvio (${tdProbability}%) on korkeampi kuin kertoimen todennäköisyys (${impliedProb}%)" style="color: #10b981; font-weight: bold; cursor: help;">💎 VALUE</span>`;
         }
 
         const row = document.createElement('div');
@@ -370,4 +437,24 @@ function renderPlayers(containerId, playersList, teamOffenseScore, opponentPassD
         `;
         container.appendChild(row);
     });
+
+    // UUSI: Renderöidään myös joukkueen tähtipuolustajat (Sack-uhka) listan loppuun
+    if (teamData.defenders && Array.isArray(teamData.defenders) && teamData.defenders.length > 0) {
+        teamData.defenders.forEach(def => {
+            const row = document.createElement('div');
+            row.className = 'player-row';
+            row.style.opacity = '0.9';
+            row.innerHTML = `
+                <div>
+                    <strong>🛡️ ${def.name}</strong>
+                    <span>${def.sacks} | ${def.pressures} | ${def.tackles} (TFL: ${def.tacklesForLoss || 0})</span>
+                </div>
+                <div class="odd-badge">
+                    <span>Sack-uhka</span>
+                    <strong>${def.probability || '50%'}</strong>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
 }
