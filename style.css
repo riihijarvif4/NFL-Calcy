@@ -18,66 +18,132 @@ body {
         radial-gradient(circle at 85% 90%, rgba(0, 255, 135, 0.06) 0%, transparent 45%),
         linear-gradient(to bottom, rgba(7, 9, 14, 0.8), rgba(7, 9, 14, 0.95));
     color: #f1f5f9;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     letter-spacing: 0.2px;
+    min-height: 100vh;
 }
 
-/* Pääkontti ja paneelit (Sportsbook Lounge look) */
-.container, .panel, #smartBettingTipsContainer {
+.container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Paneelit ja kortit (Sportsbook Lounge look) */
+.card, .panel, #smartBettingTipsContainer {
     background: linear-gradient(145deg, #101726, #0b101b) !important;
     border: 1px solid rgba(51, 65, 85, 0.6) !important;
     box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.7), 0 0 20px var(--nfl-panel-glow);
     border-radius: 18px !important;
+    padding: 20px;
+    margin-bottom: 20px;
     backdrop-filter: blur(10px);
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-.container:hover, .panel:hover {
-    border-color: rgba(0, 210, 255, 0.3) !important;
+.card:hover, .panel:hover {
+    border-color: rgba(0, 210, 255, 0.35) !important;
+}
+
+/* Otsikot */
+h1 {
+    text-align: center;
+    color: var(--nfl-neon-blue);
+    text-shadow: 0 0 18px rgba(0, 210, 255, 0.35);
+    font-size: 26px;
+    letter-spacing: 0.5px;
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--nfl-neon-blue);
+    border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 14px;
+    letter-spacing: 0.4px;
 }
 
 /* Pelaajarivit ja kortit interaktiivisiksi */
 .player-row {
-    background: linear-gradient(90deg, rgba(16, 23, 38, 0.8), rgba(11, 16, 27, 0.9));
-    border: 1px solid rgba(30, 41, 59, 0.8);
+    background: linear-gradient(90deg, rgba(16, 23, 38, 0.85), rgba(11, 16, 27, 0.95));
+    border: 1px solid rgba(30, 41, 59, 0.85);
     border-radius: 12px;
     padding: 12px 16px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     transition: all 0.2s ease-in-out;
 }
 
 .player-row:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     border-color: var(--nfl-neon-blue);
-    background: linear-gradient(90deg, rgba(20, 30, 50, 0.9), rgba(15, 22, 36, 0.95));
+    background: linear-gradient(90deg, rgba(20, 30, 50, 0.92), rgba(15, 22, 36, 0.98));
     box-shadow: 0 6px 15px rgba(0, 210, 255, 0.15);
+}
+
+/* Kohdistetaan rivinvaihto vain pelaajan päätietoriville */
+.player-row > div:first-child > span {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 4px;
+    line-height: 1.45;
+}
+
+.player-row > div:first-child > span strong {
+    color: #f1f5f9;
+}
+
+/* Kuuma vire (Hot Streak) */
+.player-row.hot {
+    border-left: 4px solid #ff9900;
+    background: linear-gradient(90deg, rgba(255, 153, 0, 0.12) 0%, rgba(11, 16, 27, 0.95) 65%);
+}
+
+.player-row.hot:hover {
+    border-color: #ff9900;
+    box-shadow: 0 6px 15px rgba(255, 153, 0, 0.2);
+}
+
+/* Loukkaantuneet / OUT -tyylit */
+.player-out {
+    border-color: var(--nfl-accent-red) !important;
+    background: linear-gradient(90deg, rgba(69, 10, 10, 0.5), rgba(40, 5, 5, 0.6)) !important;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
+    opacity: 0.75;
 }
 
 /* Odd-badge (kertoimet ja todennäköisyydet) */
 .odd-badge {
     background: linear-gradient(135deg, #1e293b, #090d16);
-    border: 1px solid rgba(0, 210, 255, 0.2);
+    border: 1px solid rgba(0, 210, 255, 0.25);
     border-radius: 10px;
     padding: 8px 14px;
+    min-width: 78px;
+    flex-shrink: 0;
     text-align: center;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(0, 210, 255, 0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 210, 255, 0.05);
 }
 
 .odd-badge span {
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: #94a3b8;
     display: block;
+    margin-bottom: 2px;
 }
 
 .odd-badge strong {
     color: var(--nfl-neon-green);
     font-size: 16px;
-    text-shadow: 0 0 10px rgba(0, 255, 135, 0.5);
+    text-shadow: 0 0 10px rgba(0, 255, 135, 0.45);
 }
 
 /* Ylikertoimet / Top Value Bets -laatikko */
@@ -93,32 +159,52 @@ body {
     letter-spacing: 1px;
     font-size: 16px;
     text-shadow: 0 0 10px rgba(255, 183, 3, 0.3);
+    margin-top: 0;
 }
 
-/* Valikot ja napit (Dropdownit & Buttons) */
-select, button {
+/* Pudotusvalikot (Dropdownit) */
+select {
     background: linear-gradient(145deg, #1e293b, #0f172a) !important;
     color: #f8fafc !important;
     border: 1px solid rgba(51, 65, 85, 0.8) !important;
     border-radius: 10px !important;
-    padding: 10px 16px;
+    padding: 12px 16px;
     font-weight: 600;
     letter-spacing: 0.3px;
     cursor: pointer;
     transition: all 0.25s ease;
 }
 
-select:hover, button:hover {
+select:hover, select:focus {
     border-color: var(--nfl-neon-blue) !important;
     background: linear-gradient(145deg, #25334d, #131c2e) !important;
     box-shadow: 0 0 15px rgba(0, 210, 255, 0.25);
-    transform: translateY(-1px);
+    outline: none;
 }
 
-select:focus, button:focus {
-    border-color: var(--nfl-neon-blue) !important;
-    box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
-    outline: none;
+/* Pääpainike (Sportsbook Action CTA) */
+button, #compareBtn {
+    background: linear-gradient(135deg, var(--nfl-neon-gold), #e09f00) !important;
+    color: #07090e !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 14px 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+    transition: all 0.25s ease;
+}
+
+button:hover, #compareBtn:hover {
+    background: linear-gradient(135deg, #ffc933, var(--nfl-neon-gold)) !important;
+    box-shadow: 0 0 20px rgba(255, 183, 3, 0.55);
+    transform: translateY(-2px);
+}
+
+button:active, #compareBtn:active {
+    transform: translateY(0);
 }
 
 /* Todennäköisyyspalkki */
@@ -129,22 +215,18 @@ select:focus, button:focus {
     border-radius: 6px;
 }
 
-/* Tulostaulun numerot (Scoreboard LED look) */
-#homeScoreNum, #awayScoreNum {
-    font-family: 'Courier New', Courier, monospace;
-    text-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
-    font-weight: 800;
-    letter-spacing: 2px;
+/* Tulostaulun kehys ja numerot (Scoreboard LED look) */
+.score-box {
+    background: #070a10 !important;
+    border: 1px solid rgba(0, 210, 255, 0.25) !important;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+    border-radius: 12px;
 }
 
-/* Loukkaantuneet / OUT -tyylit */
-.player-out {
-    border-color: var(--nfl-accent-red) !important;
-    background: linear-gradient(90deg, rgba(69, 10, 10, 0.5), rgba(40, 5, 5, 0.6)) !important;
-    box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
-}
-/* Lisää tämä style.css tiedoston loppuun */
-.player-row.hot {
-    border-left: 3px solid #ff9900;
-    background: linear-gradient(90deg, rgba(255, 153, 0, 0.08) 0%, transparent 100%);
+#homeScoreNum, #awayScoreNum {
+    font-family: 'Courier New', Courier, monospace;
+    color: var(--nfl-neon-gold);
+    text-shadow: 0 0 20px rgba(255, 183, 3, 0.45);
+    font-weight: 800;
+    letter-spacing: 2px;
 }
