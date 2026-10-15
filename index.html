@@ -13,7 +13,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
         }
         h1 {
@@ -27,7 +27,7 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
             border: 1px solid #334155;
         }
         label {
@@ -57,10 +57,13 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
         button:hover {
             background-color: #f59e0b;
+        }
+        button:active {
+            transform: scale(0.99);
         }
         .section-title {
             font-size: 18px;
@@ -73,20 +76,21 @@
         }
         .stats-text {
             font-size: 14px;
-            line-height: 1.6;
+            line-height: 1.65;
             color: #cbd5e1;
         }
         .score-box {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            font-size: 36px;
+            font-size: 38px;
             font-weight: bold;
             color: #fbbf24;
             margin: 15px 0;
             background: #0f172a;
-            padding: 15px;
+            padding: 16px;
             border-radius: 8px;
+            border: 1px solid #334155;
         }
         .prob-container {
             margin-top: 15px;
@@ -109,23 +113,36 @@
             display: flex;
             justify-content: space-between;
             font-size: 13px;
-            color: #94a3b8;
+            font-weight: 600;
+            color: #cbd5e1;
         }
         .player-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
             background: #0f172a;
-            padding: 10px 14px;
+            padding: 11px 14px;
             border-radius: 8px;
             margin-bottom: 8px;
             font-size: 14px;
             border: 1px solid #334155;
+            transition: border-color 0.2s;
         }
-        .player-row span {
+        .player-row.hot {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.08) 0%, #0f172a 45%);
+        }
+        /* Kohdistetaan rivinvaihto vain päätilastoriville, jotta sisäiset merkit (🔥, VALUE, OUT) pysyvät samalla rivillä */
+        .player-row > div:first-child > span {
             display: block;
             font-size: 12px;
             color: #94a3b8;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .player-row > div:first-child > span strong {
+            color: #e2e8f0;
         }
         .odd-badge {
             background: #1e293b;
@@ -133,14 +150,19 @@
             border-radius: 6px;
             text-align: right;
             border: 1px solid #475569;
+            min-width: 76px;
+            flex-shrink: 0;
         }
         .odd-badge span {
+            display: block;
             font-size: 10px;
             color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .odd-badge strong {
             color: #38bdf8;
-            font-size: 14px;
+            font-size: 15px;
         }
     </style>
 </head>
@@ -153,7 +175,7 @@
     <div class="card">
         <label for="weekSelect">📅 Valitse Viikko</label>
         <select id="weekSelect">
-            <option value="5" selected>Viikko 5 (2026)</option>
+            <option value="6" selected>Viikko 6 (16.–20.10.2026)</option>
         </select>
 
         <label for="matchSelect">⚔️ Valitse Ottelupari</label>
@@ -170,7 +192,7 @@
 
     <!-- Simulaation tulos -->
     <div class="card" style="text-align: center;">
-        <div style="font-size: 12px; font-weight: bold; color: #94a3b8; letter-spacing: 1px;">1000x MONTE CARLO -MEDIAANI</div>
+        <div style="font-size: 12px; font-weight: bold; color: #94a3b8; letter-spacing: 1px;">2500x MONTE CARLO -SIMULAATIO</div>
         <div class="score-box">
             <span id="homeScoreNum">--</span>
             <span style="color: #64748b; font-size: 24px;">VS</span>
@@ -195,12 +217,12 @@
 
     <!-- Pelaajatiedot / Todennäköisyydet -->
     <div class="card">
-        <div class="section-title">⭐ Kotijoukkueen Avainpelaajat & TD-todennäköisyydet</div>
+        <div class="section-title">⭐ Kotijoukkueen Avainpelaajat &amp; TD-todennäköisyydet</div>
         <div id="homePlayers"></div>
     </div>
 
     <div class="card">
-        <div class="section-title">⭐ Vierasjoukkueen Avainpelaajat & TD-todennäköisyydet</div>
+        <div class="section-title">⭐ Vierasjoukkueen Avainpelaajat &amp; TD-todennäköisyydet</div>
         <div id="awayPlayers"></div>
     </div>
 </div>
