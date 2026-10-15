@@ -1,23 +1,23 @@
-// Virallinen NFL viikon 5 otteluohjelma (2026) Suomen aikoina (EEST)
+// Virallinen NFL viikon 6 otteluohjelma (Lokakuu 2026) Suomen aikoina (EEST)
 const nflSchedule = {
-    "5": [
-        { date: "Perjantai 9.10.2026", time: "03:15", away: "Tampa Bay Buccaneers", home: "Dallas Cowboys", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "16:30", away: "Philadelphia Eagles", home: "Jacksonville Jaguars", weather: "☁️ 15°C, Pilvinen (Lontoo)" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Las Vegas Raiders", home: "New England Patriots", weather: "❄️ 12°C, Viileä" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Chicago Bears", home: "Green Bay Packers", weather: "❄️ 9°C, Viileä" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Cincinnati Bengals", home: "Miami Dolphins", weather: "🌤 27°C, Aurinkoinen" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Minnesota Vikings", home: "New Orleans Saints", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Houston Texans", home: "Tennessee Titans", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Indianapolis Colts", home: "Pittsburgh Steelers", weather: "🌥 13°C, Pilvinen" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "Cleveland Browns", home: "New York Jets", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "20:00", away: "New York Giants", home: "Washington Commanders", weather: "🌤 17°C, Aurinkoinen" },
-        { date: "Sunnuntai 11.10.2026", time: "23:05", away: "Denver Broncos", home: "Los Angeles Chargers", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "Detroit Lions", home: "Arizona Cardinals", weather: "🌤 24°C, Aurinkoinen" },
-        { date: "Sunnuntai 11.10.2026", time: "23:25", away: "San Francisco 49ers", home: "Seattle Seahawks", weather: "🌧 11°C, Sadetta" },
-        { date: "Maanantai 12.10.2026", time: "03:20", away: "Baltimore Ravens", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
-        { date: "Tiistai 13.10.2026", time: "03:15", away: "Buffalo Bills", home: "Los Angeles Rams", weather: "🏟️ Sisäkenttä (Dome)" }
+    "6": [
+        { date: "Perjantai 16.10.2026", time: "03:15", away: "Seattle Seahawks", home: "Denver Broncos", weather: "🌤 15°C, Aurinkoinen" },
+        { date: "Sunnuntai 18.10.2026", time: "16:30", away: "Houston Texans", home: "Jacksonville Jaguars", weather: "☁️ 14°C, Pilvinen (Lontoo)" },
+        { date: "Sunnuntai 18.10.2026", time: "20:00", away: "Chicago Bears", home: "Atlanta Falcons", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 18.10.2026", time: "20:00", away: "Baltimore Ravens", home: "Cleveland Browns", weather: "🌤 16°C, Melko selkeää" },
+        { date: "Sunnuntai 18.10.2026", time: "20:00", away: "Tennessee Titans", home: "Indianapolis Colts", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 18.10.2026", time: "20:00", away: "New York Jets", home: "New England Patriots", weather: "🌥 13°C, Pilvinen" },
+        { date: "Sunnuntai 18.10.2026", time: "20:00", away: "New Orleans Saints", home: "New York Giants", weather: "🌤 17°C, Raikas" },
+        { date: "Sunnuntai 18.10.2026", time: "20:00", away: "Carolina Panthers", home: "Philadelphia Eagles", weather: "🌤 18°C, Aurinkoinen" },
+        { date: "Sunnuntai 18.10.2026", time: "20:00", away: "Pittsburgh Steelers", home: "Tampa Bay Buccaneers", weather: "🌤 26°C, Aurinkoinen" },
+        { date: "Sunnuntai 18.10.2026", time: "23:05", away: "Arizona Cardinals", home: "Los Angeles Rams", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Sunnuntai 18.10.2026", time: "23:25", away: "Los Angeles Chargers", home: "Kansas City Chiefs", weather: "🌤 19°C, Selkeää" },
+        { date: "Sunnuntai 18.10.2026", time: "23:25", away: "Buffalo Bills", home: "Las Vegas Raiders", weather: "🏟️ Sisäkenttä (Dome)" },
+        { date: "Maanantai 19.10.2026", time: "03:20", away: "Dallas Cowboys", home: "Green Bay Packers", weather: "❄️ 7°C, Viileä" },
+        { date: "Tiistai 20.10.2026", time: "03:15", away: "Washington Commanders", home: "San Francisco 49ers", weather: "🌤 18°C, Selkeää" }
     ]
 };
+
 
 const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 31, 34, 35, 38, 41, 42];
 
@@ -28,9 +28,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function updateMatches() {
         if (!weekSelect || !matchSelect) return;
-        const currentWeek = weekSelect.value;
+        const currentWeek = weekSelect.value || "6";
         matchSelect.innerHTML = '';
-        const matches = nflSchedule[currentWeek] || [];
+        const matches = nflSchedule[currentWeek] || nflSchedule["6"] || [];
 
         const groupedMatches = {};
         matches.forEach((m, index) => {
@@ -86,7 +86,7 @@ function calculateTeamInjuryFactor(injuredList) {
 function calculateWeatherFactor(weatherString) {
     const wStr = weatherString ? String(weatherString) : "";
     if (wStr.includes("Dome") || wStr.includes("Sisäkenttä")) return 1.03;
-    if (wStr.includes("Sade") || wStr.includes("Rankkasade")) return 0.90;
+    if (wStr.includes("Sade") || wStr.includes("Rankkasade") || wStr.includes("Sadetta")) return 0.90;
     if (wStr.includes("Tuulinen")) return 0.94;
     if (wStr.includes("Viileä") || wStr.includes("Kylmä")) return 0.97;
     return 1.0;
@@ -96,7 +96,7 @@ function getWeatherPositionMultiplier(pos, weatherString) {
     if (!weatherString || !pos) return 1.0;
     const wStr = String(weatherString);
     const pStr = String(pos);
-    const isBadWeather = wStr.includes("Sade") || wStr.includes("Rankkasade") || wStr.includes("Tuulinen");
+    const isBadWeather = wStr.includes("Sade") || wStr.includes("Rankkasade") || wStr.includes("Sadetta") || wStr.includes("Tuulinen");
     if (isBadWeather) {
         if (pStr.includes("WR") || pStr.includes("TE")) return 0.92;
         if (pStr.includes("RB")) return 1.08;
@@ -146,10 +146,10 @@ function getRandomPoisson(lambda) {
 }
 
 function getPlayedGamesCount(recordStr) {
-    if (!recordStr) return 4;
+    if (!recordStr) return 5;
     const parts = String(recordStr).split('-');
     const played = parseInt(parts[0]) + parseInt(parts[1]);
-    return played > 0 ? played : 4;
+    return played > 0 ? played : 5;
 }
 
 function isPlayerOut(playerName, injuredList) {
@@ -173,9 +173,9 @@ function runMonteCarloSimulation() {
     const matchIndexElement = document.getElementById('matchSelect');
     if (!selectedWeekElement || !matchIndexElement) return;
 
-    const selectedWeek = selectedWeekElement.value;
-    const matchIndex = matchIndexElement.value;
-    const match = nflSchedule[selectedWeek]?.[matchIndex];
+    const selectedWeek = selectedWeekElement.value || "6";
+    const matchIndex = matchIndexElement.value || 0;
+    const match = nflSchedule[selectedWeek]?.[matchIndex] || nflSchedule["6"]?.[0];
 
     if (!match) return;
 
@@ -184,7 +184,7 @@ function runMonteCarloSimulation() {
 
     const db = typeof nflData !== 'undefined' ? nflData : {};
     const homeData = db[homeKey] || db["Chiefs"];
-    const awayData = db[awayKey] || db["Rams"];
+    const awayData = db[awayKey] || db["Broncos"];
 
     let homeInjuryPenalty = calculateTeamInjuryFactor(homeData?.injuredPlayers);
     let awayInjuryPenalty = calculateTeamInjuryFactor(awayData?.injuredPlayers);
@@ -193,15 +193,15 @@ function runMonteCarloSimulation() {
     const homeGames = getPlayedGamesCount(homeData.record);
     const awayGames = getPlayedGamesCount(awayData.record);
 
-    const homePassYPG = Math.round((homeData?.pass || 900) / homeGames);
-    const homeRushYPG = Math.round((homeData?.rush || 400) / homeGames);
-    const homePassDefYPG = Math.round((homeData?.oppPass || 900) / homeGames);
-    const homeRushDefYPG = Math.round((homeData?.oppRush || 400) / homeGames);
+    const homePassYPG = Math.round((homeData?.pass || 1000) / homeGames);
+    const homeRushYPG = Math.round((homeData?.rush || 500) / homeGames);
+    const homePassDefYPG = Math.round((homeData?.oppPass || 1000) / homeGames);
+    const homeRushDefYPG = Math.round((homeData?.oppRush || 500) / homeGames);
 
-    const awayPassYPG = Math.round((awayData?.pass || 900) / awayGames);
-    const awayRushYPG = Math.round((awayData?.rush || 400) / awayGames);
-    const awayPassDefYPG = Math.round((awayData?.oppPass || 900) / awayGames);
-    const awayRushDefYPG = Math.round((awayData?.oppRush || 400) / awayGames);
+    const awayPassYPG = Math.round((awayData?.pass || 1000) / awayGames);
+    const awayRushYPG = Math.round((awayData?.rush || 500) / awayGames);
+    const awayPassDefYPG = Math.round((awayData?.oppPass || 1000) / awayGames);
+    const awayRushDefYPG = Math.round((awayData?.oppRush || 500) / awayGames);
 
     let h2hHomeBoost = 1.0;
     let h2hAwayBoost = 1.0;
