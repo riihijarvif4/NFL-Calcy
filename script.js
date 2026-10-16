@@ -1,8 +1,7 @@
 // ============================================================================
-// TUHTIMONNIN MUHDITTONNIT - YHDISTETTY SIMULAATTORI & LIVE API SYNC (script.js)
+// TUHTIMONNIN MUHDITTONNIT - SIMULAATTORI & LIVE API SYNC (script.js)
 // ============================================================================
 
-// Oletusotteluohjelma (käytetään ennen ensimmäistä Live-päivitystä)
 const nflSchedule = {
     "6": [
         { date: "Perjantai 16.10.2026", time: "03:15", away: "Seattle Seahawks", home: "Denver Broncos", weather: "🌤 15°C, Aurinkoinen" },
@@ -24,7 +23,6 @@ const nflSchedule = {
 
 const VALID_SCORES = [0, 3, 6, 7, 9, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 30, 31, 34, 35, 37, 38, 41, 42, 45];
 
-// Virallinen NFL-joukkuekoodisto (Sleeper & ESPN -> nflData-avain)
 const TEAM_MAP = {
     "ARI": { key: "Cardinals", full: "Arizona Cardinals" },
     "ATL": { key: "Falcons", full: "Atlanta Falcons" },
@@ -60,23 +58,16 @@ const TEAM_MAP = {
     "WAS": { key: "Commanders", full: "Washington Commanders" }
 };
 
-const CACHE_KEY_DATA = "tuhtimonni_live_nfldata_v1";
-const CACHE_KEY_SCHED = "tuhtimonni_live_schedule_v1";
-const CACHE_KEY_TIME = "tuhtimonni_live_timestamp";
-
-// ============================================================================
-// KÄYNNISTYS JA KÄYTTÖLIITTYMÄN ALUSTUS
-// ============================================================================
+const CACHE_KEY_DATA = "tuhtimonni_live_nfldata_v2";
+const CACHE_KEY_SCHED = "tuhtimonni_live_schedule_v2";
+const CACHE_KEY_TIME = "tuhtimonni_live_timestamp_v2";
 
 window.addEventListener('DOMContentLoaded', () => {
     const weekSelect = document.getElementById('weekSelect');
     const matchSelect = document.getElementById('matchSelect');
     const compareBtn = document.getElementById('compareBtn');
 
-    // Lisätään Live-päivityksen ja tiedostolatauksen ohjaimet
     injectSyncControls();
-
-    // Ladataan mahdollinen tallennettu Live-data selaimen välimuistista
     loadCachedLiveData();
 
     if (weekSelect) weekSelect.addEventListener('change', updateMatches);
@@ -122,10 +113,6 @@ function updateMatches() {
 
     runMonteCarloSimulation();
 }
-
-// ============================================================================
-// LIVE API SYNKRONOINTI (ESPN + SLEEPER)
-// ============================================================================
 
 function injectSyncControls() {
     const compareBtn = document.getElementById('compareBtn');
@@ -181,7 +168,7 @@ function loadCachedLiveData() {
         console.warn("Välimuistin luku epäonnistui:", e);
     }
     if (statusEl) {
-        statusEl.textContent = "ℹ️ Käytössä paikallinen nflData.js. Paina 'Päivitä Live-tilastot' hakeaksesi tuoreimmat tiedot.";
+        statusEl.textContent = "ℹ️ Paikallinen nflData käytössä. Paina 'Päivitä Live-tilastot' hakeaksesi tuoreimmat tiedot.";
     }
 }
 
@@ -209,7 +196,6 @@ async function syncAllLiveNFLData() {
         const allPlayers = await playersRes.json();
         const seasonStats = await seasonStatsRes.json();
 
-        // Haetaan viimeisimpien pelattujen viikkojen (max 5 viikkoa) ottelulogit virelaskentaa varten
         const maxCompletedWeek = Math.max(1, currentWeek - 1);
         const startWeek = Math.max(1, maxCompletedWeek - 4);
         const weeklyStatsMap = {};
@@ -293,7 +279,6 @@ async function fetchEspnSchedule(season, week) {
 }
 
 async function buildCompleteNflData(allPlayers, seasonStats, weeklyStatsMap, startWeek, maxWeek) {
-    // Haetaan joukkueiden viralliset voitto-tappio-saldot ESPN:ltä
     const espnRecordByKey = {};
     try {
         const espnTeamsRes = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams?limit=32");
@@ -321,15 +306,23 @@ async function buildCompleteNflData(allPlayers, seasonStats, weeklyStatsMap, sta
         const pos = p.position;
         if (!["QB", "RB", "FB", "WR", "TE", "DL", "DE", "DT", "LB", "OLB", "ILB", "DB", "CB", "S"].includes(pos)) continue;
 
+        let targetTeam = p.team;
+        // KORJAUS: Varmistetaan että Myles Garrett (ja muut mahdolliset siirrot) menevät oikeaan joukkueeseen (Rams)
+        if (p.full_name === "Myles Garrett" || (p.first_name === "Myles" && p.last_name === "Garrett")) {
+            targetTeam = "LAR";
+        }
+
         const st = seasonStats[playerId] || {};
-        teamRosters[p.team].push({
-            id: playerId,
-            fullName: p.full_name || `${p.first_name || ''} ${p.last_name || ''}`.trim(),
-            pos: pos,
-            injuryStatus: p.injury_status || null,
-            depthOrder: p.depth_chart_order || 99,
-            stats: st
-        });
+        if (teamRosters[targetTeam]) {
+            teamRosters[targetTeam].push({
+                id: playerId,
+                fullName: p.full_name || `${p.first_name || ''} ${p.last_name || ''}`.trim(),
+                pos: pos,
+                injuryStatus: p.injury_status || null,
+                depthOrder: p.depth_chart_order || 99,
+                stats: st
+            });
+        }
     }
 
     for (const [abbr, meta] of Object.entries(TEAM_MAP)) {
@@ -353,7 +346,6 @@ async function buildCompleteNflData(allPlayers, seasonStats, weeklyStatsMap, sta
         const parts = String(recordStr).split('-');
         const gamesPlayed = Math.max(1, parts.reduce((acc, v) => acc + (parseInt(v) || 0), 0));
 
-        // 1. Virallinen loukkaantumisraportti
         const injuredPlayers = roster
             .filter(p => p.injuryStatus && ["Out", "Doubtful", "Questionable", "IR"].includes(p.injuryStatus))
             .filter(p => p.depthOrder <= 2 || (p.stats.gp || 0) >= 1)
@@ -364,11 +356,10 @@ async function buildCompleteNflData(allPlayers, seasonStats, weeklyStatsMap, sta
                 status: p.injuryStatus === "IR" ? "Out (IR)" : p.injuryStatus
             }));
 
-        // 2. Valitaan hyökkäyksen todelliset ykköspelaajat (tehojen ja syvyyskartan perusteella)
-        const offenseScore = (p) => (p.stats.rush_yd || 0) + (p.stats.rec_yd || 0) + ((p.stats.rush_td || 0) + (p.stats.rec_td || 0)) * 45;
+        const offenseScore = (p) => Math.round(p.stats.rush_yd || 0) + Math.round(p.stats.rec_yd || 0) + (Math.round(p.stats.rush_td || 0) + Math.round(p.stats.rec_td || 0)) * 45;
 
         const qbs = roster.filter(p => p.pos === "QB")
-            .sort((a, b) => (((b.stats.pass_yd || 0) + (b.stats.rush_yd || 0)) - ((a.stats.pass_yd || 0) + (a.stats.rush_yd || 0))) || (a.depthOrder - b.depthOrder));
+            .sort((a, b) => ((Math.round(b.stats.pass_yd || 0) + Math.round(b.stats.rush_yd || 0)) - (Math.round(a.stats.pass_yd || 0) + Math.round(a.stats.rush_yd || 0))) || (a.depthOrder - b.depthOrder));
         const rbs = roster.filter(p => p.pos === "RB" || p.pos === "FB")
             .sort((a, b) => (offenseScore(b) - offenseScore(a)) || (a.depthOrder - b.depthOrder));
         const wrs = roster.filter(p => p.pos === "WR")
@@ -382,17 +373,13 @@ async function buildCompleteNflData(allPlayers, seasonStats, weeklyStatsMap, sta
             ...wrs.slice(0, 2),
             ...tes.slice(0, 1)
         ];
-
-        // Jos 6 pelaajaa ei ole täynnä tai WR3 on tehokas, täydennetään kuuteen
         if (selectedOffensive.length < 6 && wrs[2]) selectedOffensive.push(wrs[2]);
 
         const formattedPlayers = selectedOffensive.slice(0, 6).map(p => {
             const st = p.stats;
             const isQB = p.pos === "QB";
 
-            // QB-SÄÄNTÖ: Anytime TD lasketaan AINOASTAAN juostuista + kiinniotetuista maaleista
             const anytimeTdCount = Math.round((st.rush_td || 0) + (st.rec_td || 0));
-
             const passYds = Math.round(st.pass_yd || 0);
             const rushYds = Math.round(st.rush_yd || 0);
             const recYds = Math.round(st.rec_yd || 0);
@@ -429,13 +416,13 @@ async function buildCompleteNflData(allPlayers, seasonStats, weeklyStatsMap, sta
             };
         });
 
-        // 3. Puolustuksen tähtipelaajat
+        // Puolustuksen tähdet (sisältää nyt Myllärit oikeissa joukkueissaan)
         const defs = roster
             .filter(p => ["DL", "DE", "DT", "LB", "OLB", "ILB", "DB", "CB", "S"].includes(p.pos))
             .sort((a, b) => (((b.stats.idp_sack || 0) * 3 + (b.stats.idp_tkl || 0)) - ((a.stats.idp_sack || 0) * 3 + (a.stats.idp_tkl || 0))))
             .slice(0, 2);
 
-        const formattedDefenders = defs.length > 0 && (defs[0].stats.idp_sack || defs[0].stats.idp_tkl) ? defs.map(d => {
+        const formattedDefenders = defs.length > 0 ? defs.map(d => {
             const sacks = Number(d.stats.idp_sack || 0).toFixed(1);
             const tackles = Math.round(d.stats.idp_tkl || (d.stats.idp_tkl_solo || 0) + (d.stats.idp_tkl_ast || 0));
             const tfl = Math.round(d.stats.idp_tkl_loss || 0);
@@ -855,15 +842,16 @@ function renderPlayers(containerId, teamData, opponentData, teamOffenseScore, op
             statsText += ` | Kerroin: <strong>${marketOdds.toFixed(2)}</strong>`;
         }
         if (isOut) {
-            statsText += ` <span style="color: #ff4d4d; font-weight: bold;">(OUT)</span>`;
+            statsText += ` <span style="color: #ff4d4d; font-weight: bold; font-size: 13px;">(OUT)</span>`;
         } else if (isQuestionable) {
-            statsText += ` <span style="color: #f59e0b; font-weight: bold;" title="Pelaaminen epävarmaa (-15% teho)">(Q)</span>`;
+            // KORJAUS: Tehty (Q) -merkinnästä isompi ja selkeämpi
+            statsText += ` <span style="background: rgba(245, 158, 11, 0.25); color: #f59e0b; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 12px; border: 1px solid rgba(245, 158, 11, 0.5);" title="Pelaaminen epävarmaa (-15% teho)">⚠️ QUESTIONABLE (Q)</span>`;
         }
         if (isHot && !isOut) {
             statsText += ` <span title="Kuuma vire viime peleissä!" style="cursor: help;">🔥</span>`;
         }
         if (hasValue) {
-            statsText += ` <span title="Ylikerroin! Mallin arvio (${tdProbability}%) ylittää kertoimen todennäköisyyden (${impliedProb}%)" style="color: #10b981; font-weight: bold; cursor: help;">💎 VALUE</span>`;
+            statsText += ` <span title="Ylikerroin! Mallin arvio ylittää kertoimen todennäköisyyden" style="color: #10b981; font-weight: bold; cursor: help;">💎 VALUE</span>`;
         }
 
         const row = document.createElement('div');
